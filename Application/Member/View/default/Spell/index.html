@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html class="h100">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>{:C('WEB_SITE_TITLE')}</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/zepto.js"></script>
+		<script src="__PUBLIC__/Home/js/iscroll-probe.js"></script>
+		<script src="__PUBLIC__/Home/js/delIOS_huitan.js"></script>
+		<style>
+			/*下拉加载样式*/
+			#wrapper {
+				position: absolute;
+				z-index: 1;
+				top: 0;
+				bottom: 0;
+				left: 0;
+				width: 100%;
+				overflow: hidden;
+			}
+			#wrapper > div > .list > li{margin-bottom: 10px;}
+			#wrapper > div > .list > li:last-child{margin-bottom: 0;}
+			#loadBin{color: #5d5d5d;text-align: center;line-height: 30px;}
+		</style>
+	<script>
+	function delorder(id)
+	{
+		$('.confirm .top').text('确认删除订单？');
+		$('#zhezhao').css('display','block');
+		$('.confirm').css('display','block'); 
+		
+		//点击取消
+		$('.confirm .bot div.l').on('click',function(){
+			$('#zhezhao').css('display','none');
+			$('.confirm').css('display','none');
+		});
+		//点击确定
+		$('.confirm .bot div.r').on('click',function(){
+			$('#zhezhao').css('display','none');
+			$('.confirm').css('display','none');
+
+			$.ajax({
+				//提交数据的类型 POST GET
+				type:"POST",
+				//提交的网址
+				url:"__URL__/delorder",
+				//提交的数据
+				data:{'id':id},
+				//返回数据的格式
+				datatype: "json",//"xml", "html", "script", "json", "jsonp", "text".
+				//在请求之前调用的函数
+				//成功返回之后调用的函数             
+				success:function(json){ 
+					tipFun(json.info);
+					setTimeout(function(){
+						window.location.reload();
+					},1000);
+				}
+			});
+		});
+	}
+	</script>
+	</head>
+	<body class="h100 ohid box" onload="onload()">
+		<!--confirm-->
+		<div class="confirm" style="display: none">
+			<div class="top"></div>
+			<div class="bot clear">
+				<div class="l"><p>取消</p></div>
+				<div class="r"><p>确定</p></div>
+			</div>
+		</div>
+		<!-- 遮罩层 -->
+		<div id="zhezhao" style="display:none"></div>
+		<!--提示文字-->
+		<div class="tip" style="opacity: 0;z-index: -1"></div>
+		<!--正文区域-->
+		<div id="mydingdanTop" class="topBackTitle">
+			<div class="contain maxWidth">
+				<div class="top1">
+					<a class="hz back" href="{:U('/Member/Index/index')}">&#xe600;</a>我的拼单<!--<a href="订单查询.html" class="hz search">&#xe607;</a>-->
+				</div>
+				<div class="top2">
+					<ul class="clear">
+						<li class="{$statuscss[-1]}"><a href="{:U('Spell/index')}">全部</a></li>
+						<li class="{$statuscss[0]}"><a href="{:U('Spell/index',array('state'=>2))}">拼团中</a></li>
+						<li class="{$statuscss[1]}"><a href="{:U('Spell/index',array('state'=>3))}">已成团</a></li>
+						<li class="{$statuscss[2]}"><a href="{:U('Spell/index',array('state'=>4))}">拼团失败</a></li>
+						<!-- <li class="{$statuscss[3]}"><a href="{:U('Spell/index',array('status'=>3))}">交易完成</a></li> -->
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div id="mydingdanMain" class="fastscroll">
+			<div class="contain maxWidth">
+				<div id="wrapper">
+					<div class="maxWidth">
+						<!-- 全部 待付款 待发货 待收货 待评价 共用1个ul -->
+						<ul class="list">
+						<if condition="$list neq null">
+						<volist name="list" id="item">
+							<li class="wai" data-id="{$item.id}">
+								<div class="bgulCon titlebgulCon">
+									<ul>
+										<li>
+											<span class="left">订单编号:{$item.sn}</span>
+											<span class="right red">
+											<if condition="$item['team']['status'] eq 0">
+											<!-- 拼团中 -->
+											<if condition="$item['status'] gt 0">
+											拼团中
+											<else/>待付款
+											</if>
+											<elseif condition="$item['team']['status'] eq 1"/>
+											<!-- 已成团 -->
+											{$statusarr[$item['status']]}
+											<else/>
+											<!-- 拼团失败 -->
+											拼团失败
+											<if condition="$item['is_drawback'] eq 1">，已退款<else/>，待退款</if>
+											</if>
+											
+											</span>
+										</li>
+									</ul>
+								</div>
+								<div class="ddproList">
+									<ul class="lis">
+										<li class="clear">
+											<div class="left">
+												<img src="{$item.spell.image}">
+											</div>
+											<div class="right">
+												<p class="title">{$item.spell.title}</p>
+												
+												<p class="price">
+													<em>&yen;<span>{$item.spell.price}</span></em><del>&yen;{$item.spell.oldprice}</del><span class="r">&times;<span>{$item.spell_num}</span></span>
+												</p>
+											</div>
+										</li>
+									</ul>
+								</div>
+								<div class="bgulCon bot">
+									<ul>
+										<li>
+											<span class="right">共<span class="num">{$item['spell_num']}</span>件商品 合计:&yen;<span class="sumMoney">{$item['money']}</span>(含运费&yen;<span class="yunMoney">{$item.express_money}</span>)</span>
+										</li>
+										<li>
+											<if condition="$item['team']['status'] eq 0">
+											<!-- 拼团中 -->
+											<if condition="$item['status'] gt 0">
+											<!-- 已付款 -->
+												<a href="{:U('/Home/Spell/payok',array('order_id'=>$item['id']))}" class="right spriteBtnRed">邀请好友拼团</a>
+											<else/><!-- 待付款 -->
+											<a href="/wxpay/example/jsapis.php?order_id={$item.id}" class="right spriteBtnRed">付款</a>
+											</if>
+											<elseif condition="$item['team']['status'] eq 1"/>
+											<!-- 已成团 -->
+											<if condition="$item['status'] eq 2">
+												<a href="javascript:;" onclick="javascript:cancelorder({$item.id},3);" class="right spriteBtnRed">确认收货</a>
+												<a href="http://wpa.qq.com/msgrd?v=3&uin={$website.qq}" class="spriteBtnGray right">申请售后</a>
+											</if>
+											<if condition="$item['status'] eq 3">
+											<a href="http://wpa.qq.com/msgrd?v=3&uin={$website.qq}" class="spriteBtnGray right">申请售后</a>
+											</if>
+											<else/>
+											<!-- 拼团失败 -->
+											<if condition="$item['is_drawback'] eq 0"><a href="http://wpa.qq.com/msgrd?v=3&uin={$website.qq}" class="spriteBtnGray right">申请售后</a></if>
+											</if>
+											
+											<!-- 
+											<if condition="$item.status eq 0">
+											<a href="/wxpay/example/jsapis.php?order_id={$item.id}" class="right spriteBtnRed">付款</a>
+											</if>
+											<if condition="$vo['pl'] eq 0">
+												<!-- <a href="/Member/Evaluate/add/order_detail_id/{$vo.id}" class="right spriteBtnRed pingjia">去评价</a> -->
+											<!-- </if>
+											<if condition="($item.status eq 1) or ($item.status eq 2)">
+												<a href="javascript:;" onclick="javascript:cancelorder({$item.id},3);" class="right spriteBtnRed">确认收货</a>
+												<a href="http://wpa.qq.com/msgrd?v=3&uin={$website.qq}" class="spriteBtnGray right">申请售后</a>
+											</if>
+											<if condition="$item.status eq 3">
+												<a href="javascript:delorder({$item.id});" class="right spriteBtnGray delDingdan">删除订单</a>
+											</if>
+											<if condition="$item.status eq 4">
+												<a href="javascript:;" class="right spriteBtnGray delDingdan">删除订单</a>
+											</if>
+											 -->
+										</li>
+									</ul>
+								</div>
+							</li>
+							</volist>
+							<else/>
+							<div style="width: 100%;margin-top: 120px;text-align: center;color: #5c5c5c;">暂无订单!!!</div>
+							</if>
+						</ul>
+						<div id="loadBin"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+<script>
+
+function cancelorder(order_id,status)
+{
+	var url="{:U('Spell/upstatus')}";
+	if(status==3){
+		$('.confirm .top').text('确认收货？');
+	}else if(status==4){
+		$('.confirm .top').text('确认取消订单？');
+	}
+	
+	$('#zhezhao').css('display','block');
+	$('.confirm').css('display','block');
+	
+	//点击取消
+	$('.confirm .bot div.l').on('click',function(){
+		$('#zhezhao').css('display','none');
+		$('.confirm').css('display','none');
+	});
+	//点击确定
+	$('.confirm .bot div.r').on('click',function(){
+		$('#zhezhao').css('display','none');
+		$('.confirm').css('display','none');
+
+		$.ajax({
+            //提交数据的类型 POST GET
+            type:"POST",
+            //提交的网址
+            url:url,
+            //提交的数据
+            data:{status:status,id:order_id},
+            //返回数据的格式
+            datatype: "json",//"xml", "html", "script", "json", "jsonp", "text".
+            //在请求之前调用的函数
+            //成功返回之后调用的函数             
+            success:function(data){
+				tipFun(data.info);
+				if(data.status>0)
+				{
+					setTimeout(function(){
+						window.location.reload();
+					},1000);
+				}         
+            }   ,
+            //调用执行后调用的函数
+            complete: function(XMLHttpRequest, textStatus){
+               
+            },
+            error: function(){
+            }         
+         });
+	});
+}
+
+</script>
+		<include file="Public:footer" />
+		<script>
+			//tip
+			function tipFun(str){
+				$('.tip').text(str).css({
+					'opacity':'1',
+					'z-index':'9999999'
+				});
+				setTimeout(function(){
+					$('.tip').css('opacity','0');
+					setTimeout(function(){
+						$('.tip').css('z-index','-1');
+					},300);
+				},1300);
+			}
+
+			//点击订单列表的li
+			$('#wrapper > div > .list').on('click','li.wai',function(e){
+				if(e.target.nodeName!='A'){
+					var id = $(this).attr('data-id');
+					location.href="{:U('Spell/view')}&id="+id;
+				}
+			});
+
+			//iscroll 下拉加载+zeptoajax
+			function onload(){
+			 	loadBin = document.getElementById("loadBin");
+			 	myScroll = new IScroll('#wrapper',{
+			 		probeType: 3,
+			 		click:true,
+			 		tap:true
+			 	});
+			 	myScroll.on("scroll",scrollFun);
+			 	myScroll.on("scrollEnd",scrollEndFun);
+			 }
+			 var page=2,status="{$status}";
+			 var qq = "{$website.qq}";
+			 var myScroll,
+			 	loadBin,
+			 	isload = false,
+			 	scrollFun = function(){
+			 		if((this.y - this.maxScrollY)>>0 < -50){
+			 			isload = true;
+			 			loadBin.innerHTML = "松开手指加载更多";
+			 			myScroll.refresh();
+			 			myScroll.off("scroll",scrollFun);
+			 		}
+			 	},
+			 	scrollEndFun = function(){
+			 		if(isload){
+			 			isload = false;     
+			 			$.ajax({
+			 				type: 'GET',
+			 				url: "{:U('ajaxGetList')}",
+			 				dataType: 'json',
+			 				data:{page:page,status:status},
+			 				success: function(data){
+			 					if(data.length>0){
+			 						page++;
+			 						var str='';
+			 						for(var i=0;i<data.length;i++){
+			 							
+			 							str+='<li class="wai" data-id="'+data[i].id+'">\
+			 									<div class="bgulCon titlebgulCon">\
+			 									<ul>\
+			 										<li>\
+			 											<span class="left">订单编号:'+data[i].sn+'</span>\
+			 											<span class="right red">';
+			 											
+			 											if(data[i].team.status==0){
+			 												//拼团中
+			 												if(data[i].status>0){
+			 													str+='拼团中';
+			 												}else{
+			 													str+="待付款"
+			 												}
+			 											}else if (data[i].team.status==1){
+			 												//已成团 
+			 												str+=data[i].status;
+			 											}else{
+			 												//拼团失败
+			 												str+="拼团失败";
+			 												if(data[i].is_drawback==1){
+			 													str+="，已退款";
+			 												}else{
+			 													str+="，待退款";
+			 												}
+			 											}
+			 											/*if(data[i].is_drawback==1){
+			 												str+='拼团失败 已退款';
+			 											}else{
+			 												if(data[i].team.status==2){
+			 													str+='拼团失败';
+			 												}else{
+			 													str+=data[i].status;
+			 												}
+			 											}*/
+			 											str+='</span>\
+			 												</li>\
+			 												</ul>\
+			 											</div>\
+			 											<div class="ddproList">\
+															<ul class="lis">\
+																<li class="clear">\
+																	<div class="left">\
+																		<img src="'+data[i].spell.image+'">\
+																	</div>\
+																	<div class="right">\
+																		<p class="title">'+data[i].spell.title+'</p>\
+																		<p class="price">\
+																			<em>&yen;<span>'+data[i].spell.price+'</span></em><del>&yen;'+data[i].spell.oldprice+'</del><span class="r">&times;<span>'+data[i].spell_num+'</span></span>\
+																		</p>\
+																	</div>\
+																</li>\
+															</ul>\
+														</div>\
+														<div class="bgulCon bot">\
+														<ul>\
+															<li>\
+																<span class="right">共<span class="num">'+data[i].spell_num+'</span>件商品 合计:&yen;<span class="sumMoney">'+data[i].money+'</span>(含运费&yen;<span class="yunMoney">'+data[i].express_money+'</span>)</span>\
+															</li>\
+															<li>';
+															if(data[i].team.status==0){
+																//拼团中
+																if(data[i].status==0){
+																	//已付款
+																	str+='<a href="/index.php?s=/Home/Spell/payok/order_id/'+data[i].id+'" class="right spriteBtnRed">邀请好友拼团</a>';
+																}else{
+																	//待付款
+																	str+='<a href="/wxpay/example/jsapis.php?order_id='+data[i].id+'" class="right spriteBtnRed">付款</a>';
+																}
+															}else if(data[i].team.status==1){
+																//已成团
+																if(data[i].status == 2){
+																	str+='<a href="javascript:;" onclick="javascript:cancelorder('+data[i].id+',3);" class="right spriteBtnRed">确认收货</a>\
+																	<a href="http://wpa.qq.com/msgrd?v=3&uin='+qq+'" class="spriteBtnGray right">申请售后</a>';
+																}
+																if(data[i].status==3){
+																	str+'<a href="http://wpa.qq.com/msgrd?v=3&uin='+qq+'" class="spriteBtnGray right">申请售后</a>';
+																}
+															}else{
+																//拼团失败
+																if(data[i].is_drawback==0){
+																	str+='<a href="http://wpa.qq.com/msgrd?v=3&uin='+qq+'" class="spriteBtnGray right">申请售后</a>';
+																}
+															
+															}
+															
+															
+															/*if(data[i].status==0){
+																str +='<a href="/wxpay/example/jsapis.php?order_id='+data[i].id+'" class="right spriteBtnRed">付款</a>';
+															}else if(data[i].status==1||data[i].status==2){
+																str +='<a href="javascript:;" onclick="javascript:cancelorder('+data[i].id+',3);" class="right spriteBtnRed">确认收货</a>\
+																	<a href="http://wpa.qq.com/msgrd?v=3&uin={$website.qq}" class="spriteBtnGray right">申请售后</a>';
+															}else if(data[i].status==3){
+																str += '<a href="javascript:delorder('+data[i].id+');" class="right spriteBtnGray delDingdan">删除订单</a>';
+															}else{
+																str += '<a href="javascript:;" class="right spriteBtnGray delDingdan">删除订单</a>';
+															}*/
+															str+='</li>\
+														</ul>\
+													</div>\
+												</li>';
+															
+			 						}
+			 						 $('#mydingdanMain .list').append(str);
+
+			 						loadBin.innerHTML = "";
+				 					myScroll.on("scroll",scrollFun);
+				 					myScroll.refresh();
+			 					}else{
+			 						//显示没有更多数据了
+									$('.noData').css('display','block');
+									loadBin.innerHTML = "";
+									//没有必要再看到 松开手指加载更多
+									scrollFun = function(){
+										loadBin.innerHTML = "";
+										myScroll.refresh();
+										myScroll.off("scroll",scrollFun);
+									}
+			 					}
+			 				},
+			 				error: function(xhr, type){
+			 					console.log('Ajax error!');
+			 				}
+			 			});
+			 		}
+			 	}
+		</script>
+	</body>
+</html>

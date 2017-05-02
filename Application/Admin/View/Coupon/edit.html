@@ -1,0 +1,137 @@
+<extend name="Public/base"/>
+
+<block name="body">
+
+<link href="__STATIC__/datetimepicker/css/datetimepicker.css" rel="stylesheet" type="text/css">
+<php>if(C('COLOR_STYLE')=='blue_color') echo '<link href="__STATIC__/datetimepicker/css/datetimepicker_blue.css" rel="stylesheet" type="text/css">';</php>
+<link href="__STATIC__/datetimepicker/css/dropdown.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="__STATIC__/datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript" src="__STATIC__/datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+
+<script type="text/javascript">
+
+$(function(){
+    $('.date').datetimepicker({
+        format: 'yyyy-mm-dd hh:ii:ss',
+        language:"zh-CN",
+        minView: 0,
+        minuteStep:1,
+        autoclose:true
+    });
+    $('.time').datetimepicker({
+        format: 'yyyy-mm-dd hh:ii:ss',
+        language:"zh-CN",
+        minView: 0,
+        minuteStep:1,
+        autoclose:true
+    });
+    showTab();
+
+});
+</script>
+	<script type="text/javascript" src="__STATIC__/uploadify/jquery.uploadify.min.js"></script>
+	<div class="main-title">
+		<h2>编辑优惠券</h2>
+	</div>
+	<div class="tab-wrap">
+		<div class="tab-content">
+			<form action="__URL__/update" method="post" class="form-horizontal" enctype="multipart/form-data">
+				<!-- 基础 -->
+				<input type="hidden" name="id" value="{$vo.id}" />
+				<div id="tab1" class="tab-pane in tab1">
+					<div class="form-item">
+						<label class="item-label">
+							名称<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+							<input type="text" name="title" class="text input-large" value="{$vo.title}"><span class="check-tips"></span>
+						</div>
+						<label class="item-label">
+							会员等级<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+							<?php $grade = getGradelist();?>
+							<select name="grade_id">
+								<option value="">请选择</option>
+								<volist name="grade" id="v">
+								<option value="{$v.id}">{$v.gname}</option>
+								</volist>
+							</select>
+						</div>
+						<label class="item-label">
+							开始日期<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+							<input type="text" name="start_date" class="text date" value="{$vo.start_date}">
+							<span class="check-tips"></span>
+						</div>
+						
+
+						<label class="item-label">
+							截止日期<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+							<input type="text" name="end_date" class="text date" value="{$vo.end_date}">
+							<span class="check-tips"></span>
+						</div>
+
+						<label class="item-label">
+							金额<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+							<input type="text" name="money" class="text input-large" value="{$vo.money}"><span class="check-tips"></span>
+						</div>
+
+						<label class="item-label">
+							消费下限<span class="check-tips">最低消费金额可用</span>
+						</label>
+						<div class="controls">
+							<input type="text" name="lowest" class="text input-large" value="{$vo.lowest}"><span class="check-tips"></span>
+						</div>
+
+						<label class="item-label">
+							说明<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+							<input type="text" name="desc" class="text input-large" value="{$vo.desc}"><span class="check-tips"></span>
+						</div>
+<!-- 
+						<label class="item-label">
+							可用产品id<span class="check-tips">若为0则全部商品都可用</span>
+						</label>
+						<div class="controls">
+							<input type="text" name="pid" class="text input-large" value="{$vo.pid}"><span class="check-tips"></span>
+						</div> -->
+						
+						<label class="item-label">
+							生成数量<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+							<input type="text" name="num" class="text" value="{$vo.num}"><span class="check-tips"></span>
+						</div>
+						<!-- <label class="item-label">
+							领取数量<span class="check-tips">每个会员可领取的优惠券数量，0为不限制</span>
+						</label>
+						<div class="controls">
+							<input type="text" name="pernum" class="text" value="{$vo.pernum|default=0}">
+						</div> -->
+					</div>
+				</div>
+
+				<div class="form-item">
+					<input type="hidden" name="__forward__" class="text input-large" value="{$__forward__}">
+					<input type="hidden" name="position_id" class="text input-large" value="{$Think.get.hid}"><span class="check-tips"></span>
+					<button type="submit" id="submit" class="btn submit-btn ajax-post" target-form="form-horizontal">确 定</button>
+					<button class="btn btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</block>
+<block name="script">
+<script type="text/javascript">
+
+	//导航高亮
+    highlight_subnav("{:U('Coupon/index')}");
+</script>
+</block>

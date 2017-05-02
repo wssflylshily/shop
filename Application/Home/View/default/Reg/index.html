@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html style="max-width:720px;min-height: 100%;">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>{:C('WEB_SITE_TITLE')}</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css" />
+		<script src="__PUBLIC__/Home/js/zepto.js"></script>
+		<script src="__PUBLIC__/Home/js/delIOS_huitan.js"></script>
+	</head>
+	<body class="box" style="max-width:720px;min-height: 100%;">
+		<!--提示文字-->
+		<div class="tip" style="opacity: 0;z-index: -1"></div>
+		<!--输入验证码的弹框-->
+		<div id="maKuang" style="display:none">
+			<div class="top">
+				<span class="title">输入验证码</span>
+				<div class="inputArea">
+					<input type="text" id="code"/>
+					<p class="ma">
+						<img id="verify_code" src="__URL__/verify" onclick="verifycode()"/>
+					</p>
+				</div>
+			</div>
+			<div class="bot">
+				<a href="javascript:;" class="cancel">取消</a><a href="javascript:;" class="sure">确认</a>
+			</div>
+		</div>
+		<!--遮罩层-->
+		<div id="zhezhao" style="display:none"></div>
+		<!--正文区域-->
+		<div id="zhuceMain" class="lzMain zmMain maxWidth fastscroll"> 
+			<img src="__PUBLIC__/Home/img/logo2.png" class="top"/>
+			<div class="middle">
+				<div class="phone inputArea">
+					<span>手机号</span><input type="tel" placeholder="请输入手机号" id="login_user"/>
+				</div>
+				<div class="key inputArea">
+					<span>密码</span><input type="password" placeholder="请输入密码" id="login_pass"/>
+				</div>
+				<div class="ckeckkey inputArea">
+					<span>确认密码</span><input type="password" placeholder="请再次输入密码" id="repassword"/>
+				</div>
+				<div class="ma inputArea">
+					<span>短信验证码</span><input type="text" placeholder="请输入短信验证码" id="sms"/><em class="sendma">获取验证码</em>
+				</div>
+			<input type="hidden" id="successsms" value="" />
+				<div class="zhuceArea">
+					<a href="{:U('/Member/Login/index')}" class="zhuce">登录</a>
+					<!--<a href="密码找回1.html" class="wangji">忘记密码?</a>-->
+				</div>
+				<a href="javascript:;" class="submitbtn">注册</a>
+			</div>
+		</div>
+
+		<script>
+function verifycode()
+{
+	var verifysrc='__URL__/verify&rand='+Math.random();
+	$('#verify_code').attr('src',verifysrc);
+}
+function sendsms()
+{
+	$.ajax({
+		type: "post",
+		dataType: "json",
+		url: "__URL__/sendsms",
+		data: {mobile:$('#login_user').val()},
+		success: function(json){
+			if(json.status<1)
+			{
+				tipFun(json.info);
+				//$.toast(json.info,'cancel', function() {
+				//});
+			}
+			else
+			{
+				$('#successsms').val(json.info);
+			}
+		}
+	})
+} 
+			//tip
+			function tipFun(str){
+				$('.tip').text(str).css({
+					'opacity':'1',
+					'z-index':'99999999'
+				});
+				setTimeout(function(){
+					$('.tip').css('opacity','0');
+					setTimeout(function(){
+						$('.tip').css('z-index','-1');
+					},300);
+				},1300);
+			}
+
+			//点击获取验证码
+			$('#zhuceMain .middle .ma .sendma').on('tap',function(){
+				var mobile = $('#login_user').val();
+				if(mobile==""){
+					tipFun("请输入手机号");return;
+				}
+				var myreg = /^(((13[0-9]{1})|(15[0-9]{1})|(18[0-9]{1}))+\d{8})$/; 
+				if(!myreg.test($('#login_user').val())) {
+					tipFun("手机号格式不正确");return;
+				}
+				$('#maKuang').css('display','block');
+				$('#zhezhao').css('display','block');
+			});
+
+			//点击取消
+			$('#maKuang .bot .cancel').on('tap',function(){
+				$('#maKuang .top .inputArea input').val('');//清空弹框input值
+				$('#maKuang').css('display','none');
+				$('#zhezhao').css('display','none');
+			});
+
+			//点击确定
+			$('#maKuang .bot .sure').on('tap',function(){
+				if($('#code').val()=='')
+				{
+					tipFun('请输入验证码');
+				}
+				else
+				{
+					$.ajax({
+						type: "post",
+						dataType: "json",
+						url: "__URL__/checkcode",
+						data: {code:$('#code').val()},
+						success: function(json){
+							if(json.status<1)
+							{
+								tipFun('验证码错误');
+							}
+							else
+							{
+								//提示消失后点击成功
+								if($('.tip').css('z-index')==-1){
+									sendsms();
+									tipFun('已经发送验证码');
+								}
+								$('#maKuang .top .inputArea input').val('');//清空弹框input值
+								$('#maKuang').css('display','none');
+								$('#zhezhao').css('display','none');
+							}
+						}
+					})
+				}
+				/*var getValue=$('#maKuang .top .inputArea input').val();
+//				console.log(getValue);
+				$('#maKuang .top .inputArea input').val('');//清空弹框input值
+				$('#maKuang').css('display','none');
+				$('#zhezhao').css('display','none');*/
+			});
+
+			//点击注册
+			$('#zhuceMain .middle .submitbtn').on('tap',function(){
+				//console.log('注册');
+				var login_pass	=	$('#login_pass').val();
+				var repassword	=	$('#repassword').val();
+				var myreg = /^(((13[0-9]{1})|(15[0-9]{1})|(18[0-9]{1}))+\d{8})$/; 
+				if($('#login_user').val()=='')
+				{
+					tipFun('请输入手机号'); 
+					$('#login_user').val('');
+					$('#login_user').focus();
+					return false;
+				}
+				else if(!myreg.test($('#login_user').val())) 
+				{
+					tipFun('请输入有效的手机号码！');
+					$('#login_user').focus();
+					return false; 
+				}
+				else if(login_pass.length<6)
+				{
+					tipFun('密码不能小于6位');
+					$('#login_pass').focus();
+					return false;
+				}
+				else if(login_pass!=repassword)
+				{
+					tipFun('两次密码不一致')
+					return false;
+				}
+				else if($('#sms').val()=='')
+				{
+					tipFun('请输入短信验证码!');
+					return false;
+				}
+				else if($('#sms').val()!=$('#successsms').val())
+				{
+					tipFun('验证码不正确'+$('#sms').val());
+					return false;
+				}
+				else
+				{
+					var user_id={$user_id};
+					$.ajax({
+						type: "post",
+						dataType: "json",
+						url: "__URL__/index",
+						data: {login_user:$('#login_user').val(),login_pass:login_pass,repassword:repassword,sms:$('#sms').val(),user_id:user_id},
+						success: function(json){
+							if(json.status==1)
+							{
+								//location.href = "{:U('/Member/Index/index')}";
+								location.href = json.url;
+							}
+							else
+							{
+								tipFun(json.info);
+							}
+						}
+					})
+				}
+			});
+		</script>
+	</body>
+</html>

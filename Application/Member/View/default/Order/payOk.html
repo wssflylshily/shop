@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<meta name="format-detection" content="telephone=no">
+		<title>支付成功</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/zepto.js"></script>
+		<script src="__PUBLIC__/Home/js/delIOS_huitan.js"></script>
+	</head>
+	<body class="box">
+		<!--正文区域-->
+		<div id="zhifuokTop" class="topBackTitle">
+			<div class="contain maxWidth">
+				<a class="hz back" href="{:U('Order/index')}">&#xe600;</a>支付成功
+			</div>
+		</div>
+		<div id="zhifuokMain" class="fastscroll top50bot0">
+			<div class="contain maxWidth">
+				<div class="tip">
+					<div class="circle">
+						<span class="hz">&#xe613;</span>
+					</div>支付成功
+				</div>
+				<ul class="ullist1line">
+					<!-- <li>
+						<div class="left">商品</div>
+						<div class="right">M Plus 情迷蝴蝶结系列浪漫粉色蝴蝶结单间斜挎包</div>
+					</li> -->
+					<li>
+						<div class="left">订单编号</div>
+						<div class="right">{$order.sn}</div>
+					</li>
+					<li>
+						<div class="left">成交时间</div>
+						<div class="right">{$order.paytime|date='Y-m-d H:i:s',###}</div>
+					</li>
+					<li>
+						<div class="left">支付方式</div>
+						<div class="right">
+						<if condition="$order.paytype eq 1">余额支付<else/>微信支付</if>
+						</div>
+					</li>
+					<li>
+						<div class="left">当前状态</div>
+						<div class="right">交易成功</div>
+					</li>
+				</ul>
+				<div class="summary">
+					付款金额：<span>&yen;{$order.money}</span>
+				</div>
+			</div>
+		</div>
+		<script>
+			//返回按钮
+			/*$('#zhifuokTop .back').on('click',function(){
+				window.history.go(-1);
+			});*/
+
+			setTimeout(function(){
+				$('#zhifuokMain .tip').css('opacity',0);
+			},2000);
+		</script>
+	</body>
+</html>

@@ -1,0 +1,121 @@
+<extend name="Public/base"/>
+
+<block name="body">
+	<div class="main-title">
+		<h2>拼团订单列表</h2>
+	</div>
+
+	<div class="cf">
+		<present name="Think.get.hid">
+			<a class="btn" href="{$Think.get.refer|base64_decode}">返 回</a>
+		</present>
+		<!-- <div >查看</div> -->
+		<a class="btn" href="__URL__/order">全部</a>
+		<a class="btn" href="{:U('order',array('status'=>2))}">拼团中</a>
+		<a class="btn" href="{:U('order',array('status'=>3))}">拼团成功</a>
+		<!-- <a class="btn" href="{:U('order',array('status'=>3))}">交易完成</a> -->
+		<a class="btn" href="{:U('order',array('status'=>4))}">拼团失败</a>
+		<!-- <a class="btn" href="__URL__/order/status/0">拼团中</a>
+		<a class="btn" href="__URL__/order/status/1">拼团成功</a>
+		<a class="btn" href="__URL__/order/status/3">交易完成</a>
+		<a class="btn" href="__URL__/order/status/2">拼团失败</a> -->
+		<!-- 高级搜索 -->
+		<div class="search-form fr cf">
+			<div class="sleft">
+				<div class="drop-down">
+					<span id="sch-sort-txt" class="sort-txt" data="{$status}">订单号</span>
+					<i class="arrow arrow-down"></i>
+					
+				</div>
+				<input type="text" name="title" id="order_id" class="search-input" value="{:I('title')}" placeholder="请输入订单号">
+				<a class="sch-btn" href="javascript:;" id="search" url="{:U('order/index','pid='.I('pid',0).'&cate_id='.$cate_id,false)}"><i class="btn-search"></i></a>
+			</div>
+
+		</div>
+	</div>
+
+	<div class="data-table table-striped">
+		<table>
+			<thead>
+				<tr>
+					<th class="row-selected">
+						<input class="checkbox check-all" type="checkbox">
+					</th>
+					<th>ID</th>
+					<th>订单号</th>
+					<th>参团用户</th>
+					<th>拼团团长</th>
+					<th>拼团名称</th>
+					<th>参团时间</th>
+                    <th>订单状态</th>
+                    <th>拼团状态</th>
+					<th>操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				<notempty name="info">
+				<volist name="info" id="item">
+					<tr>
+						<td><input class="ids row-selected" type="checkbox" name="" id="" value="{$item['id']}"> </td>
+						<td>{$item.id}</td>
+						<td><a href="__URL__/views/id/{$item.id}">{$item.sn}</a></td>
+						<td><a href="{:U('Member/edit',array('id'=>$item['user_id']))}"><if condition="$item['user']['name'] neq ''">{$item.user.name}<else/>{$item.user.login_user}</if></a></td>
+						<td><a href="{:U('Member/edit',array('id'=>$item['teamuserid']))}">{$item.teamuser}</a></td>
+						<td><a href="{:U('Spell/info',array('id'=>$item['spell_id']))}">{$item.title}</a></td>
+                        <td>{:date('Y-m-d H:i:s',$item['addtime'])}</td>
+                        <td>{$statusarr[$item['status']]}</td>
+                        <td>{$statearr[$item['teamstatus']]}</td>
+                        
+						<td>
+	<!-- 					<if condition="$item.status eq 2">
+							<a class="confirm ajax-get" href='__URL__/upstatus&id={$item.id}&status=3'>完成</a>
+						</if> -->
+						<if condition="$item.status eq 0">
+							<a class="confirm ajax-get" href='__URL__/upstatus&id={$item.id}&status=4'>取消</a>
+						</if>
+							<a title="详情" href="__URL__/views/id/{$item.id}">详情</a>
+						<if condition="$item.status eq 0 or $item.status eq 3">
+							<a class="confirm ajax-get" title="删除" href="__URL__/del/id/{$item.id}">删除</a>
+						</if>
+						</td>
+					</tr>
+				</volist>
+				<else/>
+				<td colspan="9" class="text-center"> aOh! 暂时还没有订单! </td>
+				</notempty>
+			</tbody>
+		</table>
+	</div>
+		<div class="page">
+        {$page}
+		</div>
+</block>
+
+<block name="script">
+<script type="text/javascript">
+    $(function() {
+    	$("#search").click(function(){
+       		var $id =$("#order_id").val();
+       		var url ='__URL__/order/id/'+$id;
+			window.location.href = url;
+		});
+    	//点击排序
+    	$('.list_sort').click(function(){
+    		var url = $(this).attr('url');
+    		var ids = $('.ids:checked');
+    		var param = '';
+    		if(ids.length > 0){
+    			var str = new Array();
+    			ids.each(function(){
+    				str.push($(this).val());
+    			});
+    			param = str.join(',');
+    		}
+
+    		if(url != undefined && url != ''){
+    			window.location.href = url + '/ids/' + param;
+    		}
+    	});
+    });
+</script>
+</block>

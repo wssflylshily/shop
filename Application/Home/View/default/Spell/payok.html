@@ -1,0 +1,474 @@
+<?php
+require_once "./sample/php/jssdk.php";
+$jssdk = new JSSDK("wx73f8f21829bef9c6", "00ea7e3072f302d457e88b7402dc6429");
+$signPackage = $jssdk->GetSignPackage();
+?>
+<!DOCTYPE html>
+<html>
+	<head> 
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>{:C('WEB_SITE_TITLE')}</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/swiper-3.3.1.min.css">
+		<script src="__PUBLIC__/Home/js/swiper-3.3.1.min.js"></script>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/zepto.js"></script>
+		<script src="__PUBLIC__/Home/js/common.js"></script>
+		<script src="__PUBLIC__/Home/js/iscroll-probe.js"></script>
+		<script src="__PUBLIC__/Home/js/delIOS_huitan.js"></script>
+		<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+	</head>
+	<body style="background: #f5f5f5;" class="box">
+		<!-- 可以遮上showArea的遮罩-->
+		<div id="detailShareZhezhaoAll" style="display: none"></div>
+		<!-- 分享成功的弹框-->
+		<div id="detailShareOKkuang" style="display: none">
+			<div class="top">
+				<img src="__PUBLIC__/Home/img/sharePindanDetail/duigou.png" alt=""/><span>分享成功</span>
+			</div>
+			<div class="con">
+				<div class="line1">继续分享才能大大提高成团率哦~</div>
+				<a class="line2" href="javascript:;">继续分享</a>
+				<div class="line3">
+					<div class="line"></div>
+					<div class="text">蜜罐儿提示</div>
+				</div>
+				<div class="line4">90%的人都在这发现了心仪好货~</div>
+				<a href="{:U('Spell/index')}" class="line5">前往拼团首页</a>
+			</div>
+		</div>
+		<!--正文区域-->
+		<div id="detailShareMain" class="fastscroll">
+			<div class="contain maxWidth">
+				<!-- 一开始显示的部分 没有被遮罩遮住-->
+				<div class="showArea">
+					<div class="notfull">
+					<img src="__PUBLIC__/Home/img/sharePindanDetail/jiantou.jpg" alt="" class="jiantou"/>
+					<div class="line1">
+						剩余
+						<span class="daojishi" data-juEndTime="{:date('Y/m/d H:i:s',$spell['end_date'])}" data-status="{$spell.state}">
+						<!--<span class="daojishi" data-juEndTime="2017-1-7 14:55:00" data-status="{$spell.state}">-->
+							<span class="shi com">88</span>:<span class="fen com">88</span>:<span class="com"><b class="miao">88</b>.<b class="span hmiao">8</b></span>
+						</span>
+						结束
+					</div>
+					<div class="line2">
+						仅差 <span class="red">{$num}</span> 人，点击右上角发送给朋友
+					</div>
+					<div class="line3">倒计时结束前人不满将拼团失败</div>
+					<!-- <a class="share" href="javascript:;">
+						点此分享到朋友圈
+						<span class="hz">&#xe60c;</span>
+					</a> -->
+					</div>
+				
+					<div class="isFull" style="display:none;">
+						<span  style="color: #c10000;">拼团人数已满 <(￣3￣)></span>
+						<div class="btns clear">
+							<a href="{:U('Spell/index')}" class="more">+ 更多拼团</a>
+							<a href="{:U('Spell/detail',array('id'=>$spell['id']))}" class="meto">我也开个团</a>
+						</div>
+					</div>
+				
+				</div>
+				<!-- 其他区域都被这个遮罩遮住了-->
+				<div class="detailZhezhao"></div>
+				<!-- 头像区域-->
+				<div class="headimgs">
+					<!-- wen.jpg 这个是?的图片 -->
+					<for start="0" end="$spell['num']" comparison="lt" step="1" name="i">
+					<div>
+						<if condition="$users[$i]['id'] eq $team['user_id']">
+						<img src="__PUBLIC__/Home/img/sharePindanDetail/guan.png" alt="" class="guan"/>
+						</if>
+						<if condition="$users[$i] neq null">
+						<img src="{$users[$i]['image']|default='__PUBLIC__/Home/img/mytouxiang.png'}" />
+						<else/>
+						<img src="__PUBLIC__/Home/img/sharePindanDetail/wen.png" class="wen"/>
+						</if>
+					</div>
+					</for>
+					
+				</div>
+				<!-- 商品名 拼团时间-->
+				<div class="xinxi">
+					<a class="clear" href="{:U('Spell/detail',array('id'=>$spell['id']))}">
+						<div class="col-3">商品名</div>
+						<div class="col-8 proname">{$spell.title}</div>
+						<div class="col-1 textR"><span class="hz">&#xe60c;</span></div>
+					</a>
+					<a class="clear" href="javascript:;">
+						<div class="col-3">参团时间</div>
+						<div class="col-9 textR">{:date('Y-m-d H:i:s',$order['addtime'])}</div>
+					</a>
+				</div>
+				<!-- 广告 750 195-->
+				<a class="ad" href="{$ads.link_url}"><img src="{$ads.image}" alt=""/></a>
+				<!-- 拼团须知-->
+				<div class="pintuanXuzhi">
+					<p class="tit">拼团须知</p>
+					<ul class="clear">
+						<li>· 邀请好友参团</li>
+						<li>· 人满分别发货</li>
+						<li>· 人不满将退款至余额</li>
+					</ul>
+				</div>
+				<!-- 本期拼团推荐-->
+				<div class="pintuanMiaosha">
+					<p class="tit"><img src="__PUBLIC__/Home/img/sharePindanDetail/pttj.png" /></p>
+					<!--
+						status1代表距离开始 status2代表距离结束
+						liendTimeStr='2016-12-24 16:46:10';
+						从后台读取的时间截止的毫秒数 1478350790050 传ms数或者，这种格式的字符串都行
+					-->
+					<ul class="lie">
+						<volist name="spelllist" id="v">
+						<li data-juStartTime="{$v.start_date}" data-juEndTime="{$v.end_date}" data-status="{$v.state}">
+							<a href="{:U('Spell/detail',array('id'=>$v['id']))}">
+								<!-- 700 400-->
+								<div class="imgp">
+									<img src="{$v.image}"/>
+								</div>
+								<div class="line1">
+									<span class="share">{$statearr[$v['state']]}</span>
+									<span class="daojishi"><span class="daojishiText">距结束</span> <span class="time"><b class="shi">08</b>:<b class="fen">26</b>:<b class="miao">58</b></span></span>
+								</div>
+								<div class="line2">{$v.title}</div>
+								<div class="line3">
+									<span class="xian">&yen;<span class="money">{$v.price}</span></span>
+									<del>&yen;<span class="money">{$v.oldprice}</span></del>
+								</div>
+								<div class="line4 textR">
+									<span class="goKaituan">
+										{$v.num}人团<span class="line"></span>去开团
+									</span>
+								</div>
+							</a>
+						</li>
+						</volist>
+						
+					</ul>
+					<div class="more">
+						<a href="{:U('Spell/index')}">查看更多 <span class="hz">&#xe60c;</span></a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script type="text/javascript">
+			var num = {$num},teamstate = "{$team.status}",spellstate = "{$spell.state}";
+			if(teamstate==0&&num>0){
+				
+			}else if(teamstate==1&&num<=0&&spellstate==2){
+				$('.isFull').show();
+				$('.notfull').hide();
+			}else if(teamstate==2||spellstate==3){
+				$('.isFull span').text("拼团已结束 <(￣3￣)>");
+				$('.isFull').show();
+				$('.notfull').hide();
+			}
+			/*if(num<=0){
+				$('.isFull').show();
+				$('.notfull').hide();
+			}*/
+			//点击top返回按钮
+			$('.topBackTitle .back').on('click',function(){
+				location.href='';
+			});
+
+			//money显示.00/////////////////////////////////////////////////////////////////////////////////////
+			moneyZero2();
+			function moneyZero2(){
+				CashToZero2('#detailShareMain .money');
+			}
+
+			//一开始是有部分遮罩的
+			$('#detailShareMain').css('overflow-y','hidden');//不允许滚动
+			$('#detailShareMain .detailZhezhao').on('click',function(){
+				$('#detailShareMain .detailZhezhao').hide();
+				$('#detailShareMain').css('overflow-y','auto');//允许滚动
+			});
+
+			//拼团倒计时///////////////////////////////////////////////////////////////////////////////////////////
+			//本期拼团推荐倒计时
+			//距离结束 距离开始 公共调用的函数
+			function setPTtime(li,listatus,listartTimeStr,liendTimeStr,licurrTime,litimer){
+				var NowTime = new Date();
+				var t =licurrTime.getTime() - NowTime.getTime();
+				var d=0;
+				var h=0;
+				var m=0;
+				var s=0;
+				if(t>=0){
+					d=Math.floor(t/1000/60/60/24);
+					h=Math.floor(t/1000/60/60%24);
+					m=Math.floor(t/1000/60%60);
+					s=Math.floor(t/1000%60);
+				}else{
+					clearInterval(litimer);
+					//距离开始倒计时结束后，直接走距离结束的倒计时
+					if(listatus==1){
+						listatus=2;
+						juliEndTimer(li,listatus,listartTimeStr,liendTimeStr,licurrTime,litimer);
+						//ajax 把后台的status设置为2
+						$.ajax({
+							type: 'GET',
+							url: "{:U('Spell/updateSpell')}",
+							dataType: 'json',
+							success: function(data){
+
+							},
+							error: function(xhr, type){
+								console.log('Ajax error!');
+							}
+						});
+					}
+				}
+
+				//天转换成小时
+				h+=d*24;
+				$(li).find('.line1 .daojishi .time .shi').text(zhuanTwo(h));
+				$(li).find('.line1 .daojishi .time .fen').text(zhuanTwo(m));
+				$(li).find('.line1 .daojishi .time .miao').text(zhuanTwo(s));
+			}
+			function zhuanTwo(v){
+				//时分秒转成两位数
+				if(v<10){
+					return '0'+v;
+				}else{
+					return ''+v;
+				}
+			}
+			//距离结束
+			function juliEndTimer(li,listatus,listartTimeStr,liendTimeStr,licurrTime,litimer){
+				var liEndTime= new Date(liendTimeStr);
+				licurrTime=liEndTime;
+				$(li).find('.daojishiText').text('距离结束');
+				litimer=setInterval(function(){
+					setPTtime(li,listatus,listartTimeStr,liendTimeStr,licurrTime,litimer);
+				},30);
+			}
+			//距离开始
+			function juliStartTimer(li,listatus,listartTimeStr,liendTimeStr,licurrTime,litimer){
+				var liStartTime= new Date(listartTimeStr);
+				licurrTime=liStartTime;
+				$(li).find('.daojishiText').text('距离开始');
+				litimer=setInterval(function(){
+					setPTtime(li,listatus,listartTimeStr,liendTimeStr,licurrTime,litimer);
+				},30);
+			}
+			//根据status走不同的定时器
+			function setliDaojishi(li,listatus,listartTimeStr,liendTimeStr,licurrTime,litimer){
+				if(listatus==1){
+					juliStartTimer(li,listatus,listartTimeStr,liendTimeStr,licurrTime,litimer);
+				}else if(listatus==2){
+					juliEndTimer(li,listatus,listartTimeStr,liendTimeStr,licurrTime,litimer);
+				}
+			}
+			//获取所有的li，执行倒计时操作
+			var allli=$('#detailShareMain .pintuanMiaosha .lie li');
+			for(var x=0;x<allli.length;x++){
+				//设置
+				allli[x].timer=null;
+				allli[x].currTime=null;
+
+				//获取
+				var li=$(allli[x]);
+				var listatus=$(allli[x]).attr('data-status');
+				var listartTimeStr=$(allli[x]).attr('data-juStartTime');
+				var liendTimeStr=$(allli[x]).attr('data-juEndTime');
+				var licurrTime=allli[x].currTime;
+				var litimer=allli[x].timer;
+
+				//执行倒计时操作
+				setliDaojishi(li,listatus,listartTimeStr,liendTimeStr,licurrTime,litimer);
+			}
+
+			//没有遮上区域的倒计时//////////////////////////////////////////////////////////////////
+			setCurrDaojishi();
+			function setCurrDaojishi(){
+				var obj=$('#detailShareMain .showArea .line1 .daojishi');
+				var status=obj.attr('data-status');
+				var endTimeStr=obj.attr('data-juEndTime');
+				var currTime=obj[0].currTime;
+				var timer=obj[0].timer;
+
+				juliEndTimer1(obj,status,null,endTimeStr,currTime,timer);
+			}
+			//距离结束
+			function juliEndTimer1(li,listatus,listartTimeStr,liendTimeStr,licurrTime,litimer){
+				var liEndTime= new Date(liendTimeStr);
+				licurrTime=liEndTime;
+				litimer=setInterval(function(){
+					setPTtime1(li,listatus,listartTimeStr,liendTimeStr,licurrTime,litimer);
+				},30);
+			}
+			function setPTtime1(li,listatus,listartTimeStr,liendTimeStr,licurrTime,litimer){
+				var NowTime = new Date();
+				var t =licurrTime.getTime() - NowTime.getTime();
+				var d=0;
+				var h=0;
+				var m=0;
+				var s=0;
+				var ms=0;
+				if(t>=0){
+					d=Math.floor(t/1000/60/60/24);
+					h=Math.floor(t/1000/60/60%24);
+					m=Math.floor(t/1000/60%60);
+					s=Math.floor(t/1000%60);
+					ms = Math.floor(t%1000);
+					ms=ms.toString().substr(0,1);
+					
+					h=d*24+h;
+				}else{
+					clearInterval(litimer);
+					//距离开始倒计时结束后，直接走距离结束的倒计时
+					if(listatus==1){
+						listatus=2;
+						juliEndTimer1(li,listatus,listartTimeStr,liendTimeStr,licurrTime,litimer);
+						//ajax 把后台的status设置为2
+						$.ajax({
+							type: 'GET',
+							url: "{:U('Spell/updateSpell')}",
+							dataType: 'json',
+							success: function(data){
+
+							},
+							error: function(xhr, type){
+								console.log('Ajax error!');
+							}
+						});
+					}
+				}
+
+				$('#detailShareMain .showArea .line1 .daojishi .shi').text(zhuanTwo(h));
+				$('#detailShareMain .showArea .line1 .daojishi .fen').text(zhuanTwo(m));
+				$('#detailShareMain .showArea .line1 .daojishi .miao').text(zhuanTwo(s));
+				$('#detailShareMain .showArea .line1 .daojishi .hmiao').text(ms);
+			}
+
+
+			//点击继续分享
+			$('#detailShareOKkuang .con .line2').on('click',function(){
+				$('#detailShareOKkuang').hide();
+				$('#detailShareZhezhaoAll').hide();
+				$('#detailShareMain .detailZhezhao').show();
+			});
+
+			//分享成功后调用这个函数
+			//shareOK();//现在是立即调用了，不调用，就不显示分享成功后的弹框
+			function shareOK(){
+				$('#detailShareOKkuang').show();
+				$('#detailShareZhezhaoAll').show();
+			}
+			
+			//微信分享部分
+			/*var user_id = "{$user_id}";
+			var team_user = "{$team['user_id']}";
+			var weilink = "{:U('Spell/detail')}";
+			if(user_id!=team_user){
+				weilink = "{:U('Spell/detail_share')}";
+			}
+			weilink += "&id={$spell.id}&share_user={$user_id}&team_id={$team.id}";
+			console.log(weilink);*/
+			wx.config({
+			      debug: false,
+			      appId: '<?php echo $signPackage["appId"];?>',
+			      timestamp: <?php echo $signPackage["timestamp"];?>,
+			      nonceStr: '<?php echo $signPackage["nonceStr"];?>',
+			      signature: '<?php echo $signPackage["signature"];?>',
+			      jsApiList: [
+			        'checkJsApi',
+			        'onMenuShareTimeline',
+			        'onMenuShareAppMessage',
+			        'onMenuShareQQ',
+			        'onMenuShareWeibo',
+			        'onMenuShareQZone',
+			      ]
+			  });
+			
+			wx.ready(function(){
+				var weiurl = "{$share_url}";
+				//var weilink = window.location.href;
+				var weititle = "{$spell.title}";
+				var imgurl = "{:C('WEBSITE')}{$share_img}";
+				var brief = "{$share_desc}";
+				//console.log(weiurl);
+		      wx.checkJsApi({
+		          jsApiList: ['onMenuShareAppMessage'], // 需要检测的JS接口列表，所有JS接口列表见附录2,
+		      });
+		       wx.onMenuShareTimeline({
+		          title: weititle, 
+		          link: weiurl,
+		          desc: brief,
+		          imgUrl: imgurl, // 分享图标
+		          trigger:function(res){
+		          },
+		          success: function () {
+		        	  shareOK();
+		          },
+		          cancel: function () {
+		          },
+		          fail:function(){
+		          } 
+		      });
+		      wx.onMenuShareAppMessage({
+		          title: weititle, // 分享标题
+		          desc: brief, // 分享描述
+		          link: weiurl, // 分享链接
+		          imgUrl: imgurl, // 分享图标
+		          type: 'link', // 分享类型,music、video或link，不填默认为link
+		          dataUrl: '', // 如果type是music或video，则要提供数据链接，默认为空
+		          success: function () {
+		        	  shareOK();
+		          },
+		          cancel: function () {
+		          }
+		      });
+		       //分享到QQ
+		      wx.onMenuShareQQ({
+		          title: weititle,
+		          desc: brief,
+		          link: weiurl,
+		          imgUrl: imgurl, // 分享图标
+		          success: function () { 
+		        	  shareOK();
+		          },
+		          cancel: function () { 
+		             // 用户取消分享后执行的回调函数
+		          }
+		      });
+		      //分享到腾讯微博
+		      wx.onMenuShareWeibo({
+		          title: weititle,
+		          desc: brief,
+		          link: weiurl,
+		          imgUrl: imgurl, // 分享图标
+		          success: function () { 
+		             // 用户确认分享后执行的回调函数
+		             shareOK();
+		          },
+		          cancel: function () { 
+		              // 用户取消分享后执行的回调函数
+		          }
+		      });
+		
+		      // 分享到qq空间
+		      wx.onMenuShareQZone({
+				    title: weititle, // 分享标题
+				    desc: brief, // 分享描述
+				    link: weiurl, // 分享链接
+				    imgUrl: imgurl, // 分享图标
+				    success: function () { 
+				       // 用户确认分享后执行的回调函数
+				       shareOK();
+				    },
+				    cancel: function () { 
+				        // 用户取消分享后执行的回调函数
+				    }
+				});
+			});
+		</script>
+	</body>
+</html>							

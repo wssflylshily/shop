@@ -1,0 +1,320 @@
+<extend name="Public/base" />
+
+<!-- 子导航 -->
+<block name="sidebar">
+    <include file="sidemenu" />
+</block>
+
+<block name="body">
+<link href="__STATIC__/datetimepicker/css/datetimepicker.css" rel="stylesheet" type="text/css">
+<php>if(C('COLOR_STYLE')=='blue_color') echo '<link href="__STATIC__/datetimepicker/css/datetimepicker_blue.css" rel="stylesheet" type="text/css">';</php>
+<link href="__STATIC__/datetimepicker/css/dropdown.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="__STATIC__/datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript" src="__STATIC__/datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+
+<script type="text/javascript">
+
+$(function(){
+    $('.date').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language:"zh-CN",
+        minView:2,
+        autoclose:true
+    });
+    $('.time').datetimepicker({
+        format: 'yyyy-mm-dd hh:ii',
+        language:"zh-CN",
+        minView:2,
+        autoclose:true
+    });
+    showTab();
+
+});
+</script>
+<script>
+
+function delthispic(obj,dataid){
+	if(!confirm("确认删除此图？"))return false;
+	/*var dataid=$(obj).attr('dataid');
+	$('.input_upload_all').val($('.input_upload_all').val().replace(dataid, ""));*/
+	var str='';
+	list=$('#z_sliders').val();
+	arr=list.split(',');
+	for(var i=0;i<arr.length;i++)
+	{
+		if(arr[i]==dataid)continue;
+		if(str=='')
+		{
+			str=arr[i];
+		}
+		else
+		{
+			str=str+','+arr[i];
+		}
+	}
+	$('#z_sliders').val(str);
+	$(obj).parent().remove();
+}
+</script>
+	<script type="text/javascript" src="__STATIC__/uploadify/jquery.uploadify.min.js"></script>
+	<div class="main-title cf">
+		<h2>
+			新增拼团
+		</h2>
+	</div>
+	<!-- 标签页导航 -->
+<div class="tab-wrap">
+	<ul class="tab-nav nav">
+		<li data-tab="tab0"class="current"><a href="javascript:void(0);">基础</a></li>
+		
+		<?php
+		$navnum=$key+1;
+		?>
+	</ul>
+	<div class="tab-content">
+		<!-- 表单 -->
+		<form id="form" action="{:U('addChk')}" method="post" class="form-horizontal">
+        <div id="tab0" class="tab-pane in tab0">
+                <div class="form-item cf">
+						<label class="item-label">产品序号<span class="check-tips"></span></label>
+						<div class="controls">
+                        <input type="text" class="text input-large" name="pid" value="">
+						</div>
+						<div class="ajaxgoods"></div>
+						
+						<label class="item-label">开团人数<span class="check-tips"></span></label>
+						<div class="controls">
+                        <input type="text" class="text input-large" name="num" value="">
+						</div>
+						
+						<label class="item-label">团购价格<span class="check-tips"></span></label>
+						<div class="controls">
+                        <input type="text" class="text input-large" name="cost" value="">
+						</div>
+						
+						<label class="item-label">库存数量<span class="check-tips"></span></label>
+						<div class="controls">
+                        <input type="text" class="text input-large" name="depot_num" value="" disabled="disabled">
+						</div>
+
+							开始日期<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+							<input type="text" name="start_date" class="text date" value="{:date('Y-m-d')}">
+							<span class="check-tips"></span>
+						</div>
+						<label class="item-label">
+							截止日期<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+							<input type="text" name="end_date" class="text date" value="{:date('Y-m-d')}">
+							<span class="check-tips"></span>
+						</div>
+						
+						<label class="item-label">排列序号<span class="check-tips"></span></label>
+						<div class="controls">
+                        <input type="text" class="text input-large" name="order_num" value="0">
+						</div>
+
+						<label class="item-label">快递费<span class="check-tips"></span></label>
+						<div class="controls">
+                        <input type="text" class="text input-large" name="express_money" value="0">
+						</div>
+
+				</div>
+		</div>
+		
+		</form>
+		<div class="form-item cf">
+			<button class="btn submit-btn" id="button"  target-form="form-horizontal" disabled>确 定</button>
+			<a class="btn btn-return" href="#">返 回</a>
+		</div>
+		<br />
+	</div>
+</div>
+<script type="text/javascript">
+	$('input[name="pid"]').blur(function(event) {
+		/* Act on the event */
+		if ($(this).val()=="") {
+			// console.log('产品序号不能为空！');
+			$('.check-tips').eq(0).html('产品序号不能为空！')
+			
+		}else{
+			// console.log('产品序号不能为空！');
+			$('.check-tips').eq(0).html('')
+			$("#button").removeAttr("disabled");
+		}
+	});
+	$("#button").click(function(){
+		$("form").submit();
+	})
+</script>
+<script>
+function delitem(title,id)
+{
+	if(confirm("确认删除"+title+"?"))
+	{
+		var titles=$('#attr_titles').val().split(',');
+		var str='';
+		var key=0;
+		for(var i=0;i<titles.length;i++)
+		{
+			if(title==titles[i])
+			{
+				key=i;
+				continue;
+			}
+			if(str=='')
+			{
+				str=titles[i];
+			}
+			else
+			{
+				str+=','+titles[i];
+			}
+		}
+		$('#attr_titles').val(str);
+		str='';
+		var values=$('#attr_values').val().split(',');
+		for(var i=0;i<values.length;i++)
+		{
+			if(key==i)
+			{
+				key=i;
+				continue;
+			}
+			if(str=='')
+			{
+				str=values[i];
+			}
+			else
+			{
+				str+=','+values[i];
+			}
+		}
+		$('#attr_values').val(str);
+		$('#item_'+id).remove();
+		var attrform = $('.form-horizontal');
+		var query = attrform.serialize();
+		//alert(query);
+		$.post("__URL__/getattrlist",query).success(function(data){
+			if (data.status==1) {
+				//updateAlert(data.attr_str ,'alert-success');
+				$('#attr_str').html(data.attr_str);
+				$('#attr_html').html(data.attr_html);
+			}else{
+				updateAlert(data.info);
+			}
+			setTimeout(function(){
+				$('#top-alert').find('button').click();
+			},1500);
+		})
+	}
+}
+var num=0;
+var str='';
+var attr_title='';
+var attr_value='';
+</script>
+</block>
+
+<block name="script">
+<link href="__STATIC__/datetimepicker/css/datetimepicker.css" rel="stylesheet" type="text/css">
+<php>if(C('COLOR_STYLE')=='blue_color') echo '<link href="__STATIC__/datetimepicker/css/datetimepicker_blue.css" rel="stylesheet" type="text/css">';</php>
+<link href="__STATIC__/datetimepicker/css/dropdown.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="__STATIC__/datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript" src="__STATIC__/datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+
+
+<script type="text/javascript">
+	//检测产品；
+	$("input[name='pid']").blur(function(event) {
+		/* Act on the event */
+		var $id =$(this).val();
+		if ($id != '') {
+			$.ajax({
+				url: '__URL__/findGoods',
+				type: 'POST',
+				dataType: 'json',
+				data: {id: $id},
+				success: function(data){
+					$('.ajaxgoods').html("<p>"+data.title+"</p>"+"<p>商城价格："+data.gprice+"</p>");
+					$('input[name="depot_num"]').val(data.depot_num);
+				}
+			})
+		}
+	});
+
+</script>
+<script type="text/javascript">
+
+$('#button').click(function(){
+	//$('#form').submit();
+});
+
+$(function(){
+    $('.time').datetimepicker({
+        format: 'yyyy-mm-dd hh:ii',
+        language:"zh-CN",
+        minView:2,
+        autoclose:true
+    });
+    showTab();
+
+	<if condition="C('OPEN_DRAFTBOX') and (ACTION_NAME eq 'add' or $info['status'] eq 3)">
+	//保存草稿
+	var interval;
+	$('#autoSave').click(function(){
+        var target_form = $(this).attr('target-form');
+        var target = $(this).attr('url')
+        var form = $('.'+target_form);
+        var query = form.serialize();
+        var that = this;
+
+        $(that).addClass('disabled').attr('autocomplete','off').prop('disabled',true);
+        $.post(target,query).success(function(data){
+            if (data.status==1) {
+                updateAlert(data.info ,'alert-success');
+                $('input[name=id]').val(data.data.id);
+            }else{
+                updateAlert(data.info);
+            }
+            setTimeout(function(){
+                $('#top-alert').find('button').click();
+                $(that).removeClass('disabled').prop('disabled',false);
+            },1500);
+        })
+
+        //重新开始定时器
+        clearInterval(interval);
+        autoSaveDraft();
+        return false;
+    });
+
+	//Ctrl+S保存草稿
+	$('body').keydown(function(e){
+		if(e.ctrlKey && e.which == 83){
+			$('#autoSave').click();
+			return false;
+		}
+	});
+
+	//每隔一段时间保存草稿
+	function autoSaveDraft(){
+		interval = setInterval(function(){
+			//只有基础信息填写了，才会触发
+			var title = $('input[name=title]').val();
+			var name = $('input[name=name]').val();
+			var des = $('textarea[name=description]').val();
+			if(title != '' || name != '' || des != ''){
+				$('#autoSave').click();
+			}
+		}, 1000*parseInt({:C('DRAFT_AOTOSAVE_INTERVAL')}));
+	}
+	autoSaveDraft();
+
+	</if>
+
+});
+</script>
+</block>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>{:C('WEB_SITE_TITLE')}</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/zepto.js"></script>
+		<script src="__PUBLIC__/Home/js/jquery-1.8.3.min.js"></script>
+		<script src="__PUBLIC__/Home/js/selectmore.js"></script>
+		<script src="__PUBLIC__/Home/js/delIOS_huitan.js"></script>
+		<style>
+			#myCardMain .ullist1line li{height: auto;padding:3%;}
+			#myCardMain .ullist1line li a{display:block;}
+			#myCardMain .ullist1line .l{width: 25%;padding-right:10px;}
+			#myCardMain .ullist1line .l img{width: 100%;}
+			#myCardMain .ullist1line .r{width: 75%;}
+
+			.selectdiqu{padding:0 3%;border-bottom:1px solid #ddd;}
+			.selectdiqu .title{color:#5d5d5d;height:30px;line-height:30px;}
+			.selectdiqu .clear{padding-bottom:10px;}
+			.selectdiqu .queding{float:right;color:#5d5d5d}
+			.selectdiqu select{border:1px solid #ddd;-webkit-appearance:none;padding:3px 20px 3px 5px;background:url(__PUBLIC__/Home/img/xl.png) no-repeat right center;float:left;margin-right:3px;}
+		</style>
+	</head>
+	<body class="box">
+		<!--正文区域-->
+		<div id="myCardTop" class="topBackTitle">
+			<div class="contain maxWidth">
+				<a class="hz back" href="history.go(-1);">&#xe600;</a>选择自提点
+			</div>
+		</div>
+		<div id="myCardMain" class="fastscroll top50bot0">
+			<!-- <div style="display:none;">
+				<div><span>选择自提点地区</span></div>
+				<div>
+					<select class="bindDB" name="area_0" style="margin-right:10px;">
+						<option value="0">请选择</option>
+						<volist name="areas" id="v">
+						<option value="{$v.id}">{$v.title}</option>
+						</volist>
+					</select>
+				</div>
+			</div> -->
+			<div class="contain maxWidth">
+				<div class="selectdiqu">
+					<p class="title">选择自提点地区</p>
+					<div class="clear">
+						<select class="bindDB" name="area_0">
+							<option value="0">请选择</option>
+							<volist name="areas" id="v">
+							<option value="{$v.id}" <if condition="$area0 eq $v['id']">selected</if>>{$v.title}</option>
+							</volist>
+						</select>
+						<if condition="$area1 gt 0">
+						<select class="bindDB" name="area_1">
+							<option value="0">请选择</option>
+							<volist name="areas1" id="vo">
+							<option value="{$vo.id}" <if condition="$area1 eq $vo['id']">selected</if>>{$vo.title}</option>
+							</volist>
+						</select>
+						</if>
+						<if condition="$area2 gt 0">
+						<select class="bindDB" name="area_2">
+							<option value="0">请选择</option>
+							<volist name="areas2" id="h">
+							<option value="{$h.id}" <if condition="$area2 eq $h['id']">selected</if>>{$h.title}</option>
+							</volist>
+						</select>
+						</if>
+						<a class="queding" href="javascript:dosearch();">确定</a>
+					</div>
+				</div>
+				<ul class="ullist1line">
+					<volist name="stores" id="item">
+					<li>
+						<a href="javascript:;" onclick="javascript:tourl({$item.id});" class="clear">
+							<div>
+								<p class="title">{$item.sname}</p>
+								<p class="title">联系电话：{$item.mobile}</p>
+								<p class="info">联系地址：{$item.sadd}</p>
+								
+							</div>
+						</a>
+					</li>
+					</volist>
+				</ul>
+				
+			</div>
+		</div>
+
+		<script>
+			$(function(){
+				var url = "__URL__/getareas";
+    			bindDB({ajaxurl:url},function(v){});
+			})
+			//img w=h
+			setImgH();
+			function setImgH(){
+				var w=$('#myCardMain .ullist1line .l img').width();
+				$('#myCardMain .ullist1line .l img').height(w);
+			}
+			
+			function tourl(id){
+				var cart = "{$_GET['cart']}",paytype = 1,send = "{$_GET['send']}",addr = "{$_GET['addr']}",coupon="{$_GET['coupon']}";
+				var url = "__URL__/step2/cart_id/"+cart+"/paytype/"+paytype+"/sendtype/"+send+"/depot_id/"+id;
+				if(addr!="")url+="/uaddress_id/"+addr;
+				if(coupon!="")url+="/coupon_id/"+coupon;
+				location.href = url;
+			};
+			
+			function dosearch(){
+				var area0 = $('select[name="area_0"]').val();
+				var area1 = $('select[name="area_1"]').val();
+				var area2 = $('select[name="area_2"]').val();
+				var url = window.location.href;
+				var s = "{$_GET}";
+				
+				if(area0>0){
+					url+='&area0='+area0;
+				}
+				if(area1>0){
+					url+='&area1='+area1;
+				}
+				if(area2>0){
+					url+='&area2='+area2;
+				}
+				location.href = url;
+			}
+			
+		</script>
+	</body>
+</html>

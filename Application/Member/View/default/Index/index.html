@@ -1,0 +1,437 @@
+﻿<?php
+require_once "./sample/php/jssdk.php";
+$jssdk = new JSSDK("wx73f8f21829bef9c6", "00ea7e3072f302d457e88b7402dc6429");
+$signPackage = $jssdk->GetSignPackage();
+?>
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>{:C('WEB_SITE_TITLE')}</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/zepto.js"></script>
+		<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+		<script src="__PUBLIC__/Home/js/delIOS_huitan.js"></script>
+	</head>
+	<body class="box">
+		<!--正文区域-->
+		<div id="myTop">
+			<div class="contain maxWidth">
+				<div class="top">
+					<a href="javascript:;" class="hz back">&#xe600;</a>
+				</div>
+				<div class="xiaoxi">
+				<!-- <a href="{:U('Index/infolist')}">
+					<span class="hz">&#xe6a9;</span>
+					<span class="text">消息</span>
+				</a> -->
+				</div>
+				<div class="togeren">
+					<div class="touxiangArea">
+						<a href="{:U('Index/baseinfo')}">
+							<p class="touxiang" style="background-image:
+						<if condition="$user['image'] eq null">
+							url(__PUBLIC__/Home/img/mytouxiang.png);
+							<else />
+							url({$user.image});
+							</if>
+							"></p>
+						</a>
+					</div>
+					<div class="right">
+						<a href="#" class="kahao">会员卡号：{$user.card_num}</a>
+						<a class="tel" href="{:U('Index/baseinfo')}">{$user.login_user}</a>
+						<a href="#" class="dengji"><b>V{$user.lv}</b>{$grade}</a>
+					</div>
+				</div>
+				<div class="content clear">
+					<div class="l zhanghu">
+						<span>{$user.money}</span>账户余额
+					</div>
+					<!--
+					<div class="line"></div>
+					<div class="center yongjin">
+						<span>{$user.jie_money}</span>已结佣金
+					</div>
+					-->
+					<div class="l shentixian" onclick="window.location.href='__URL__/withdraw'">
+						<span class="hz">&#xe61a;</span>
+						申请提现
+					</div>
+					<div class="l jifen">
+						<span>{$user.integral}</span>积分
+					</div>
+					<div class="l yi" style="display:none;">
+						已签到
+					</div>
+					<div class="l qiandao">
+						签到
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="myMain" class="fastscroll">
+			<div class="contain maxWidth">
+				<ul class="ullist1line dingdan">
+					<li>
+						<a href="{:U('Order/index')}">
+							<div class="left">
+								<span class="hz">&#xe602;</span>全部订单
+							</div>
+							<div class="right">
+								<span class="hz">&#xe60c;</span>
+							</div>
+						</a>
+					</li>
+				</ul>
+				<ul class="dingdanArea">
+					<!--我的订单 全部1 待付款2 待发货3 待收货4 待评价5-->
+					<li>
+						<a href="{:U('Order/index',array('status'=>0))}">
+							<span class="hz">&#xe627;</span>待付款
+							<if condition="$num0 gt 0"><span class="num">{$num0}</span></if>
+						</a>
+					</li>
+					<li>
+						<a href="{:U('Order/index',array('status'=>1))}">
+							<span class="hz">&#xe626;</span>待发货
+							<if condition="$num1 gt 0"><span class="num">{$num1}</span></if>
+						</a>
+					</li>
+					<li>
+						<a href="{:U('Order/index',array('status'=>2))}">
+							<span class="hz">&#xe629;</span>待收货
+							<if condition="$num2 gt 0"><span class="num">{$num2}</span></if>
+						</a>
+					</li>
+					<li>
+						<a href="{:U('Order/index',array('status'=>3))}">
+							<span class="hz">&#xe628;</span>待评价
+							<if condition="$num3 gt 0"><span class="num">{$num3}</span></if>
+						</a>
+					</li>
+					<li>
+						<a href="{:U('Order/drawback')}">
+							<span class="hz">&#xe62d;</span>退款
+							<if condition="$num4 gt 0"><span class="num">{$num4}</span></if>
+						</a>
+					</li>
+				</ul>
+				<ul class="ullist1line">
+					<li>
+						<a href="{:U('Index/baseInfo')}">
+							<div class="left">
+								<div class="icon yc">
+									<span class="hz">&#xe6a8;</span>
+								</div>个人资料
+							</div>
+							<div class="right">
+								<span class="hz">&#xe60c;</span>
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="{:U('Spell/index')}">
+							<div class="left">
+								<div class="icon pd">
+									<span class="hz">&#xe6a8;</span>
+								</div>我的拼单
+							</div>
+							<div class="right">
+								<span class="hz">&#xe60c;</span>
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="{:U('Index/withdrawlist')}">
+							<div class="left">
+								<div class="icon yc" style="background-color:#fd747b;">
+									<span class="hz">&#xe62c;</span>
+								</div>提现申请记录
+							</div>
+							<div class="right">
+								<span class="hz">&#xe60c;</span>
+							</div>
+						</a>
+					</li>
+					<!-- <li>
+						<a href="__URL__/rebatelist">
+							<div class="left">
+								<div class="icon fl">
+									<span class="hz">&#xe62b;</span>
+								</div>我的返利
+							</div>
+							<div class="right">
+								<span class="hz">&#xe60c;</span>
+							</div>
+						</a>
+					</li> -->
+					<li>
+						<a href="{:U('Index/integralrecord')}">
+							<div class="left">
+								<div class="icon yc" style="background-color:#266989;">
+									<span class="hz">&#xe62c;</span>
+								</div>积分明细
+							</div>
+							<div class="right">
+								<span class="hz">&#xe60c;</span>
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="{:U('Bank/index')}">
+							<div class="left">
+								<div class="icon yc">
+									<span class="hz">&#xe62c;</span>
+								</div>我的银行卡
+							</div>
+							<div class="right">
+								<span class="hz">&#xe60c;</span>
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="{:U('Index/qrcode')}">
+							<div class="left">
+								<div class="icon ema">
+									<span class="hz">&#xe62a;</span>
+								</div>我的二维码
+							</div>
+							<div class="right">
+								<span class="hz">&#xe60c;</span>
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="{:U('Spread/index')}">
+							<div class="left">
+								<div class="icon tr">
+									<span class="hz">&#xe60e;</span>
+								</div>我的推广人
+							</div>
+							<div class="right">
+								<span class="hz">&#xe60c;</span>
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="{:U('Collection/index')}">
+							<div class="left">
+								<div class="icon sc">
+									<span class="hz">&#xe60f;</span>
+								</div>我的收藏
+							</div>
+							<div class="right">
+								<span class="hz">&#xe60c;</span>
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="__URL__/couponlist">
+							<div class="left">
+								<div class="icon yq">
+									<span class="hz">&#xe611;</span>
+								</div>我的优惠券
+							</div>
+							<div class="right">
+								<span class="hz">&#xe60c;</span>
+							</div>
+						</a>
+					</li>
+					<!-- <li>
+						<a href="__URL__/cashcoupon">
+							<div class="left">
+								<div class="icon djq">
+									<span class="hz">&#xe611;</span>
+								</div>我的代金券
+							</div>
+							<div class="right">
+								<span class="hz">&#xe60c;</span>
+							</div>
+						</a>
+					</li> -->
+					<li>
+						<a href="javascript:;" id="storeadr">
+							<div class="left">
+								<div class="icon store">
+									<span class="hz">&#xe630;</span>
+								</div>门店地址
+							</div>
+							<div class="right">
+								<span class="hz">&#xe60c;</span>
+							</div>
+						</a>
+					</li>
+					<if condition="$is_hexiao eq 1">
+					<li>
+						<a href="javascript:;" id="scanQRCode1">
+							<div class="left">
+								<div class="icon yq">
+									<span class="hz">&#xe611;</span>
+								</div>核销
+							</div>
+							<div class="right">
+								<span class="hz">&#xe60c;</span>
+							</div>
+						</a>
+					</li>
+					</if>
+				</ul>
+				<a href="javascript:;" class="blueBtn">退出登录</a>
+			</div>
+		</div>
+		<include file="Public:footer" />
+		<!--confirm-->
+		<div class="confirm" style="display: none">
+			<div class="top"></div>
+			<div class="bot clear">
+				<div class="l"><p>取消</p></div>
+				<div class="r"><p>确定</p></div> 
+			</div>
+		</div>
+		<!--遮罩层-->
+		<div id="zhezhao" style="display: none"></div>
+		<!--提示文字-->
+		<div class="tip" style="opacity: 0;z-index: -1"></div>
+
+
+		<script>
+			//返回按钮
+			$('#myTop .back').on('tap',function(){
+				// window.history.go(-1);
+				location.href='/';
+			});
+
+			//tip
+			function tipFun(str){
+				$('.tip').text(str).css({
+					'opacity':'1',
+					'z-index':'9999'
+				});
+				setTimeout(function(){
+					$('.tip').css('opacity','0');
+					setTimeout(function(){
+						$('.tip').css('z-index','-1');
+					},300);
+				},1300);
+			}
+
+			//点击退出登陆
+			$('#myMain .blueBtn').on('tap',function(){
+				$('.confirm .top').text('确认退出?');
+				$('#zhezhao').css('display','block');
+				$('.confirm').css('display','block');
+			});
+			//点击退出登陆 点击取消
+			$('.confirm .bot div.l').on('click',function(){
+				$('#zhezhao').css('display','none');
+				$('.confirm').css('display','none');
+			});
+			//点击退出登陆 点击确定
+			$('.confirm .bot div.r').on('click',function(){
+				window.location.href="{:U('/Member/Login/logout')}";
+			});
+
+			//点击账户余额
+			$('#myTop .content .zhanghu').on('tap',function(){
+				location.href='__URL__/balance';
+			});
+
+			//点击 已结佣金
+			$('#myTop .content .yongjin').on('tap',function(){
+				location.href='__URL__/brokerage';
+			});
+			
+			//判断一开始是不是 已签到
+			var is_sign = {$is_sign};
+			if(is_sign==1){
+				$('#myTop .content .yi').show();
+				$('#myTop .content .qiandao').hide();
+			}
+			//点击签到
+			$('#myTop .content .qiandao').on('click',function(){
+				var jifen = {$user.integral};
+				$.ajax({
+	 				type: 'POST',
+	 				url: "{:U('ajaxSign')}",
+	 				dataType: 'json',
+	 				success: function(data){
+	 					//console.log(data);
+	 					tipFun(data.msg);
+	 					if(data.status==1){
+		 					//一天只能签到一次
+		 					$('#myTop .content .qiandao').css('display','none');
+		 					$('#myTop .content .yi').css('display','block');
+		 					//更新积分值
+		 					$('#myTop .content .jifen span').html(data.jifen);
+	 					}
+	 				},
+	 				error:function(){
+	 					
+	 				}
+				});
+				
+			});
+
+			//如果小红点中的数字超过99则显示为99+
+			var allredNum=$('#myMain .dingdanArea li .num');
+			for(var i=0;i<allredNum.length;i++){
+				if(parseFloat($(allredNum[i]).text())>99){
+					allredNum[i].innerHTML='99+';
+				}
+			}
+		</script>
+		
+		
+		<script type="text/javascript">
+			wx.config({
+			      debug: false,
+			      appId: '<?php echo $signPackage["appId"];?>',
+			      timestamp: <?php echo $signPackage["timestamp"];?>,
+			      nonceStr: '<?php echo $signPackage["nonceStr"];?>',
+			      signature: '<?php echo $signPackage["signature"];?>',
+			      jsApiList: [
+					'getLocation',
+			        'scanQRCode'
+			      ]
+			  });
+			  
+			 wx.ready(function () {
+				 document.querySelector('#storeadr').onclick = function () {
+				 //alert("jdsl");
+					wx.getLocation({
+						success: function (res) {
+							//console.log(res);
+							var str = JSON.stringify(res);
+							//alert(str);
+							var url = "__URL__/stores/lat/"+res.latitude+"/lng/"+res.longitude;
+							//alert(url);
+							location.href = url;
+				      	},
+				      	cancel: function (res) {
+				        	alert('用户拒绝授权获取地理位置');
+				      	}
+					 });
+				 }
+				 document.querySelector('#scanQRCode1').onclick = function () {
+			    	wx.scanQRCode({
+				      	needResult: 0,
+				      	//desc: 'scanQRCode desc',
+				      	success: function (res) {
+				        	//alert(JSON.stringify(res));
+				      	}
+			    	});
+			  	}
+				 
+				 
+			 });
+			 
+			 /*$('#storeadr').click(function(){
+				 alert("dddfdls");
+			 });*/
+			
+		</script>
+	</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html style="max-width:720px;min-height:100%;">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>{:C('WEB_SITE_TITLE')}</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css" />
+		<script src="__PUBLIC__/Home/js/zepto.js"></script><script>
+$(function(){
+	$(".submitbtn").click(function() {
+        /*$.toast("登录成功", function() {
+          console.log('close');
+        });*/
+		$.ajax({
+			type: "post",
+			dataType: "json",
+			url: "__URL__/index",
+			data: {login_user:$('#login_user').val(),login_pass:$('#login_pass').val(),code:$('#code').val()},
+			success: function(json){
+				if(json.status<1)
+				{
+					//$.toast(json.info,'cancel', function() {
+					//});
+					alert(json.info);
+				}
+				else
+				{
+					//$.toast(json.info, function() {
+						window.location.href='/Member';
+					//});
+				}
+			}
+		})
+    })
+})
+</script>
+		<script>
+		function verifycode()
+		{
+			var verifysrc='__URL__/verify&rand='+Math.random();
+			$('#verify_code').attr('src',verifysrc);
+		}
+		</script>
+	</head>
+	<body class="fastscroll bgGreen" style="max-width:720px;min-height: 100%;">
+		<!--正文区域-->
+		<div id="loginMain" class="lzMain maxWidth">
+			<img src="__PUBLIC__/Home/img/logo.jpg" class="top"/>
+			<div class="middle">
+				<div class="phone inputArea">
+					<span>手机号</span><input type="tel" placeholder="请输入手机号" id="login_user"/>
+				</div>
+				<div class="key inputArea">
+					<span>密码</span><input type="password" placeholder="请输入密码" id="login_pass"/>
+				</div>
+				<div class="ma inputArea">
+					<span>验证码</span><input type="text" placeholder="请输入验证码" id="code"/><img src="__URL__/verify" id="verify_code" onclick="verifycode()"/>
+				</div>
+				<div class="zhuceArea">
+					<a href="/Reg" class="zhuce">注册</a>
+					<a href="/Member/Login/password1.html" class="wangji">忘记密码?</a>
+				</div>
+				<a href="javascript:;" class="submitbtn">登录</a>
+			</div>
+			<div class="bot">
+				<div class="title">
+					<div class="linel"></div>
+					<span>第三方账户快速登录</span>
+					<div class="liner"></div>
+				</div>
+				<div class="btns">
+					<p>
+						<a href="javascript:;" class="weixin">
+							<img src="__PUBLIC__/Home/img/login/weixin.png" />
+						</a>
+					</p>
+					<p>
+						<a href="javascript:;" class="qq">
+							<img src="__PUBLIC__/Home/img/login/qq.png" />
+						</a>
+					</p>
+					<p>
+						<a href="javascript:;" class="weibo">
+							<img src="__PUBLIC__/Home/img/login/weibo.png" />
+						</a>
+					</p>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			//点击登陆
+			$('.lzMain .middle .submitbtn').on('tap',function(){
+//				console.log('登录');
+			});
+		</script>
+	</body>
+</html>

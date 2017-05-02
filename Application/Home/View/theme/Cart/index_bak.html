@@ -1,0 +1,356 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>{:C('WEB_SITE_TITLE')}</title>
+<meta name="description" content="{:C('WEB_SITE_DESCRIPTION')}" />
+<meta name="keywords" content="{:C('WEB_SITE_KEYWORD')}" />
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, width=device-width">
+<link href="__PUBLIC__/Home/css/weui.min.css" rel="stylesheet" />
+<link href="__PUBLIC__/Home/css/jquery-weui.css" rel="stylesheet" />
+<link href="__PUBLIC__/Home/css/swiper.min.css" rel="stylesheet" />
+<link href="__PUBLIC__/Home/css/common.css" rel="stylesheet" />
+<link href="__PUBLIC__/Home/css/style.css" rel="stylesheet" />
+<script src="__PUBLIC__/Home/js/jquery-1.8.3.min.js"></script>
+<script src="__PUBLIC__/Home/js/common.js"></script>
+<script src="__PUBLIC__/Home/js/swiper-3.3.1.jquery.min.js"></script>
+<script src="__PUBLIC__/Home/js/numbers.js"></script>
+<script>
+$(function(){	
+
+	function all_price(){
+		var p=0,p1=0,p2=0,p3=0;
+		$(".sin_xz.cur").each(function(index, element) {
+            var p=parseFloat($(this).parents("li").find(".price_now").html()),
+			p1=parseFloat($(this).parents("li").find(".num_num").html());
+			p2+=p1;
+			p3+=p*p1;	
+        });
+		$(".money_num").html(p3);
+		$(".pack_num").html(p2);
+	}
+
+	$(".edit_btn").click(function(){
+		var str=$(this).html();
+		if(str=="编辑")
+		{
+			$(".car_ul li .edit .amount").each(function(index, element) {
+                $(this).val($(this).parents("li").find(".num_num").html());
+            });
+			
+			$(".xz_operate .dele_home").show();
+			$(".xz_operate .buy_home").hide();
+			
+			$(".edit").show();
+			$(this).html("完成");			
+		}
+		else{
+			
+			$(".car_ul li .edit .amount").each(function(index, element) {
+                $(this).parents("li").find(".num_num").html($(this).val());
+            });
+			$(".car_ul li .xz_infor").each(function(index, element) {
+                $(this).html( $(this).parents("li").find(".shop_num").html());
+            });
+			$(".edit").hide();
+			$(this).html("编辑");
+			
+			$(".xz_operate .dele_home").hide();
+			$(".xz_operate .buy_home").show();
+			all_price();
+		}
+    });
+	
+	 var pro_num=$(".pro_num"),
+ 	 pro_box=$(".pro_box");
+	 
+	$(".shop_num").click(function(){
+		var $id=$(this).parents("li").attr("data-id");
+		
+		$(".pro_num").attr("data-id",$id);
+		$(".xz_font").html($(this).html());
+	});
+	
+	$(".pro_num .com_btndiv .com_btn").click(function(){
+		var $id=$(this).parents(".pro_num").attr("data-id");
+		var str=$(this).parents(".pro_num").find(".xz_font").html();
+		$(".car_list li[data-id='"+$id+"']").find(".shop_num").html(str);
+				
+		pro_box.hide();
+		pro_num[0].style.webkitTransform = "translate(0,110%)";
+	
+	});
+	
+	$(".sin_xz").click(function(){
+		$(this).toggleClass("cur");
+		var c="";
+		$(".sin_xz").each(function(index, element) {
+            if(!$(this).hasClass("cur"))
+			{
+				c=1;
+			}
+			//alert(1);
+        });
+		if(c==1)
+		{
+			$(".all_sin i").removeClass("cur");	
+		}
+		else
+		{
+			$(".all_sin i").addClass("cur");
+		}
+		all_price();
+	});
+	
+	$(".all_sin").click(function(){
+		$(this).children().toggleClass("cur");
+		
+		if($(this).children().hasClass("cur"))
+		{
+			$(".sin_xz").addClass("cur");
+		}
+		else
+		{
+			$(".sin_xz").removeClass("cur");
+		}
+		all_price();
+	});
+	
+	
+	$(".show_collect").click(function() {
+        $.toast("已移入收藏夹", function() {
+          console.log('close');
+        });
+      })
+	  $(".deleteclass").click(function() {
+        /*$.toast("已从购物车删除", function() {
+          console.log('close');
+        });*/
+			var str='';
+			$(".sin_xz.cur").each(function(index, element) {
+				dataid=$(this).parents("li").attr("data-id");
+				if(str=='')
+				{
+					str=dataid;
+				}
+				else
+				{
+					str+=','+dataid;
+				}
+			});
+			//alert(str);
+			$.ajax({
+				//提交数据的类型 POST GET
+				type:"POST",
+				//提交的网址
+				url:"{:U('Cart/del')}",
+				//提交的数据
+				data:{'cart_id':str},
+				//返回数据的格式
+				datatype: "json",          
+				success:function(json){
+					$.toast("删除成功", function() {
+						window.location.reload();
+						//console.log('close');
+					});
+				}
+			});
+      })
+	  
+	
+})
+</script>
+</head>
+<body>
+<!--top-->
+<div class="g_wrap top">
+	<table>
+    	<tr>
+        	<td class="td01"><a href="/"><img src="__PUBLIC__/Home/images/icon1_03.png" class="img2" /></a></td>
+            <td class="td02">购物车</td>
+            <td class="td03"><span class="inbtn edit_btn">编辑</span></td>
+        </tr>
+    </table>
+</div>
+<!--content-->
+<div class="container g_wrap" style="margin-bottom:110px;">    
+    <ul class="car_ul car_list">
+		<volist name="list" id="item">
+    	<li class="clear" data-id="{$item.id}">
+        	<div class="xz_div l"><i class="single_btn sin_xz"></i></div>
+        	<div class="img_div l"><a href="{:U('Product/detail',array('id'=>$item['product_id']))}"><img src="{$item.image}" /></a></div>
+            <div class="font_div r">
+            	<a href="{:U('Product/detail',array('id'=>$item['product_id']))}">
+                	<h2>{$item.title}</h2>
+                    <div class="xz_infor">
+					<?php
+					$arr=array();
+					$attr=explode(',',$item['product_attr']);
+					foreach($attr as $val)
+					{
+						list($name,$value)=explode('=',$val);
+						$arr[]=$name.'：'.$value;
+					}
+					echo implode('；',$arr);
+					?>
+					</div>
+                    <div class="price_div">￥<em class="price_now">
+					<if condition="$is_vip eq 1">
+					{$item['product_vipprice']}
+					<else />
+					{$item['product_price']}
+					</if>
+					</em><i>x<span class="num_num">{$item.product_num}</span></i></div>
+                </a>
+                <div class="edit edit_div">
+                	<div class="pro_add">
+                        <a href="javascrpit:void(0);" class="sub" onclick="reduce({$item.id})"></a><input type="text" name="amount[]" class="amount" value="{$item.product_num}" onblur="updatenum({$item.id},this)"/><a href="javascrpit:void(0)" class="add" onclick="addnum({$item.id})"></a>
+                    </div>
+                    <div class="kind_fl shop_num"><?php echo implode('；',$arr);?></div>
+                </div>
+            </div>
+        </li>
+		</volist>
+    </ul>
+</div>
+<script>
+function updatenum(cart_id,sel)
+{
+	$.ajax({
+		//提交数据的类型 POST GET
+		type:"POST",
+		//提交的网址
+		url:"{:U('Cart/updatenum')}",
+		//提交的数据
+		data:{'cart_id':cart_id,'product_num':sel.value},
+		//返回数据的格式
+		datatype: "json",          
+		success:function(json){   
+		}
+	});
+}
+function reduce(cart_id)
+{
+	$.ajax({
+		//提交数据的类型 POST GET
+		type:"POST",
+		//提交的网址
+		url:"{:U('Cart/reduce')}",
+		//提交的数据
+		data:{'cart_id':cart_id},
+		//返回数据的格式
+		datatype: "json",//"xml", "html", "script", "json", "jsonp", "text".
+		//在请求之前调用的函数
+		//成功返回之后调用的函数             
+		success:function(json){   
+		}
+	});
+}
+function addnum(cart_id)
+{
+	$.ajax({
+		//提交数据的类型 POST GET
+		type:"POST",
+		//提交的网址
+		url:"{:U('Cart/addnum')}",
+		//提交的数据
+		data:{'cart_id':cart_id},
+		//返回数据的格式
+		datatype: "json",//"xml", "html", "script", "json", "jsonp", "text".
+		//在请求之前调用的函数
+		//成功返回之后调用的函数             
+		success:function(json){   
+		}
+	});
+}
+</script>
+<!--xz-->
+<div class="xz_operate clear g_wrap">
+	<div class="l">
+    	<label class="all_sin"><i class="single_btn"></i> 全选</label>
+    </div>
+    <div class="r buy_home">
+    	<span class="s01">
+        	<p>合计：<i>￥</i><i class="money_num">0</i></p>
+            <p class="font1">共计<em class="pack_num">0</em>件商品</p>
+        </span>
+        <span class="com_btndiv">
+        	<a href="javascript:jiesuan()" class="weui_btn weui_btn_warn com_btn bg1">去结算</a>
+        </span>
+    </div>
+    <div class="r dele_home">
+    	<span>
+        	<a href="#" class="a01 show_collect">移入收藏夹</a>
+        </span>
+        <span class="com_btndiv">
+        	<a href="javascript:delitem()" class="weui_btn weui_btn_warn com_btn bg1 deleteclass">删除</a>
+        </span>
+    </div>
+</div>
+<script>
+function jiesuan()
+{
+	//var str=[];
+	var str='';
+	$(".sin_xz.cur").each(function(index, element) {
+		dataid=$(this).parents("li").attr("data-id");
+		if(str=='')
+		{
+			str=dataid;
+		}
+		else
+		{
+			str+=','+dataid;
+		}
+	});
+	if(str=='')
+	{
+		$.toast("请选择商品",'cancel', function() {
+			//window.location.reload();
+			//console.log('close');
+		});
+	}
+	else
+	{
+		window.location.href='{:U('Cart/step2')}&cart_id='+str
+	}
+	//alert(str);
+}
+function delitem()
+{
+}
+</script>
+
+<!--商品属性选择-->
+<div class="pro_box g_wrap"></div>
+<div class="pro_num g_wrap" data-id="">
+	<div class="pro_detail">
+    	<div class="img_div l"><img src="__PUBLIC__/Home/images/icon_25.png" /></div>
+        <div class="font_div l">
+        	<h2>￥100.00</h2>
+            <h4>库存<i>110</i>件</h4>
+            <h3 class="xz_font">请选择颜色分类  型号</h3>
+        </div>
+        <div class="close"><i class="weui_icon_clear"></i></div>
+    </div>
+    <div class="pro_xz_content">
+        <div class="num_kind">
+            <h2>颜色分类</h2>
+            <ul class="clear pro_ys">
+                <li class="l">GTX960</li><li class="l">GTX961</li><li class="l">GTX962</li>
+            </ul>
+        </div>
+        <div class="num_kind">
+            <h2>产品型号</h2>
+            <ul class="clear pro_xh">
+                <li class="l">U系列</li><li class="l">X系列</li><li class="l">Y系列</li>
+            </ul>
+        </div>        
+    </div>
+    <div class="com_btndiv gmbtn">
+    	<a href="javascript:;" class="weui_btn weui_btn_warn com_btn bg2">确认</a>
+    </div>
+</div>
+<!--footer-->
+<include file="Public:footer" />

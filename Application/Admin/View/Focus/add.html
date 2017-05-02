@@ -1,0 +1,146 @@
+<extend name="Public/base"/>
+
+<block name="body">
+
+<link href="__STATIC__/datetimepicker/css/datetimepicker.css" rel="stylesheet" type="text/css">
+<php>if(C('COLOR_STYLE')=='blue_color') echo '<link href="__STATIC__/datetimepicker/css/datetimepicker_blue.css" rel="stylesheet" type="text/css">';</php>
+<link href="__STATIC__/datetimepicker/css/dropdown.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="__STATIC__/datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript" src="__STATIC__/datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+
+<script type="text/javascript">
+$(function(){
+    $('.date').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language:"zh-CN",
+        minView:2,
+        autoclose:true
+    });
+    $('.time').datetimepicker({
+        format: 'yyyy-mm-dd hh:ii',
+        language:"zh-CN",
+        minView:2,
+        autoclose:true
+    });
+    showTab();
+
+});
+</script>
+	<script type="text/javascript" src="__STATIC__/uploadify/jquery.uploadify.min.js"></script>
+	<div class="main-title">
+		<h2>Banner添加</h2>
+	</div>
+	<div class="tab-wrap">
+		<div class="tab-content">
+			<form action="__URL__/insert" method="post" class="form-horizontal" enctype="multipart/form-data">
+				<!-- 基础 -->
+				<div id="tab1" class="tab-pane in tab1">
+					<div class="form-item">
+						<label class="item-label">
+							开始日期<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+							<input type="text" name="start_date" class="text date" value="{:date('Y-m-d')}">
+							<span class="check-tips"></span>
+						</div>
+						<label class="item-label">
+							截止日期<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+							<input type="text" name="end_date" class="text date" value="{:date('Y-m-d',time()+30*86400)}">
+							<span class="check-tips"></span>
+						</div>
+						<label class="item-label">
+							名称<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+							<input type="text" name="title" class="text input-large" value=""><span class="check-tips"></span>
+						</div>
+						<label class="item-label">
+							位置<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+							<select name="pos_id">
+							<volist name="poslist" id="item">
+							<option value="{$item.id}">{$item.title}</option>
+							</volist>
+							</select>
+							<span class="check-tips"></span>
+						</div>
+						<label class="item-label">
+							图片<span class="check-tips">（建议尺寸：700*400）</span>
+						</label>
+						<div class="controls">
+							<div class="controls">
+								<input type="file" id="z_image">
+								<input type="hidden" name="image" id="image_id" value=""/>
+								<div class="upload-img-box">
+								</div>
+							</div>
+							<script type="text/javascript">
+								//上传图片
+							    /* 初始化上传插件 */
+								$("#z_image").uploadify({
+							        "height"          : 30,
+							        "swf"             : "/Public/static/uploadify/uploadify.swf",
+							        "fileObjName"     : "download",
+							        "buttonText"      : "上传图片",
+							        "uploader"        : "{:U('File/uploadPicture',array('session_id'=>session_id()))}",
+							        "width"           : 120,
+							        'removeTimeout'	  : 1,
+							        'fileTypeExts'	  : '*.jpg; *.png; *.gif;',
+							        "onUploadSuccess" : z_image_id,
+							        'onFallback' : function() {
+							            alert('未检测到兼容版本的Flash.');
+							        }
+							    });
+								function z_image_id(file, data){
+							    	var data = $.parseJSON(data);
+							    	var src = '';
+							        if(data.status){
+							        	$("#image_id").val(data.path);
+							        	src = data.url || '' + data.path
+							        	$("#image_id").parent().find('.upload-img-box').html(
+							        		'<div class="upload-pre-item"><img src="' + src + '"/></div>'
+							        	);
+							        } else {
+							        	updateAlert(data.info);
+							        	setTimeout(function(){
+							                $('#top-alert').find('button').click();
+							                $(that).removeClass('disabled').prop('disabled',false);
+							            },1500);
+							        }
+							    }
+								</script>
+						</div>
+						<label class="item-label">
+							链接地址<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+							<input type="text" name="link_url" class="text input-large" value=""><span class="check-tips"></span>
+						</div>
+						<label class="item-label">
+							排列序号<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+							<input type="text" name="order_num" class="text input-large" value="0"><span class="check-tips"></span>
+						</div>
+					</div>
+				</div>
+
+				<div class="form-item">
+					<input type="hidden" name="__forward__" class="text input-large" value="{$__forward__}">
+					<input type="hidden" name="position_id" class="text input-large" value="{$Think.get.hid}"><span class="check-tips"></span>
+					<button type="submit" id="submit" class="btn submit-btn ajax-post" target-form="form-horizontal">确 定</button>
+					<button class="btn btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</block>
+<block name="script">
+<script type="text/javascript">
+	//导航高亮
+	highlight_subnav("{:U('Focus/index')}");
+</script>
+</block>

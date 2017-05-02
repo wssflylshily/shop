@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>充值</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/zepto.js"></script>
+	</head>
+	<body>
+		<!--正文区域-->
+		<div id="chongzhiTop" class="top1top2">
+			<div class="contain maxWidth">
+				<div class="top1">
+					<a class="hz back" href="javascript:;">&#xe600;</a>充值
+				</div>
+				<div class="middle">
+					<span class="sanjiaoGray"></span>
+					<span class="sanjiaoWhite"></span>
+					<p class="title">可用余额<span><em>{$user.money}</em>元</span></p>
+				</div>
+			</div>
+		</div>
+		<div id="chongzhiMain" class="fastscroll">
+			<div class="contain maxWidth">
+				<div class="bgulCon">
+					<ul>
+						<li>
+							<span class="left">
+								<span class="hz zhifubao">&#xe61c;</span><em>支付宝支付</em>
+							</span>
+							<span class="right">
+								<span class="circleGreen">
+									<span class="hz active">&#xe613;</span>
+								</span>
+							</span>
+						</li>
+						<li>
+							<span class="left">
+								<span class="hz weixin">&#xe61b;</span><em>微信支付</em>
+							</span>
+							<span class="right">
+								<span class="circleGreen">
+									<span class="hz">&#xe613;</span>
+								</span>
+							</span>
+						</li>
+					</ul>
+				</div>
+				<input type="hidden" id="recharge_type" value="1" />
+				<ul class="ullist1line">
+					<li>
+						<div class="left">
+							<span>充值金额</span><input type="text" id="money" onkeydown="onlyNum();">
+						</div>
+						<div class="right">
+							<div class="circle">
+								<span class="hz">&#xe625;</span>
+							</div>
+						</div>
+					</li>
+				</ul>
+				<a href="javascript:recharge();" class="orangeBtn">确认充值</a>
+			</div>
+		</div>
+
+		<script>
+		function onlyNum() {
+			if(!(event.keyCode==46)&&!(event.keyCode==8)&&!(event.keyCode==37)&&!(event.keyCode==39))
+			if(!((event.keyCode>=48&&event.keyCode<=57)||(event.keyCode>=96&&event.keyCode<=105)))
+			event.returnValue=false;
+		}
+			function recharge()
+			{
+				var money=$('#money').val();
+				if(money<1)
+				{
+					alert('充值金额必须大于0')
+				}
+				else
+				{
+					$.ajax({
+						//提交数据的类型 POST GET
+						type:"POST",
+						//提交的网址
+						url:"__URL__/recharge",
+						//提交的数据
+						data:{money:$('#money').val(),recharge_type:$('#recharge_type').val()},
+						//返回数据的格式
+						datatype: "json",//"xml", "html", "script", "json", "jsonp", "text"           
+						success:function(data){
+							alert(data.info);
+							//$("#msg").html(decodeURI(data));            
+						}
+					});
+				}
+			}
+			//返回按钮
+			$('#chongzhiTop .back').on('tap',function(){
+				window.history.go(-1);
+			});
+
+			//选择支付方式 点击 圈
+			$('#chongzhiMain .bgulCon .right .circleGreen').on('tap',function(){
+				$('#chongzhiMain .bgulCon .right .circleGreen .hz').removeClass('active');
+				$(this).find('.hz').addClass('active');
+				var currSelect=$(this).parent().siblings('.left').find('em').text();
+				if(currSelect=='微信支付')
+				{
+					$('#recharge_type').val(0);
+				}
+				else
+				{
+					$('#recharge_type').val(1);
+				}
+				console.log('当前选中的是:'+currSelect);
+			});
+
+			//点击x
+			$('#chongzhiMain .ullist1line .right .circle').on('tap',function(){
+				$('#chongzhiMain .ullist1line .left input').val('');
+			});
+		</script>
+	</body>
+</html>

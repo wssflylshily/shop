@@ -1,0 +1,151 @@
+<extend name="Public/base"/>
+<block name="sidebar">
+    <include file="sidemenu" />
+</block>
+<block name="body">
+	<div class="main-title">
+		<h2>代金券管理</h2>
+	</div>
+
+	<div class="cf">
+		<a class="btn" href="__URL__/add">新 增</a>
+			<a class="btn" href="{$url}&state=0">未兑换</a>
+			<a class="btn" href="{$url}&state=1">已兑换</a>
+		<button class="btn" target-form="ids" onclick="javascript:exportexl();">导出Excel</button>
+		<div class="search-form fr cf">
+			<div class="btn-group-click adv-sch-pannel fl">
+                <button class="btn">高 级<i class="btn-arrowdown"></i></button>
+                <div class="dropdown cf">
+                	<div class="row">
+                		<label>生成时间：</label>
+                		<input type="text" id="time_start" name="time_start" class="text input-3x" value="" placeholder="起始时间" /> -
+                		<input type="text" id="time_end" name="time_end" class="text input-3x" value="" placeholder="结束时间" />
+                	</div>
+                </div>
+            </div>
+            <div class="sleft" style="margin-right:35px;">
+				<a class="sch-btn" href="javascript:;" id="search" url="{:U('CashCoupon/index')}"><i class="btn-search"></i></a>
+			</div>
+		</div>
+	</div>
+
+	<div class="data-table table-striped">
+		<table>
+			<thead>
+				<tr>
+					<th class="row-selected">
+						<input class="checkbox check-all" type="checkbox">
+					</th>
+					<th>ID</th>
+					<th>代金券编码</th>
+					<th>代金金额</th>
+					<th>生成数量</th>
+					<th>使用数量</th>
+					<th>生成时间</th>
+                    <th>是否兑换</th>
+					<th>操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				<notempty name="list">
+				<volist name="list" id="v">
+					<tr>
+						<td><input class="ids row-selected" type="checkbox" name="ids[]" id="" value="{$v['id']}"> </td>
+						<td>{$v.id}</td>
+						<td>{$v.code}</td>
+                        <td>{$v.money}</td>
+						<td><if condition="$v['totalNum'] gt 0">{$v.totalNum}</if></td>
+						<td><if condition="$v['useNum'] gt 0">{$v.useNum}</if></td>
+                        <td><if condition="$v['addtime'] gt 0">{$v.addtime|date="Y-m-d H:i:s",###}</if></td>
+                        <td>{$statusarr[$v['state']]}</td> 
+						<td>
+						<if condition="$v.state eq 0">
+							<!-- <a title="生成" href="__URL__/create/id/{$item.id}">生成</a>
+							<a title="编辑" href="__URL__/edit/id/{$item.id}">编辑</a> -->
+							<a class="confirm ajax-get" title="删除" href="__URL__/del/id/{$v.id}">删除</a>
+						<else />
+						<a title="明细" href="__URL__/detail/id/{$v.id}">明细</a>
+						</if>
+						</td>
+					</tr>
+				</volist>
+				<else/>
+				<td colspan="6" class="text-center"> aOh! 暂时还没有内容! </td>
+				</notempty>
+			</tbody>
+		</table>
+	</div>
+		<div class="page">
+        {$page}
+		</div>
+</block>
+
+<block name="script">
+<link href="__STATIC__/datetimepicker/css/datetimepicker.css" rel="stylesheet" type="text/css">
+<php>if(C('COLOR_STYLE')=='blue_color') echo '<link href="__STATIC__/datetimepicker/css/datetimepicker_blue.css" rel="stylesheet" type="text/css">';</php>
+<link href="__STATIC__/datetimepicker/css/dropdown.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="__STATIC__/datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript" src="__STATIC__/datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+<script type="text/javascript">
+//导航高亮
+highlight_subnav('{:U('CashCoupon/index')}');
+    $(function() {
+    	//点击排序
+    	$('.list_sort').click(function(){
+    		var url = $(this).attr('url');
+    		var ids = $('.ids:checked');
+    		var param = '';
+    		if(ids.length > 0){
+    			var str = new Array();
+    			ids.each(function(){
+    				str.push($(this).val());
+    			});
+    			param = str.join(',');
+    		}
+
+    		if(url != undefined && url != ''){
+    			window.location.href = url + '/ids/' + param;
+    		}
+    	});
+    	$("#search").click(function(){
+    		var url = $(this).attr('url');
+            var query  = $('.search-form').find('input').serialize();
+            query = query.replace(/(&|^)(\w*?\d*?\-*?_*?)*?=?((?=&)|(?=$))/g,'');
+            query = query.replace(/^&/g,'');
+            if( url.indexOf('?')>0 ){
+                url += '&' + query;
+            }else{
+                url += '?' + query;
+            }
+    		window.location.href = url;
+    	});
+        $('#time_start').datetimepicker({
+        	format: 'yyyy-mm-dd hh:ii:ss',
+            language:"zh-CN",
+            minView: 0,
+            minuteStep:1,
+            autoclose:true
+        });
+
+        $('#time_end').datetimepicker({
+        	format: 'yyyy-mm-dd hh:ii:ss',
+            language:"zh-CN",
+            minView: 0,
+            minuteStep:1,
+            autoclose:true
+        });
+    });
+    function exportexl(){
+    	var url = "{$excel_url}";
+    	var ids = "";
+    	$(".ids").each(function(i,e){
+    		if($(this).is(":checked")){
+    			ids += $(this).val()+",";
+    		}
+    	});
+    	if(ids!="")url = url+"&ids="+ids;
+    	//alert(url);return;
+    	location.href = url;
+    }
+</script>
+</block>

@@ -1,0 +1,68 @@
+<extend name="Public/base"/>
+
+<!-- 子导航 -->
+<block name="sidebar">
+    <include file="sidemenu" />
+</block>
+
+<block name="body">
+	<script type="text/javascript" src="__STATIC__/uploadify/jquery.uploadify.min.js"></script>
+    <div class="main-title">
+    	<if condition="$info.id neq ''"> 
+    	<h2>编辑会员等级</h2>
+    	<else/>
+        <h2>新增会员等级</h2>
+        </if>
+    </div>
+    <form action="__URL__/insertgrade" method="post" class="form-horizontal">
+        <!--
+		<div class="form-item">
+            <label class="item-label">类别<span class="check-tips"></span></label>
+            <div class="controls">
+                <select name="type">
+				<option value="0">普通</option>
+				<option value="1">VIP</option>
+				</select>
+            </div>
+        </div>
+		-->
+        <input type="hidden" name="id" value="{$info.id}">
+        <div class="form-item">
+            <label class="item-label">会员等级<span class="check-tips"></span></label>
+            <div class="controls">
+                <input type="text" class="text input-large" name="glv" value="{$info.glv}">
+            </div>
+        </div>
+        <div class="form-item">
+            <label class="item-label">等级名称<span class="check-tips"></span></label>
+            <div class="controls">
+                <input type="text" class="text input-large" name="gname" value="{$info.gname}">
+            </div>
+        </div>
+        <div class="form-item">
+            <label class="item-label">积分下限</label>
+            <div class="controls">
+                <input type="text" class="text input-large" name="glimit" value="{$info.glimit}">
+            </div>
+        </div>
+
+         <div class="form-item">
+            <label class="item-label">商品折扣<span class="check-tips">（折扣为0-1之间的数字）</span></label>
+            <div class="controls">
+                <input type="text" class="text input-large" name="gzk" value="{$info.gzk}">
+            </div>
+        </div>
+
+        <div class="form-item">
+            <button class="btn submit-btn ajax-post" id="submit" type="submit" target-form="form-horizontal">确 定</button>
+            <button class="btn btn-return" onclick="javascript:window.location.href='__URL__/grade';return false;">返 回</button>
+        </div>
+    </form>
+</block>
+
+<block name="script">
+    <script type="text/javascript">
+        //导航高亮
+        highlight_subnav('{:U('Member/grade')}');
+    </script>
+</block>

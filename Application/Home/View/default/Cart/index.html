@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<meta name="format-detection" content="telephone=no">
+		<title>{:C('WEB_SITE_TITLE')}</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/zepto.js"></script>
+		<script src="__PUBLIC__/Home/js/iscroll-probe.js"></script>
+		<script src="__PUBLIC__/Home/js/delIOS_huitan.js"></script>
+		<include file="Public/weixin"/>
+		<style>
+			/*下拉加载样式*/ 
+			#wrapper {
+				position: absolute;
+				z-index: 1;
+				top: 0;
+				bottom: 0;
+				left: 0;
+				width: 100%;
+				overflow: hidden;
+			}
+			#loadBin{color: #5d5d5d;text-align: center;line-height: 30px;}
+		</style>
+	</head>
+	<body onLoad="onload()" class="box">
+		<!-- 遮罩 -->
+		<div id="zhezhao" style="display:none"></div>
+		<!--confirm-->
+		<div class="confirm" style="display: none">
+			<div class="top"></div>
+			<div class="bot clear">
+				<div class="l"><p>取消</p></div>
+				<div class="r"><p>确定</p></div>
+			</div>
+		</div>
+		<!--提示文字-->
+		<div class="tip" style="opacity: 0;z-index: -1"></div>
+		<!--正文区域-->
+		<div id="cartTop" class="topBackTitle">
+			<div class="contain maxWidth">
+				<a class="hz back" href="javascript:;">&#xe600;</a>购物车<a href="javascript:;" class="right">编辑</a>
+			</div>
+		</div>
+		<div id="cartMain" class="fastscroll">
+			<div class="contain maxWidth">
+				<div class="content">
+					<!-- 购物车空 显示的文字 -->
+					<div class="empty clear" style="display:none">
+						<span class="hz l">&#xe601;</span>
+						<div class="l">
+							购物车空空如也<br>
+							来挑几件好货吧!
+						</div>
+					</div>
+					<div id="wrapper" class="maxWidth">
+						<div>
+							<ul class="list">
+								<volist name="list" id="item">
+									<div class="clear" cart_id="{$item.id}" max_num="{$item.stock}">
+										<div class="circleGray" cart_id="{$item.id}">
+											<span class="hz">&#xe613;</span>
+										</div>
+										<a href="{:U('Product/detail',array('id'=>$item['product_id']))}" class="clear">
+											<div class="center">
+												<img src="{$item.image}">
+											</div>
+											<div class="right">
+												<p class="title">{$item.title}</p>
+												<div class="price">
+													<p class="money">
+														<em>&yen;<span>{$item['price']}</span></em><del>&yen;<span>{$item.oldprice}</span></del>
+													</p>
+												</div>
+											</div>
+										</a>
+										<div class="addJianCom">
+											<span class="hz jian nooperate" attrid="{$item.id}" attr-num="{$item.stock}">&#xe616;</span>
+											<input type="number" value="{$item.product_num}" attrid="{$item.id}" attr-num="{$item.stock}">
+											<span class="hz add canoperate" attrid="{$item.id}" attr-num="{$item.stock}">&#xe615;</span>
+										</div>
+									</div>
+								</volist>
+								<volist name="list1" id="item">
+								<div class="clear" cart_id="{$item.id}" max_num="{$item.stock}">
+									<div class="circleGray" cart_id="{$item.id}">
+										<span class="hz">&#xe613;</span>
+									</div>
+									<div class="center">
+										<a href="/Product/detail?id={$item.product_id}"><img src="{$item.image}"></a>
+									</div>
+									<div class="right">
+										<p class="title"><a href="/Product/detail?id={$item.product_id}">{$item.title}(团)</a></p>
+										<div class="price">
+											
+											<p class="money">
+												<em>&yen;<span>{$item['product_price']}</span></em><del>&yen;<span>{$item.gprice}</span></del>
+											</p>
+										</div>
+										<div class="addJianCom">
+											<a href="javascript:;" class="hz jian nooperate" attrid="{$item.id}" attr-num="{$item.stock}">&#xe616;</a>
+											<input type="text" value="{$item.product_num}" attrid="{$item.id}"  attr-num="{$item.stock}">
+											<a href="javascript:;" class="hz add canoperate" attrid="{$item.id}" attr-num="{$item.stock}">&#xe615;</a>
+										</div>
+									</div>
+								</div>
+								</volist>
+							</ul>
+							<div id="loadBin"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="cartBot2">
+			<div class="contain maxWidth" style="display:none">
+				<div class="quanxuan left">
+					<div class="circleGray l">
+						<span class="hz">&#xe613;</span>
+					</div>
+					<p class="l">全选</p>
+				</div>
+				<div class="zong left">
+					总金额：<span>&yen;<em>00.00</em></span>
+				</div>
+				<a href="javascript:;" class="right">去结算</a>
+			</div>
+		</div>
+		<include file="Public:footer" />
+	</body>
+
+	<script>
+		//返回按钮
+		$('#cartTop .back').on('click',function(){
+			 window.history.go(-1);
+			//location.href='/';
+		});
+
+		//判断购物车是否为空
+		function cartCheckEmpty(){
+			var num=$('#wrapper .list > div').length;
+			//console.log(num);
+			if(num==0){
+				$('#cartMain .empty').show();
+			}else{
+				$('#cartBot2 .contain').show();
+			}
+		}
+		cartCheckEmpty();
+
+		//tip
+		function tipFun(str){
+			$('.tip').text(str).css({
+				'opacity':'1',
+				'z-index':'99999999'
+			});
+			setTimeout(function(){
+				$('.tip').css('opacity','0');
+				setTimeout(function(){
+					$('.tip').css('z-index','-1');
+				},300);
+			},1300);
+		}
+
+		//点击列表项的 圈
+		$('#wrapper .list').on('click','.clear .circleGray',function(){
+			if($(this).find('.hz').hasClass('active')){
+				$(this).find('.hz').removeClass('active');
+				checkSumNum();
+				checkQuanxuan();
+			}else{
+				$(this).find('.hz').addClass('active');
+				checkSumNum();
+				checkQuanxuan();
+			}
+		});
+
+		//点击全选前的 圈
+		$('#cartBot2 .contain .circleGray').on('click',function(){
+			var all=$('#cartMain .contain .clear .circleGray .hz');
+			if($('#cartBot2 .contain .circleGray .hz').hasClass('active')){
+				$('#cartBot2 .contain .circleGray .hz').removeClass('active');
+				for(var j=0;j<all.length;j++){
+					$(all[j]).removeClass('active');
+				}
+				checkSumNum();
+			}else{
+				$('#cartBot2 .contain .circleGray .hz').addClass('active');
+				for(var j=0;j<all.length;j++){
+					$(all[j]).addClass('active');
+				}
+				checkSumNum();
+			}
+		});
+
+		//检测总计
+		function checkSumNum(){
+			var moneyobj=$('#cartMain .contain .clear');
+			var sum=0;
+			for(var i=0;i<moneyobj.length;i++){
+				if($(moneyobj[i]).find('.circleGray span').hasClass('active')){
+					var num=parseFloat($(moneyobj[i]).find('.addJianCom input').val());
+					var money=parseFloat($(moneyobj[i]).find('.right .money em span').text());
+					sum+=money*num;
+				}
+			}
+			$('#cartBot2 .contain .zong span em').text(sum.toFixed(2));
+		}
+
+		//检测是否全选
+		function checkQuanxuan(){
+			var sumNum=$('#cartMain .contain .clear .circleGray').length;
+			var selectNum=$('#cartMain .contain .clear .circleGray .active').length;
+			if(sumNum==selectNum){
+				$('#cartBot2 .contain .circleGray .hz').addClass('active');
+			}else{
+				$('#cartBot2 .contain .circleGray .hz').removeClass('active');
+			}
+		}
+
+		//点击+
+		$('#cartMain').on('click','.addJianCom .add',function(ev){
+			var cart_id = $(this).attr('attrid');
+			//var cart_id=$(ev.currentTarget.parentNode.parentNode.parentNode).attr('cart_id');
+			var kucun=$(this).closest('div.clear').attr('max_num');//从后台获取的库存;
+			var currNum=$(this).siblings('input').val();
+			currNum++;
+			if(currNum>kucun){currNum=kucun;}
+			$(this).siblings('input').val(currNum);
+			$.ajax({
+				//提交数据的类型 POST GET
+				type:"POST",
+				//提交的网址
+				url:"{:U('Cart/addnum')}",
+				//提交的数据
+				data:{'cart_id':cart_id},
+				//返回数据的格式
+				datatype: "json",//"xml", "html", "script", "json", "jsonp", "text".
+				//在请求之前调用的函数
+				//成功返回之后调用的函数             
+				success:function(json){   
+				}
+			});
+			checkSumNum();
+		});
+		//点击-
+		$('#cartMain').on('click','.addJianCom .jian',function(ev){
+			//var cart_id=$(ev.currentTarget.parentNode.parentNode.parentNode).attr('cart_id');
+			var cart_id = $(this).attr("attrid");
+			var currNum=$(this).siblings('input').val();
+			currNum--;
+			if(currNum<1){currNum=1;}
+			$(this).siblings('input').val(currNum);
+			$.ajax({
+				//提交数据的类型 POST GET
+				type:"POST",
+				//提交的网址
+				url:"{:U('Cart/reduce')}",
+				//提交的数据
+				data:{'cart_id':cart_id},
+				//返回数据的格式
+				datatype: "json",//"xml", "html", "script", "json", "jsonp", "text".
+				//在请求之前调用的函数
+				//成功返回之后调用的函数             
+				success:function(json){   
+				}
+			});
+			checkSumNum();
+		});
+
+		//手动输入商品数量
+		$('.addJianCom input').on('change',function(){
+			var v = $(this).val();
+			var cart_id = $(this).attr('attrid');
+			var stock = $(this).attr('attr-num');
+			//alert(stock+"---"+v);
+			if(v<=0){
+				tipFun('低于商品下限');
+				$(this).val(1);
+				return;
+			}
+			//alert(typeof(stock));
+			if(stock < v){
+				//alert("超过商品上限");
+				tipFun('超过商品上限');
+				$(this).val(stock);
+				return;
+			}
+			$.ajax({
+				//提交数据的类型 POST GET
+				type:"POST",
+				//提交的网址
+				url:"{:U('Cart/updatenum')}",
+				//提交的数据
+				data:{'cart_id':cart_id,num:v},
+				//返回数据的格式
+				datatype: "json",//"xml", "html", "script", "json", "jsonp", "text".
+				//在请求之前调用的函数
+				//成功返回之后调用的函数             
+				success:function(json){   
+					/*if(json.status==1){
+						
+					}else{
+						tipFun(json.info);
+					}*/
+				}
+			});
+		});
+
+		//点击编辑 进行删除购物车操作 点击完成 切换回购物车界面
+		$('#cartTop .right').on('click',function(){
+			if($(this).text()=='编辑'){
+				$(this).text('完成');
+				$('#cartMain .contain .clear .circleGray, #cartBot2 .contain .circleGray').children('.hz').removeClass('active');
+				$('#cartBot2 .contain .zong').css('display','none');
+				$('#cartBot2 .contain .right').text('删除');
+			}else if($(this).text()=='完成'){
+				$(this).text('编辑');
+				$('#cartMain .contain .clear .circleGray, #cartBot2 .contain .circleGray').children('.hz').removeClass('active');
+				$('#cartBot2 .contain .zong').css('display','block');
+				$('#cartBot2 .contain .right').text('去结算');
+				checkSumNum();
+			}
+		});
+
+		//点击 去结算 或 删除按钮
+		$('#cartBot2 .contain .right').on('click',function(){
+			var str='';
+			var all=$('#cartMain .contain .clear .circleGray .hz');
+			for(var i=0;i<all.length;i++){
+				if($(all[i]).closest('.clear').find('.circleGray .hz').hasClass('active')){
+					var dataid=$(all[i]).closest('.clear').find('.circleGray').attr('cart_id');
+					if(str=='')
+					{
+						str=dataid;
+					}
+					else
+					{
+						str+=','+dataid;
+					}
+				}
+			}
+			if(str=='')
+			{
+				tipFun('请选择商品');
+			}
+			else if($(this).text()=='去结算'){
+				//var cart_id=$(ev.currentTarget.parentNode.parentNode.parentNode).attr('cart_id');
+				//去结算操作
+				window.location.href='{:U('Cart/step2')}&cart_id='+str
+				//location.href='订单确认确认订单.html';
+			}else if($(this).text()=='删除'){
+				$('.confirm .top').text('确认删除吗？');
+				$('#zhezhao').css('display','block');
+				$('.confirm').css('display','block');
+				//点击取消
+				$('.confirm .bot div.l').on('click',function(){
+					$('#zhezhao').css('display','none');
+					$('.confirm').css('display','none');
+				});
+				//点击确定
+				$('.confirm .bot div.r').on('click',function(){
+					$('#zhezhao').css('display','none');
+					$('.confirm').css('display','none');
+					//删除操作
+					$.ajax({
+						//提交数据的类型 POST GET
+						type:"POST",
+						//提交的网址
+						url:"{:U('Cart/del')}",
+						//提交的数据
+						data:{'cart_id':str},
+						//返回数据的格式
+						datatype: "json",//"xml", "html", "script", "json", "jsonp", "text".
+						//在请求之前调用的函数
+						//成功返回之后调用的函数             
+						success:function(json){   
+							tipFun('删除成功');
+							setTimeout(function(){
+								window.location.reload();
+							},1000);
+						}
+					});
+				});
+			}
+		});
+
+		//iscroll 下拉加载+zeptoajax
+		function onload(){
+			loadBin = document.getElementById("loadBin");
+			myScroll = new IScroll('#wrapper',{
+				probeType: 3,
+				click:true
+			});
+			myScroll.on("scroll",scrollFun);
+			myScroll.on("scrollEnd",scrollEndFun);
+		}
+		var page=2;
+		var myScroll,
+			loadBin,
+			isload = false,
+			scrollFun = function(){
+				// if((this.y - this.maxScrollY)>>0 < -50){
+					isload = true;
+					// loadBin.innerHTML = "松开手指加载更多";
+					myScroll.refresh();
+					myScroll.off("scroll",scrollFun);
+				// }
+			},
+			scrollEndFun = function(){
+				if(isload){
+					isload = false;
+
+					// $.ajax({
+					// 	type: 'GET',
+					// 	url: '__PUBLIC__/Home/data/cart.html',
+					// 	dataType: 'json',
+					// 	success: function(data){
+					// 		page++;
+
+							// var str='';
+							// for(var i=0;i<5;i++){
+							// 	str+='<div class="clear" cart_id="88" max_num="6">\
+							// 			<div class="circleGray" cart_id="88">\
+							// 				<span class="hz">&#xe613;</span>\
+							// 			</div>\
+							// 			<a href="/Product/detail?id=4" class="clear">\
+							// 				<div class="center">\
+							// 					<img src="/Uploads/Picture/2016-11-10/582443c0a32d9.jpg">\
+							// 				</div>\
+							// 				<div class="right">\
+							// 					<p class="title">ajax金塞克鱼</p>\
+							// 					<div class="price">\
+							// 						<p class="money">\
+							// 							<em>&yen;<span>80.00</span></em><del>&yen;<span>299.00</span></del>\
+							// 						</p>\
+							// 					</div>\
+							// 				</div>\
+							// 			</a>\
+							// 			<div class="addJianCom">\
+							// 				<span class="hz jian nooperate" attrid="88">&#xe616;</span>\
+							// 				<input type="number" value="1">\
+							// 				<span class="hz add canoperate" attrid="88">&#xe615;</span>\
+							// 			</div>\
+							// 		</div>';
+							// }
+							// $('#cartMain .list').append(str);
+						
+							loadBin.innerHTML = "";
+							myScroll.on("scroll",scrollFun);
+							myScroll.refresh();
+
+							//加载更多后，就不一定全选了
+							// $('#cartBot2 .contain .circleGray .hz').removeClass('active');
+					// 	},
+					// 	error: function(xhr, type){
+					// 		console.log('Ajax error!');
+					// 	}
+					// });
+				}
+			};
+	</script>
+</html>

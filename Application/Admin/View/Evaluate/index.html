@@ -1,0 +1,149 @@
+<extend name="Public/base"/>
+
+<block name="body">
+	<div class="main-title">
+		<h2>评价列表</h2>
+	</div>
+
+	<div class="cf">
+		<div class="fl">
+			<button class="btn ajax-post confirm" target-form="ids" url="__URL__/setStatus/status/1">审 核</button>
+			<button class="btn ajax-post confirm" target-form="ids" url="__URL__/setStatus/status/-1">删 除</button>
+			<a class="btn" href="__URL__/index">全部</a>
+			<a class="btn" href="__URL__/index/status/0">待审核</a>
+			<a class="btn" href="__URL__/index/status/1">已审核</a>
+			<a class="btn" href="__URL__/index/status/-1">已删除</a>
+		</div>
+		<!--<a class="btn" href="__URL__/index">全部</a>
+		<a class="btn" href="{:U('Coupon/detaillist',array('is_ply'=>0))}">未使用</a>
+		<a class="btn" href="{:U('Coupon/detaillist',array('is_ply'=>1))}">已使用</a>-->
+		<!--<button class="btn ajax-post confirm" target-form="ids" url="{:U("del")}">删除</button>-->
+		
+		<!-- <div class="search-form fr cf">
+			<div class="btn-group-click adv-sch-pannel fl">
+               <button class="btn">高 级<i class="btn-arrowdown"></i></button>
+               <div class="dropdown cf">
+               	<div class="row">
+               		<label>评论时间：</label>
+               		<input type="text" id="time-start" name="time-start" class="text input-2x" value="" placeholder="起始时间" /> -
+               		<input type="text" id="time-end" name="time-end" class="text input-2x" value="" placeholder="结束时间" />
+               	</div>
+               	
+               </div>
+	        </div>
+			<div class="sleft">
+				 <input type="text" name="title" class="search-input" value="{:I('title')}" placeholder="请输入标题文档">
+				<a class="sch-btn" href="javascript:;" id="search" url="{:U('Evaluate/index')}"><i class="btn-search"></i></a>
+			</div>
+	           
+		</div> -->
+	</div>
+	<div class="data-table table-striped">
+		<table>
+			<thead>
+				<tr>
+					<th class="row-selected">
+						<input class="checkbox check-all" type="checkbox">
+					</th>
+					<th>ID</th>
+					<th width="120">订单号</th>
+					<th width="120">评价人</th>
+					<th width="*">评价内容</th>
+					<th width="150">评论时间</th>
+					<th width="30">评分</th>
+					<th width="80">状态</th>
+					<th width="120">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				<notempty name="list">
+				<volist name="list" id="item">
+					<tr>
+						<td><input class="ids row-selected" type="checkbox" name="ids[]" id="" value="{$item['id']}"> </td>
+                        <td>{$item['id']}</td>
+						<td><a href="{:U('Order/views',array('id'=>$item['order_id']))}">{:getorderid($item['order_id'])}</a>&nbsp;</td>
+						<td>{:getusername($item['user_id'])}&nbsp;</td>
+						<td>{$item.desc}</td>
+                        <td>{:date('Y-m-d H:i:s',$item['addtime'])}</td>
+                        <td>{$item['score']}</td>
+                        <td>{$statarr[$item['status']]}</td>
+						<td>
+						<if condition="$item.status eq 0"><a title="审核" href="__URL__/audit/id/{$item.id}/status/1">审核</a></if>
+						<if condition="$item.status gt -1">
+						<a title="编辑" href="__URL__/edit/id/{$item.id}">编辑</a>
+						<a class="confirm ajax-get" title="删除" href="__URL__/audit/id/{$item.id}/status/-1">删除</a>
+						</if>
+						</td>
+					</tr>
+				</volist>
+				<else/>
+				<td colspan="6" class="text-center"> aOh! 暂时还没有内容! </td>
+				</notempty>
+			</tbody>
+		</table>
+	</div>
+		<div class="page">
+        {$page}
+		</div>
+</block>
+
+<block name="script">
+
+<link href="__STATIC__/datetimepicker/css/datetimepicker.css" rel="stylesheet" type="text/css">
+<php>if(C('COLOR_STYLE')=='blue_color') echo '<link href="__STATIC__/datetimepicker/css/datetimepicker_blue.css" rel="stylesheet" type="text/css">';</php>
+<link href="__STATIC__/datetimepicker/css/dropdown.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="__STATIC__/datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript" src="__STATIC__/datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+<script type="text/javascript">
+    $(function() {
+    	//搜索功能
+    	$("#search").click(function(){
+    		var url = $(this).attr('url');
+    		var status = $("#sch-sort-txt").attr("data");
+            var query  = $('.search-form').find('input').serialize();
+            query = query.replace(/(&|^)(\w*?\d*?\-*?_*?)*?=?((?=&)|(?=$))/g,'');
+            query = query.replace(/^&/g,'');
+    		if(status != ''){
+    			query += 'status=' + status + "&" + query;
+            }
+            if( url.indexOf('?')>0 ){
+                url += '&' + query;
+            }else{
+                url += '?' + query;
+            }
+    		window.location.href = url;
+    	});
+    	//点击排序
+    	$('.list_sort').click(function(){
+    		var url = $(this).attr('url');
+    		var ids = $('.ids:checked');
+    		var param = '';
+    		if(ids.length > 0){
+    			var str = new Array();
+    			ids.each(function(){
+    				str.push($(this).val());
+    			});
+    			param = str.join(',');
+    		}
+
+    		if(url != undefined && url != ''){
+    			window.location.href = url + '/ids/' + param;
+    		}
+    	});
+
+        $('#time-start').datetimepicker({
+            format: 'yyyy-mm-dd',
+            language:"zh-CN",
+    	    minView:2,
+    	    autoclose:true
+        });
+
+        $('#time-end').datetimepicker({
+            format: 'yyyy-mm-dd',
+            language:"zh-CN",
+    	    minView:2,
+    	    autoclose:true
+        });
+    });
+</script>
+</block>

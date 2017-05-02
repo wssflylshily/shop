@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html>
+	<head> 
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>{:C('WEB_SITE_TITLE')}</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/swiper-3.3.1.min.css">
+		<script src="__PUBLIC__/Home/js/swiper-3.3.1.min.js"></script>
+
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/zepto.js"></script>
+		<script src="__PUBLIC__/Home/js/iscroll-probe.js"></script>
+		<include file="Public/weixin"/>
+		<style>
+			/*下拉加载样式*/
+			.loadBin,.loadBinPj{color: #5d5d5d;text-align: center;line-height: 30px;}
+			#proDetailMain .one,#proDetailMain .two,#proDetailMain .three,#proDetailMain .four{position: absolute;z-index: 1;top: 0;bottom: 0;left: 0;width: 100%;overflow: hidden;}
+			#proDetailMain .two,#proDetailMain .three{padding: 0;}
+			#proDetailMain .two > div,#proDetailMain .three > div{padding: 12px;}
+			#proDetailMain .four .main .pjone,#proDetailMain .four .main .pjtwo,#proDetailMain .four .main .pjthree{position: absolute;z-index: 1;top: 0;bottom: 0;left: 0;width: 100%;overflow: hidden;}
+		</style>
+		<script>
+			//用于：拖动切换tab
+			var myScrollone,myScrolltwo,myScrollthree;
+			var loadBin;
+			var isloadone=false,isloadtwo=false,isloadthree=false;
+			var currPage=0;//当前tab在第一个上 第一个0 第二个1 第三个2 第四个3
+
+			//用于：拖动下拉加载 评价
+			var myScrollpjone,myScrollpjtwo,myScrollpjthree;
+			var loadBinpj;
+			var isloadPjone=false,isloadPjtwo=false,isloadPjthree=false;
+			var pjonePage=2,pjtwoPage=2,pjthreePage=2;
+			var currPagePj=0;//当前评价在第一个上 第一个0
+
+			function onload () {
+				loadBin = document.querySelectorAll(".loadBin");
+				loadBinPj=document.querySelectorAll(".loadBinPj");
+
+				if(currPage==0){
+					myScrollone = new IScroll('#proDetailMain .one',{probeType: 3,click:true});
+					myScrollone.on("scroll",scrollFun1);
+					myScrollone.on("scrollEnd",scrollEndFun1);
+				}
+				else if(currPage==1){
+					myScrolltwo = new IScroll('#proDetailMain .two',{probeType: 3,click:true});
+					myScrolltwo.on("scroll",scrollFun2);
+					myScrolltwo.on("scrollEnd",scrollEndFun2);
+				}
+				else if(currPage==2){
+					myScrollthree = new IScroll('#proDetailMain .three',{probeType: 3,click:true});
+					myScrollthree.on("scroll",scrollFun3);
+					myScrollthree.on("scrollEnd",scrollEndFun3);
+				}
+				//评价
+				else if(currPage==3){
+					if(currPagePj==0){
+						myScrollpjone = new IScroll('#proDetailMain .four .main .pjone',{probeType: 3,click:true});
+						myScrollpjone.on("scroll",scrollFunPj1);
+						myScrollpjone.on("scrollEnd",scrollEndFunPj1);
+					}
+					else if(currPagePj==1){
+						myScrollpjtwo = new IScroll('#proDetailMain .four .main .pjtwo',{probeType: 3,click:true});
+						myScrollpjtwo.on("scroll",scrollFunPj2);
+						myScrollpjtwo.on("scrollEnd",scrollEndFunPj2);
+					}
+					else if(currPagePj==2){
+						myScrollpjthree = new IScroll('#proDetailMain .four .main .pjthree',{probeType: 3,click:true});
+						myScrollpjthree.on("scroll",scrollFunPj3);
+						myScrollpjthree.on("scrollEnd",scrollEndFunPj3);
+					}
+				}
+			}
+			var scrollFun1=function(){
+				if((this.y - this.maxScrollY)>>0 < -50){
+					isloadone = true;
+					loadBin[0].innerHTML = "继续拖动，查看图文详情";
+					myScrollone.refresh();
+					myScrollone.off("scroll",scrollFun1);
+				}
+			}
+			var scrollEndFun1=function(){
+				if(isloadone){
+					isloadone = false;
+
+					//跳转到tab2 图文详情
+					currPage=1;
+					$('#proDetailMain .contain > div').eq(currPage).css('display','block').siblings().css('display','none');
+					$('#proDetailTop .top2 li').eq(currPage).addClass('active').siblings().removeClass('active');
+					onload();
+
+					loadBin[0].innerHTML = "";
+					myScrollone.on("scroll",scrollFun1);
+					myScrollone.refresh();
+				}
+			}
+			
+			var scrollFun2=function(){
+				if((this.y - this.maxScrollY)>>0 < -50){
+					isloadtwo = true;
+					loadBin[1].innerHTML = "继续拖动，查看产品参数";
+					myScrolltwo.refresh();
+					myScrolltwo.off("scroll",scrollFun2);
+				}
+			}
+			var scrollEndFun2=function(){
+				if(isloadtwo){
+					isloadtwo = false;
+
+					//跳转到tab3 产品参数
+					currPage=2;
+					$('#proDetailMain .contain > div').eq(currPage).css('display','block').siblings().css('display','none');
+					$('#proDetailTop .top2 li').eq(currPage).addClass('active').siblings().removeClass('active');
+					onload();
+
+					loadBin[1].innerHTML = "";
+					myScrolltwo.on("scroll",scrollFun2);
+					myScrolltwo.refresh();
+				}
+			}
+
+			var scrollFun3=function(){
+				if((this.y - this.maxScrollY)>>0 < -50){
+					isloadthree = true;
+					loadBin[2].innerHTML = "继续拖动，查看评价";
+					myScrollthree.refresh();
+					myScrollthree.off("scroll",scrollFun3);
+				}
+			}
+			var scrollEndFun3=function(){
+				if(isloadthree){
+					isloadthree = false;
+
+					//跳转到tab4 产品参数
+					currPage=3;
+					$('#proDetailMain .contain > div').eq(currPage).css('display','block').siblings().css('display','none');
+					$('#proDetailTop .top2 li').eq(currPage).addClass('active').siblings().removeClass('active');
+					onload();
+
+					loadBin[2].innerHTML = "";
+					myScrollthree.on("scroll",scrollFun3);
+					myScrollthree.refresh();
+				}
+			}
+
+			//评价
+			var scrollFunPj1=function(){
+				if((this.y - this.maxScrollY)>>0 < -50){
+					isloadPjone = true;
+					loadBinPj[0].innerHTML = "松开手指加载更多";
+					myScrollpjone.refresh();
+					myScrollpjone.off("scroll",scrollFunPj1);
+				}
+			}
+			//all评价下拉加载 pjonePage=2,pjtwoPage=2,pjthreePage=2
+			var scrollEndFunPj1=function(){
+				if(isloadPjone){
+					isloadPjone = false;
+					var proid={$info.id};
+					 $.ajax({
+					 	type: 'GET',
+					 	url: "{:U('Spell/ajaxGetEvaluate')}",
+					 	data:{page:pjonePage,proid:proid,state:0},
+					 	dataType: 'json',
+					 	success: function(data){
+					 		console.log(data);
+							if(data.length>0){
+								pjonePage++;
+								//列表
+								var str='';
+								for(var i=0;i<data.length;i++){
+									str+='<li>\
+											<div class="title clear">';
+												if(data[i].image!=""){
+													str+='<p class="touxiang" style="background-image: url('+data[i].image+')"></p>';
+												}else{
+													str+='<p class="touxiang" style="background-image: url(__PUBLIC__/Home/img/mytouxiang.png)"></p>';
+												}
+												str+='<span class="phone">'+data[i].name+'</span><span class="time">'+data[i].time+'</span>';
+											str+='</div>\
+											<div class="content">\
+												<p class="hua">';
+													for(var j=0;j<data[i].score;j++){
+														str+='<span class="hz huaorange">&#xe614;</span>';
+													}
+													for(var k=0;k<5-data[i].score;k++){
+														str+='<span class="hz huagray">&#xe614;</span>';
+													}
+													str+='<span class="zhi">'+data[i].score+'.0</span>\
+												</p>\
+												<p class="word">全部评价</p>\
+											</div>\
+										</li>';
+								}
+								$('#proDetailMain .four .main .pjone ul').append(str);
+							}else{
+								//没有更多数据了
+								$('.noDataPingjiaAll').show();
+								scrollFunPj1=function(){
+									isloadPjone = true;
+									myScrollpjone.refresh();
+									myScrollpjone.off("scroll",scrollFunPj1);
+								}
+							}
+							
+							
+							myScrollpjone.refresh();
+							telCenterStar('#proDetailMain .pingjia .main .pingjiaCom .title .phone');
+					 	},
+					 	error: function(xhr, type){
+					 		console.log('Ajax error!');
+					 	}
+					 });
+
+					loadBinPj[0].innerHTML = "";
+					myScrollpjone.on("scroll",scrollFunPj1);
+					myScrollpjone.refresh();
+				}
+			}
+
+			var scrollFunPj2=function(){
+				if((this.y - this.maxScrollY)>>0 < -50){
+					isloadPjtwo = true;
+					loadBinPj[1].innerHTML = "松开手指加载更多";
+					myScrollpjtwo.refresh();
+					myScrollpjtwo.off("scroll",scrollFunPj2);
+				}
+			}
+			//好评下拉加载
+			var scrollEndFunPj2=function(){
+				if(isloadPjtwo){
+					isloadPjtwo = false;
+					var proid={$info.id};
+					 $.ajax({
+					 	type: 'GET',
+					 	url: "{:U('Spell/ajaxGetEvaluate')}",
+					 	data:{page:pjtwoPage,proid:proid,state:1},
+					 	dataType: 'json',
+					 	success: function(data){
+					 		if(data.length>0){
+					 			pjtwoPage++;
+					 			
+								var str='';
+								for(var i=0;i<data.length;i++){
+									str+='<li>\
+											<div class="title clear">';
+												if(data[i].image!=""){
+													str+='<p class="touxiang" style="background-image: url('+data[i].image+')"></p>';
+												}else{
+													str+='<p class="touxiang" style="background-image: url(__PUBLIC__/Home/img/mytouxiang.png)"></p>';
+												}
+												str+='<span class="phone">'+data[i].name+'</span><span class="time">'+data[i].time+'</span>';
+											str+='</div>\
+											<div class="content">\
+												<p class="hua">';
+													for(var j=0;j<data[i].score;j++){
+														str+='<span class="hz huaorange">&#xe614;</span>';
+													}
+													for(var k=0;k<5-data[i].score;k++){
+														str+='<span class="hz huagray">&#xe614;</span>';
+													}
+													str+='<span class="zhi">'+data[i].score+'.0</span>\
+												</p>\
+												<p class="word">好评</p>\
+											</div>\
+										</li>';
+								}
+								$('#proDetailMain .four .main .pjtwo ul').append(str);
+							}else{
+								//没有更多数据了
+								$('.noDataPingjiaGood').show();
+								scrollFunPj2=function(){
+									isloadPjtwo = true;
+									myScrollpjtwo.refresh();
+									myScrollpjtwo.off("scroll",scrollFunPj2);
+								}	
+							}
+							
+							myScrollpjtwo.refresh();
+							telCenterStar('#proDetailMain .pingjia .main .pingjiaCom .title .phone');
+					 	},
+					 	error: function(xhr, type){
+					 		console.log('Ajax error!');
+					 	}
+					 });
+
+					loadBinPj[1].innerHTML = "";
+					myScrollpjtwo.on("scroll",scrollFunPj2);
+					myScrollpjtwo.refresh();
+				}
+			}
+
+			var scrollFunPj3=function(){
+				if((this.y - this.maxScrollY)>>0 < -50){
+					isloadPjthree = true;
+					loadBinPj[2].innerHTML = "松开手指加载更多";
+					myScrollpjthree.refresh();
+					myScrollpjthree.off("scroll",scrollFunPj3);
+				}
+			}
+			//差评下拉加载
+			var scrollEndFunPj3=function(){
+				if(isloadPjthree){
+					isloadPjthree = false;
+					var proid={$info.id};
+					 $.ajax({
+					 	type: 'GET',
+					 	url: "{:U('Spell/ajaxGetEvaluate')}",
+					 	data:{page:pjthreePage,proid:proid,state:2},
+					 	dataType: 'json',
+					 	success: function(data){
+							if(data.length>0){
+								page++;
+								//列表
+								var str='';
+								for(var i=0;i<data.length;i++){
+									str+='<li>\
+											<div class="title clear">';
+												if(data[i].image!=""){
+													str+='<p class="touxiang" style="background-image: url('+data[i].image+')"></p>';
+												}else{
+													str+='<p class="touxiang" style="background-image: url(__PUBLIC__/Home/img/mytouxiang.png)"></p>';
+												}
+												str+='<span class="phone">'+data[i].name+'</span><span class="time">'+data[i].time+'</span>';
+											str+='</div>\
+											<div class="content">\
+												<p class="hua">';
+												for(var j=0;j<data[i].score;j++){
+													str+='<span class="hz huaorange">&#xe614;</span>';
+												}
+												for(var k=0;k<5-data[i].score;k++){
+													str+='<span class="hz huagray">&#xe614;</span>';
+												}
+												str+='<span class="zhi">'+data[i].score+'.0</span>\
+												</p>\
+												<p class="word">差评</p>\
+											</div>\
+										</li>';
+								}
+								$('#proDetailMain .four .main .pjthree ul').append(str);
+							}else{
+								//没有更多数据了
+								$('.noDataPingjiaBad').show();
+								scrollFunPj3=function(){
+									isloadPjthree = true;
+									myScrollpjthree.refresh();
+									myScrollpjthree.off("scroll",scrollFunPj3);
+								}
+							}
+							
+							myScrollpjthree.refresh();
+							telCenterStar('#proDetailMain .pingjia .main .pingjiaCom .title .phone');
+					 	},
+					 	error: function(xhr, type){
+					 		console.log('Ajax error!');
+					 	}
+					 });
+
+					loadBinPj[2].innerHTML = "";
+					myScrollpjthree.on("scroll",scrollFunPj3);
+					myScrollpjthree.refresh();
+				}
+			}
+		</script>
+	</head>
+	<body onLoad="onload()">
+		<!-- 分享提示 -->
+		<div id="share" style="display:none"><img src="__PUBLIC__/Home/img/share.png"></div>
+		<!--收藏成功提示-->
+		<div id="shoucangokTip" class="scTip" style="opacity: 0">
+			<p><span class="hz">&#xe613;</span></p>
+			收藏成功
+		</div>
+		<!--取消收藏成功提示-->
+		<div id="shoucangxTip" class="scTip" style="opacity: 0">
+			<p><span class="hz">&#xe613;</span></p>
+			取消收藏成功
+		</div>
+		<!--提示文字-->
+		<div class="tip" style="opacity: 0;z-index: -1"></div>
+		<!-- 颜色规格 -->
+		<div id="proDetailGuige" style="display:none;">
+			<div class="top">
+				<div class="imgContain">
+					<p class="img" style="background-image:url({$info.image})"></p>
+				</div>
+				<div class="centerArea">
+					<div class="title">{$info.title}</div>
+					<div class="price">
+						<span id='gprice_txt'>&yen;{$spell.cost}</span><del>&yen;{$info.market_price}</del>
+					</div>
+				</div>
+				<span class="hz close">&#xe617;</span>
+			</div>
+			<div class="scrollArea">
+			
+				<div class="num">
+					<p class="title">数量</p>
+					<div class="addJianCom">
+						<a href="javascript:;" class="hz jian nooperate">&#xe616;</a>
+						<input type="number" value="1" id='amount'>
+						<a href="javascript:;" class="hz add canoperate">&#xe615;</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--正文区域-->
+		<div id="proDetailTop">
+			<div class="contain maxWidth">
+				<div class="top1">
+					<a href="javascript:;" class="hz back">&#xe600;</a>
+					<a href="{:U('Cart/index')}" class="right carta">
+						<span class="hz cart">&#xe601;</span>
+						<em>{$cart_num}</em>
+					</a>
+					<a href="javascript:;" class="right shoucanga">
+					<span class="hz shoucang" style="display: <if condition="$is_coll eq 0">block<else />none</if>">&#xe60f;</span>
+					<span class="hz shoucangok" style="display: <if condition="$is_coll eq 1">block<else />none</if>">&#xe612;</span></a>
+
+					<a href="javascript:;" class="right sharea"><span class="hz share">&#xe60e;</span></a>
+				</div>
+				<div class="top2">
+					<ul class="clear">
+						<li class="active"><a href="javascript:;">基本信息</a></li>
+						<li><a href="javascript:;">图文详情</a></li>
+						<li><a href="javascript:;">产品参数</a></li>
+						<li><a href="javascript:;">评价</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div id="proDetailMain" class="fastscroll">
+			<div class="contain maxWidth">
+				<!--基本信息-->
+				<div class="one item basicInfo">
+					<div class="maxWidth">
+						<div class="swiper-container lunbo">
+							<div class="swiper-wrapper">
+							<volist name="piclist" id="item">
+								<div class="swiper-slide">
+									<img src="{$item.path}" />
+								</div>
+							</volist>
+							</div>
+							<div class="swiper-pagination"></div>
+						</div>
+						<div class="ptline">
+							<span>{$spell.num}人团</span>
+							<if condition="$spell.state eq 1"><b>拼团未开始</b></if>
+							<if condition="$spell.state eq 2">
+							<b>
+							距离结束:<i style="font-style: normal;"></i>
+							已有{$spell.join_num}人参团</b></if>
+							<if condition="$spell.state eq 3"><b>拼团已完成</b></if>
+							<if condition="$spell.state eq 4"><b>拼团已结束</b></if>
+							<input type="hidden" name="deadline" value="{$spell.end_date}">
+						</div>
+						<div class="infoContent">
+							<div class="basic">
+								<p class="title">
+									{$info.title}
+								</p>
+								<p class="price">
+									<span>&yen;{$spell.cost}</span><del>&yen;{$info.market_price}</del>
+								</p>
+								<p class="other">
+									快递费:&yen;<span class="kuaidi">{$spell.express_money}</span>已售:<span class="num">{$info.sell_num}</span>件
+								</p>
+							</div>
+							<div class="guize">
+								<!-- <a href="{:U('Product/newsdetail',array('id'=>7))}">
+									<span class="fan">返</span>返利规则
+									<span class="hz">&#xe60c;</span>
+								</a> -->
+								<a href="{:U('Product/newsdetail',array('id'=>8))}">
+									<span class="tui">推</span>推广规则
+									<span class="hz">&#xe60c;</span>
+								</a>
+							</div>
+							<div class="select">
+								<a href="javascript:;">
+									<span class="selectno">请选择商品规格</span>
+									<span class="selected" style="display:none">
+										已选： <span class="selectinfo"></span><span class="num">1</span>件
+									</span>
+									<span class="hz">&#xe60c;</span>
+								</a>
+							</div>
+						</div>
+						<div class="loadBin"></div>
+					</div>
+				</div>
+				<!--图文详情 这个区域的p h1 h2 h3 h4 h5 h6 em i strong b ins del a的样式已经定义过了-->
+				<div class="two item tuwenDetail" style="display: none">
+					<div class="maxWidth">
+						<div class="imgs">
+							{$info.content}
+						</div>
+						<div class="loadBin"></div>
+					</div>
+				</div>
+				<!--产品参数-->
+				<div class="three item proCanshu" style="display:none;">
+					<div class="maxWidth">
+						<div>
+							{$info.description}
+						</div>
+						<div class="loadBin"></div>
+					</div>
+				</div>
+				<!--评价-->
+						<div class="four item pingjia" style="display:none;">
+							<div class="top">
+								<ul class="clear">
+									<li class="active"><p><a href="javascript:;">全部(<span class="all">{$evaluate_num}</span>)</a></p></li>
+									<li><p><a href="javascript:;">好评(<span class="good">{:count($hao_evaluate_list)}</span>)</a></p></li>
+									<li><p><a href="javascript:;">差评(<span class="bad">{:count($cha_evaluate_list)}</span>)</a></p></li>
+								</ul>
+							</div>
+							<div class="main">
+								<div class="contain maxWidth">
+									<div class="pjone allPingjia pingjiaCom">
+										<div class="maxWidth">
+											<div class="summary clear">
+												<div class="left">
+													<p class="sumzhi">{$total_score}.0</p>
+													<span>整体评价</span>
+												</div>
+												<div class="right">
+													<for start="0" end="$total_score">
+														<span class="hz huaorange">&#xe614;</span>
+													</for>
+													<for start="0" end="5-$total_score">
+														<span class="hz huagray">&#xe614;</span>
+													</for>
+												</div>
+											</div>
+											<ul class="marok">
+												<volist name="all_evaluate_list" id="item">
+												<li>
+													<div class="title clear">
+														<p class="touxiang" style="background-image: url({$userarr[$item['user_id']]['image']})"></p>
+														<span class="phone">{$userarr[$item['user_id']]['login_user']}</span>
+														<span class="time">{:date('Y-m-d',$item['addtime'])}</span>
+													</div>
+													<div class="content">
+														<p class="hua">
+														<for start="0" end="$item['score']">
+															<span class="hz huaorange">&#xe614;</span>
+														</for>
+														<for start="0" end="5-$item['score']">
+															<span class="hz huagray">&#xe614;</span>
+														</for>
+															<span class="zhi">{$item.score}.0</span>
+														</p>
+														<p class="word">{$item.desc}</p>
+													</div>
+												</li>
+											</volist>
+											</ul>
+											<div class="noData noDataPingjiaAll" style="display:none">没有更多数据了</div>
+											<div class="loadBinPj"></div>
+										</div>
+									</div>
+									<div style="display: none" class="pjtwo goodPingjia pingjiaCom">
+										<div class="maxWidth">
+											<ul class="marok">
+												
+												<volist name="hao_evaluate_list" id="item">
+												<li>
+													<div class="title clear">
+														<p class="touxiang" style="background-image: url({$userarr[$item['user_id']]['image']})"></p>
+														<span class="phone">{$userarr[$item['user_id']]['login_user']}</span>
+														<span class="time">{:date('Y-m-d',$item['addtime'])}</span>
+													</div>
+													<div class="content">
+														<p class="hua">
+														<for start="0" end="$item['score']">
+															<span class="hz huaorange">&#xe614;</span>
+														</for>
+														<for start="0" end="5-$item['score']">
+															<span class="hz huagray">&#xe614;</span>
+														</for>
+															<span class="zhi">{$item.score}.0</span>
+														</p>
+														<p class="word">{$item.desc}</p>
+													</div>
+												</li>
+											</volist>
+											</ul>
+											<div class="noData noDataPingjiaGood" style="display:none">没有更多数据了</div>
+											<div class="loadBinPj"></div>
+										</div>
+									</div>
+									<div style="display: none" class="pjthree chaPingjia pingjiaCom">
+										<div class="maxWidth">
+											<ul class="marok">
+											<volist name="cha_evaluate_list" id="item">
+												<li>
+													<div class="title clear">
+														<p class="touxiang" style="background-image: url({$userarr[$item['user_id']]['image']})"></p>
+														<span class="phone">{$userarr[$item['user_id']]['login_user']}</span>
+														<span class="time">{:date('Y-m-d',$item['addtime'])}</span>
+													</div>
+													<div class="content">
+														<p class="hua">
+														<for start="0" end="$item['score']">
+															<span class="hz huaorange">&#xe614;</span>
+														</for>
+														<for start="0" end="5-$item['score']">
+															<span class="hz huagray">&#xe614;</span>
+														</for>
+															<span class="zhi">{$item.score}.0</span>
+														</p>
+														<p class="word">{$item.desc}</p>
+													</div>
+												</li>
+											</volist>
+											</ul>
+											<div class="noData noDataPingjiaBad" style="display:none">没有更多数据了</div>
+											<div class="loadBinPj"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+		<div id="proDetailBot">
+			<div class="contain maxWidth">
+				<button class="cart">加入购物车</button><button class="mai">立即购买</button>
+			</div>
+		</div>
+		<!--confirm-->
+		<div class="confirm" style="display: none">
+			<div class="top">确认收货吗</div>
+			<div class="bot clear">
+				<div class="l"><p>取消</p></div>
+				<div class="r"><p>确定</p></div>
+			</div>
+		</div>
+		<!-- 遮罩-->
+		<div id="zhezhao" style="display: none"></div>
+		<!--提示文字-->
+		<div class="tip" style="opacity: 0;z-index: -1"></div>
+
+<input type="hidden" id="sel_attr" name="sel_attr" class="kind_selected" value="" />
+		<script>
+			var share_user_id={$share_user_id};
+			var is_login={$is_login};
+			var stra="";
+			var product_id={$info.id};
+			var spellid = {$spell.id};
+			function ergodic()
+			{
+				stra='';
+				$(".fenlei .content .select").each(function(index, element) {
+					var ssele=$(this).html();
+					stra+=ssele
+				});
+				$('#sel_attr').val(stra);
+
+			}
+			// $('.fenlei .content p').click(function(){
+				// ergodic();
+				// getpriceattr();
+			// })
+			// function getpriceattr()
+			// {
+			// 	$.ajax({
+			// 		//提交数据的类型 POST GET
+			// 		type:"POST",
+			// 		//提交的网址
+			// 		url:"/Product/getpriceattr",
+			// 		//提交的数据
+			// 		data:{'attr':$('#sel_attr').val(),'product_id':product_id},
+			// 		//返回数据的格式
+			// 		datatype: "json",//"xml", "html", "script", "json", "jsonp", "text".
+			// 		//在请求之前调用的函数
+			// 		//成功返回之后调用的函数             
+			// 		success:function(json){
+			// 			$('#gprice_txt').html('￥'+json.price);
+			// 		},
+			// 		//调用执行后调用的函数
+			// 		complete: function(XMLHttpRequest, textStatus){
+					   
+			// 		},
+			// 		error: function(){
+			// 		}         
+			// 	 });
+			// }
+			//返回按钮
+			$('#proDetailTop .top1 .back').on('tap',function(){
+				window.history.go(-1);
+			});
+			//当前界面
+			//当购物车的数量超过99，则显示99+
+			var cartProNum=$('#proDetailTop .top1 a.right em').text();
+			if(cartProNum>99){
+				$('#proDetailTop .top1 a.right em').text('99+');
+			}
+
+
+
+			//点击分享 弹出分享框
+			$('#proDetailTop .top1 .sharea').on('click',function(){
+				$('#share').css('display','block');
+			});
+			//点击#share区域
+			$('#share').on('click',function(){
+				$('#share').css('display','none');
+			});
+
+			//点击分享框中的取消
+			$('#proDetailShare button').on('tap',function(){
+				$('#proDetailShare').css('display','none');
+			});
+
+			//点击收藏
+			var shoucangokTimer=null;
+			var shoucangxTimer=null;
+			$('#proDetailTop .top1 .shoucanga').on('tap',function(){
+				if(is_login==0)
+				{
+					//window.location.href='/Member/Login?href={$info.id}';
+					window.location.href = "{:U('/Member/Login/index')}";
+				}
+				else
+				{
+					$.ajax({
+						//提交数据的类型 POST GET
+						type:"POST",
+						//提交的网址
+						url:"{:U('Product/addcollection')}",
+						//提交的数据
+						data:{'product_id':product_id},
+						//返回数据的格式
+						datatype: "json",//"xml", "html", "script", "json", "jsonp", "text".
+						//在请求之前调用的函数
+						//成功返回之后调用的函数             
+						success:function(json){
+							if(json.status<1)
+							{
+								$.toast(json.info,'cancel', function() {
+								});
+							}
+							else
+							{
+								$.toast(json.info, function() {
+									/*var cstr=$(".td03").html();
+									if(cstr.indexOf("cur")>=0){
+									}*/
+									$('.collect_btn').toggleClass("cur");
+								});
+							}
+						}   ,  
+					 });
+					var okValue=$(this).find('.shoucangok').css('display');
+					if(okValue=='none'){
+						//添加收藏
+						$(this).find('.shoucangok').css('display','block');
+						$(this).find('.shoucang').css('display','none');
+						//弹出收藏成功提示 1s后消失
+						$('#shoucangokTip').animate({'opacity':1},500,'ease',function(){
+							shoucangokTimer=setTimeout(function(){
+								shoucangokTimer=null;
+								$('#shoucangokTip').animate({'opacity':0},500,'ease');
+							},500)
+						});
+					}else{
+						//取消收藏
+						$(this).find('.shoucangok').css('display','none');
+						$(this).find('.shoucang').css('display','block');
+						//弹出取消收藏成功提示 1s后消失
+						$('#shoucangxTip').animate({'opacity':1},500,'ease',function(){
+							shoucangxTimer=setTimeout(function(){
+								shoucangxTimer=null;
+								$('#shoucangxTip').animate({'opacity':0},500,'ease');
+							},500)
+						});
+					}
+				}
+			});
+			// $(function(){
+			// 	setInterval(callback, repeat);
+			// })
+
+			//电话号码处理成，带有*****
+			function telCenterStar(selectorstr){
+				var alltel=$(selectorstr);
+				for(var i=0;i<alltel.length;i++){
+					var str=alltel[i].innerHTML;
+					var reg=/(\d{3})(\d{5})(\d{3})/;
+					alltel[i].innerHTML=str.replace(reg,'$1*****$3');
+				}
+			}
+			telCenterStar('#proDetailMain .pingjia .main .pingjiaCom .title .phone');
+
+			//规格
+			//初始化
+			var getSelectNum=$('#proDetailMain .basicInfo .infoContent .select span.num')[0].innerHTML;
+			if(getSelectNum>1){
+				$('#proDetailGuige .num .addJianCom input').val(getSelectNum);
+			}else{
+				$('#proDetailGuige .num .addJianCom input').val(1);
+			}
+			$('#proDetailGuige .num .addJianCom .jian')[0].className='hz jian nooperate';
+			$('#proDetailGuige .num .addJianCom .add')[0].className='hz add canoperate';
+			//点击+
+			$('#proDetailGuige .num .addJianCom .add').on('click',function(){
+				var kucun=9999;//从后台获取的库存
+				var currNum=$('#proDetailGuige .num .addJianCom input').val();
+				currNum++;
+				if(currNum>kucun){currNum=kucun;}
+				$('#proDetailGuige .num .addJianCom input').val(currNum);
+				//更新到基本信息界面上
+				$('#proDetailMain .basicInfo .infoContent .select .selectno').css('display','none');
+				$('#proDetailMain .basicInfo .infoContent .select .selected').css('display','block');
+				$('#proDetailMain .basicInfo .infoContent .select span.num').text(currNum);//件数跟随改变
+			});
+			//点击-
+			$('#proDetailGuige .num .addJianCom .jian').on('click',function(){
+				var currNum=$('#proDetailGuige .num .addJianCom input').val();
+				currNum--;
+				if(currNum<1){currNum=1;}
+				$('#proDetailGuige .num .addJianCom input').val(currNum);
+				//更新到基本信息界面上
+				$('#proDetailMain .basicInfo .infoContent .select .selectno').css('display','none');
+				$('#proDetailMain .basicInfo .infoContent .select .selected').css('display','block');
+				$('#proDetailMain .basicInfo .infoContent .select span.num').text(currNum);//件数跟随改变
+			});
+			//手动输入商品数量
+			$('.addJianCom input').on('change',function(){
+				var v=$(this).val();
+				if(v<=0){
+					tipFun('低于商品下限');
+					$(this).val(1);
+				}
+				if(v>9999){
+					tipFun('超过商品上限');
+					$(this).val(1);
+				}
+			});
+			//点击x
+			$('#proDetailGuige .top .close').on('click',function(){
+				$('#proDetailGuige').css('display','none');
+				$('#zhezhao').hide();
+			});
+			//选中的分类项
+			$('#proDetailGuige .fenlei .content p').on('click',function(){
+				$(this).addClass('select').siblings().removeClass('select');
+				//更新到基本信息界面上
+				$('#proDetailMain .basicInfo .infoContent .select .selectno').css('display','none');
+				$('#proDetailMain .basicInfo .infoContent .select .selected').css('display','block');
+				var alltype=$('#proDetailGuige .fenlei .content');
+				var text='';
+				for(var i=0;i<alltype.length;i++){
+					text+=''+$(alltype[i]).find('.select').text()+' ';
+				}
+				$('#proDetailMain .basicInfo .infoContent .select span.selectinfo').text(text);//颜色等跟随改变
+				//防止同一个元素绑定click冲突
+				ergodic();
+				// getpriceattr();
+			});
+
+			//基本信息
+			//设置轮播高度660*525
+			setLunboH();
+			function setLunboH(){
+				var w=$('#proDetailMain .basicInfo .lunbo .swiper-slide img').width();
+				$('#proDetailMain .basicInfo .lunbo .swiper-slide img').height(525*w/660);
+			}
+			//轮播
+			var lunbosw = new Swiper('#proDetailMain .basicInfo .lunbo', {
+				autoplay: 3000,
+				loop:true,
+				autoplayDisableOnInteraction:false,
+				pagination : '.swiper-pagination',
+				paginationType : 'fraction'
+			});
+
+			//点击规格
+			$('#proDetailMain .basicInfo .infoContent .select').on('tap',function(){
+				$('#proDetailGuige').css('display','block');
+			});
+
+			var price = {$spell.cost};
+			//点击加入购物车 选择规格显示
+			$('#proDetailBot .cart').on('tap',function(){
+				var state = {$spell.state};
+				if(price<=0){
+					tipFun('拼团价格为0，不可购买');return;
+				}
+				if(state==1){
+					tipFun('拼团未开始');return;
+				}
+				if(state==2){
+					$('#zhezhao').show();
+					if($("#proDetailGuige").css("display")=='block')
+					{
+						addcart();
+					}else{
+						ergodic();
+						$('#proDetailGuige').css('display','block');
+					}
+				}
+				if(state==3){
+					tipFun('拼团已完成');return;
+				}
+				if(state==4){
+					tipFun('拼团已结束');return;
+				}
+			});
+
+			//点击立即购买 选择规格显示
+			$('#proDetailBot .mai').on('tap',function(){
+				var state = {$spell.state};
+				if(price<=0){
+					tipFun('拼团价格为0，不可购买');return;
+				}
+				if(state==1){
+					tipFun('拼团未开始');return;
+				}
+				if(state==2){
+					$('#zhezhao').show();
+					if($("#proDetailGuige").css("display")=='block')
+					{
+						addcart();
+					}
+					else
+					{
+						ergodic();
+						// getpriceattr();
+						$('#proDetailGuige').css('display','block');
+					}
+				}
+				if(state==3){
+					tipFun('拼团已完成');return;
+				}
+				if(state==4){
+					tipFun('拼团已结束');return;
+				}
+			});
+
+
+var is_login={$is_login};
+function addcart()
+{
+	if(is_login==0)
+	{
+		//window.location.href='/Member/Login?href={$info.id}';
+		window.location.href = "{:U('/Member/Login/index')}";
+	}
+	else
+	{
+		//window.location.href='/Cart/step3?num='+$("#amount").val()+'&product_id='+product_id+'&spell_id='+spellid;
+		window.location.href = "{:U('Cart/step3')}&num="+$("#amount").val()+"&product_id="+product_id+"&spell_id="+spellid;
+	}
+}
+function collection(product_id)
+{
+	if(is_login==0)
+	{
+		//window.location.href='/Member/Login?href={$info.id}';
+		window.location.href = "{:U('/Member/Login/index')}";
+	}
+	else
+	{
+		$.ajax({
+				//提交数据的类型 POST GET
+				type:"POST",
+				//提交的网址
+				url:"{:U('Product/addcollection')}",
+				//提交的数据
+				data:{'product_id':product_id},
+				//返回数据的格式
+				datatype: "json",//"xml", "html", "script", "json", "jsonp", "text".
+				//在请求之前调用的函数
+				//成功返回之后调用的函数             
+				success:function(json){
+					if(json.status<1)
+					{
+						$.toast(json.info,'cancel', function() {
+						});
+					}
+					else
+					{
+						$.toast(json.info, function() {
+							/*var cstr=$(".td03").html();
+							if(cstr.indexOf("cur")>=0){
+							}*/
+							$('.collect_btn').toggleClass("cur");
+						});
+					}
+				}
+			 });
+	}
+}
+			//点击nav li切换当前状态
+			$('#proDetailTop .top2 li').on('click',function(){
+				var index=$(this).index();
+				currPage=index;
+
+				$(this).addClass('active').siblings().removeClass('active');
+				$('#proDetailMain .contain > div').eq(currPage).css('display','block').siblings().css('display','none');
+				onload();
+			});
+
+
+			//评价
+			//当评价里面的数量超过999，则显示999+
+			var pingjiaSum=$('#proDetailMain .pingjia .top .all').text();
+			var pingjiaGood=$('#proDetailMain .pingjia .top .good').text();
+			var pingjiaBad=$('#proDetailMain .pingjia .top .bad').text();
+			if(pingjiaSum>999){
+				$('#proDetailMain .pingjia .top .all').text('999+');
+			}
+			if(pingjiaGood>999){
+				$('#proDetailMain .pingjia .top .good').text('999+');
+			}
+			if(pingjiaBad>999){
+				$('#proDetailMain .pingjia .top .bad').text('999+');
+			}
+
+			//切换评论 好评 差评
+			$('#proDetailMain .pingjia .top li').on('click',function(){
+				var currIndex=$(this).index();
+				currPagePj=currIndex;
+
+				$(this).addClass('active').siblings().removeClass('active');
+				$('#proDetailMain .four .main .contain > div').eq(currPagePj).css('display','block').siblings().css('display','none');
+				onload();
+			});
+
+			//tip
+			function tipFun(str){
+				$('.tip').text(str).css({
+					'opacity':'1',
+					'z-index':'9999'
+				});
+				setTimeout(function(){
+					$('.tip').css('opacity','0');
+					setTimeout(function(){
+						$('.tip').css('z-index','-1');
+					},300);
+				},1300);
+			}
+		</script>
+		<script>
+		//拼团时间 设置时间
+		var EndTimeStr=$('input[name="deadline"]').val();//从后台读取的时间截止的毫秒数 1478350790050 传ms数或者，这种格式的字符串都行
+		var EndTime= new Date(EndTimeStr);
+		function setPTtime(){
+		    var NowTime = new Date();
+		    var t =EndTime.getTime() - NowTime.getTime();
+		    var product_id={$info.id};
+		    var d=0;
+		    var h=0;
+		    var m=0;
+		    var s=0;
+		    if(t>=0){
+		      d=Math.floor(t/1000/60/60/24);
+		      h=Math.floor(t/1000/60/60%24);
+		      m=Math.floor(t/1000/60%60);
+		      s=Math.floor(t/1000%60);
+		    }else{
+		    	clearInterval(pt_timer);
+		    	$.ajax({
+		    		url: "{:U('endspell')}",
+		    		type: 'POST',
+		    		dataType: 'json',
+		    		data: {'product_id':product_id},
+		    		success:function(){
+		    			$('.mai').attr('disabled','ture');
+		    		}
+		    	})
+		    	
+		    	
+		    }
+		 	$('.ptline b i').text(d+'天'+h+'时'+m+'分'+s+'秒');
+	    }
+  		var pt_timer=setInterval(setPTtime,0);
+
+	</script>
+	</body>
+</html>							

@@ -1,0 +1,39 @@
+<extend name="Public/base"/>
+
+<block name="body">
+	<div class="main-title">
+		<h2>客服设置</h2>
+	</div>
+		<div class="tab-wrap">
+		<div class="tab-content">
+	<form action="{:U('index')}" method="post" class="form-horizontal">
+	
+		<div class="form-item">
+			<label class="item-label">客服QQ<span class="check-tips"></span> </label>
+			<div class="controls">
+			<input type="text" class="text input-middle" name="qq" value="{$info.qq}"/> 
+			</div>
+		</div>
+		<div class="form-item">
+			<label class="item-label">客服电话<span class="check-tips"></span> </label>
+			<div class="controls">
+			<input type="text" class="text input-middle" name="phone" value="{$info.phone}"/> 
+			
+			</div>
+		</div>
+		<div class="form-item">
+			<label class="item-label"></label>
+			<div class="controls">
+				<button type="submit" class="btn submit-btn ajax-post" target-form="form-horizontal">确 定</button>
+				
+				<!-- <button class="btn btn-return" onclick="javascript:history.back(-1);return false;">返 回</button> -->
+			</div>
+		</div>
+	</form>
+			</div>
+	</div>
+</block>
+
+<block name="script">
+
+</block>

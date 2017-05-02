@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>{:C('WEB_SITE_TITLE')}</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/zepto.js"></script>
+		<script src="__PUBLIC__/Home/js/delIOS_huitan.js"></script>
+		<include file="Public/weixin"/>
+	</head>
+	<body class="box">
+		<!--正文区域-->
+		<div id="fanliTop" class="topBackTitle">
+			<div class="contain maxWidth">
+				<a class="hz back" href="javascript:;">&#xe600;</a>{$news.title}
+			</div>
+		</div>
+		<div id="fanliMain" class="fastscroll fltgMain">
+			<if condition="($news['title'] eq '') or ($id eq 0) ">
+			<div style="color:#030303;text-align:center;padding:20px;">文章不存在</div>
+			<else/>
+			<div class="contain maxWidth" style="color:#5d5d5d;">
+				{$news.content}
+			</div>
+			</if>
+		</div>
+		<script>
+			//返回按钮
+			$('#fanliTop .back').on('tap',function(){
+				window.history.go(-1);
+			});
+		</script>
+	</body>
+</html>

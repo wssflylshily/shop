@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>性别</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/zepto.js"></script>
+<script src="__PUBLIC__/Home/js/jquery-1.8.3.min.js"></script>
+		<script src="__PUBLIC__/Home/js/delIOS_huitan.js"></script>
+	</head>
+	<body class="box">
+		<!--提示文字-->
+		<div class="tip" style="opacity: 0;z-index: -1"></div>
+		<!--正文区域-->
+		<div id="gerenGaiSexTop" class="topBackTitle">
+			<div class="contain maxWidth">
+				<a class="hz back" href="javascript:;">&#xe600;</a>性别<a href="javascript:;" class="save">保存</a>
+			</div>
+		</div>
+		<div id="gerenGaiSexMain" class="fastscroll top50bot0">
+			<div class="contain maxWidth">
+				<ul class="ullist1line">
+					<li>
+						<div class="left">男</div>
+						<div class="right">
+							<div class="circleGreen" style="display: none">
+								<span class="hz active">&#xe613;</span>
+							</div>
+						</div>
+					</li>
+					<li>
+						<div class="left">女</div>
+						<div class="right">
+							<div class="circleGreen" style="display: none">
+								<span class="hz active">&#xe613;</span>
+							</div>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+<input type="hidden" id="id" value="{$user.id}" />
+
+		<script>
+			//返回按钮
+			$('#gerenGaiSexTop .back').on('tap',function(){
+				//window.history.go(-1);
+				window.location.href='{:U('Index/baseinfo')}';
+			});
+
+			//tip
+			function tipFun(str){
+				$('.tip').text(str).css({
+					'opacity':'1',
+					'z-index':'9999'
+				});
+				setTimeout(function(){
+					$('.tip').css('opacity','0');
+					setTimeout(function(){
+						$('.tip').css('z-index','-1');
+					},300);
+				},1300);
+			}
+
+			//获取参数
+			var hrefstr=location.href;
+			if(hrefstr.indexOf('sex=')!=-1){
+				var num=hrefstr.substring(hrefstr.indexOf('sex=')+4);
+				$('#gerenGaiSexMain .ullist1line li').eq(num-1).find('.right .circleGreen').css('display','block');
+			}
+
+			//选择性别
+			var currSexNum=null;
+			$('#gerenGaiSexMain .ullist1line li').on('tap',function(){
+				$(this).siblings().find('.right .circleGreen').css('display','none');
+				$(this).find('.right .circleGreen').css('display','block');
+				currSexNum=$(this).index()+1;
+			});
+
+			//点击保存
+			$('#gerenGaiSexTop .save').on('tap',function(){
+				//保存操作
+				$.ajax({
+					//提交数据的类型 POST GET
+					type:"POST",
+					//提交的网址
+					url:"__URL__/save",
+					//提交的数据
+					data:{'sex':currSexNum,id:$('#id').val()},
+					//返回数据的格式
+					datatype: "json",//"xml", "html", "script", "json", "jsonp", "text".
+					//在请求之前调用的函数
+					//成功返回之后调用的函数             
+					success:function(json){
+						tipFun(json.info);
+					}     
+				 });
+
+				//跳转页面
+				//location.href='我的个人资料.html?sex='+currSexNum;
+			});
+		</script>
+	</body>
+</html>

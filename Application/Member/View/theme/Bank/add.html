@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>填写银行卡信息</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/zepto.js"></script>
+	</head>
+	<body>
+		<!--正文区域-->
+		<div id="editKaTop" class="topBackTitle">
+			<div class="contain maxWidth">
+				<a class="hz back" href="javascript:;">&#xe600;</a>填写银行卡信息
+			</div>
+		</div>
+		<div id="editKaMain" class="fastscroll top50bot0">
+			<div class="contain maxWidth">
+				<ul class="ullist1line">
+					<li>
+						<a href="javascript:;">
+							<div class="left">
+								<span class="title">持卡人</span><input type="text" placeholder="请输入持卡人" id="name">
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="javascript:;">
+							<div class="left">
+								<span class="title">卡号</span><input type="text" placeholder="请输入银行卡卡号" id="card_num">
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="__URL__/seltype">
+							<div class="left">
+								<span class="title">卡类型</span><span class="name kaname">{$typelist[0]['title']}</span>
+								<input type="hidden" id="type_id" value="{$typelist[0]['id']}" />
+							</div>
+							<div class="right">
+								<span class="hz">&#xe60c;</span>
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="javascript:;">
+							<div class="left">
+								<span class="title">手机号码</span><input type="tel" id="mobile" placeholder="请输入银行卡预留手机号">
+							</div>
+						</a>
+					</li>
+				</ul>
+				<a href="javascript:;" class="orangeBtn">确认</a>
+			</div>
+		</div>
+
+		<script>
+			//返回按钮
+			$('#editKaTop .back').on('tap',function(){
+				window.history.go(-1);
+			});
+
+			$('.orangeBtn').on('tap',function(){
+				//alert('a');
+				$.ajax({
+					type: "post",
+					dataType: "json",
+					url: "__URL__/insert",
+					data: {name:$('#name').val(),card_num:$('#card_num').val(),type_id:$('#type_id').val(),mobile:$('#mobile').val()},
+					success: function(json){
+						alert(json.info);
+						if(json.status==1)
+						{
+							window.location.href='/Member/Bank';
+						}
+					}
+				})
+			});
+
+			//判断当前页面是正常进入，还是选择了卡类型跳回的
+			//招商 1 花旗2 建设3 工商4 交通5 中国6 农业7 广发8 中信9 兴业10 民生11
+			var str=[null,'招商银行','花旗银行','建设银行','工商银行','交通银行','中国银行','农业银行','广发银行','中信银行','兴业银行','民生银行'];
+			var hrefstr=location.href;
+			if(hrefstr.indexOf('kaNum=')!=-1){//选择了卡类型跳回的
+				var num=hrefstr.substring(hrefstr.indexOf('kaNum=')+6);
+				$('#editKaMain .ullist1line li .left .kaname').text(str[num]);
+			}
+//			console.log(num);
+
+			//点击确认
+			$('#editKaMain .orangeBtn').on('tap',function(){
+				location.href='我的账户余额提现2选择卡类型.html';
+			});
+		</script>
+	</body>
+</html>

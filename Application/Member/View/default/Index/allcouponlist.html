@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>{:C('WEB_SITE_TITLE')}</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/zepto.js"></script>
+		<script src="__PUBLIC__/Home/js/iscroll-probe.js"></script>
+		<script src="__PUBLIC__/Home/js/delIOS_huitan.js"></script>
+		<style>
+			/*下拉加载样式*/
+			#wrapper {
+				position: absolute;
+				z-index: 1;
+				top: 0;
+				bottom: 0;
+				left: 0;
+				width: 100%;
+				overflow: hidden; 
+			}
+			#loadBin{color: #5d5d5d;text-align: center;line-height: 30px;}
+		</style>
+	</head>
+	<body class="box">
+		<!--提示文字-->
+		<div class="tip" style="opacity: 0;z-index: -1"></div>
+		
+		<!--正文区域-->
+		<div id="dingdanUseQuanTop" class="top1top2">
+			<div class="contain maxWidth">
+				<div class="top1">
+					<a class="hz back" href="javascript:history.go(-1);">&#xe600;</a>领取优惠券
+					<!-- <a href="javascript:;" class="lor">添加</a> -->
+				</div>
+			</div>
+		</div>
+		<div id="dingdanUseQuanMain" class="fastscroll top50bot0">
+			<div class="contain maxWidth">
+				<div id="wrapper">
+					<div class="maxWidth">
+						<!--未过期 已过期 公用一个ul-->
+						<ul class="list quancom">
+						<if condition="$list neq null">
+						<volist name="list" id="item">
+							<li>
+								<a href="javascript:;" onclick="javascript:getcoupon({$item.id});">
+									<div class="left">
+										<p class="title">{$item.title}</p>
+										<p class="info">使用期限 <span class="starttime">{$item.start_date}</span>-<span class="endtime">{$item.end_date}</span></p>
+									</div>
+									<div class="right">
+										<!-- 这块的类名是 area10 area20 area40 循环出现 三个是三种不同的颜色-->
+										<div class="area area10">
+											<span class="leftcircle circle"></span>
+											<span class="rightcircle circle"></span>
+											<p class="title">&yen;<span>{$item.money}</span></p>
+											<p class="info">{$item.desc}</p>
+										</div>
+									</div>
+								</a>
+							</li>
+						</volist>
+						<else/>
+						<div style="width: 100%;height: 100px;color: gray;text-align: center;margin-top: 100px;">暂无可领取的优惠券！！</div>
+						</if>
+						</ul>
+						<div id="loadBin"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			function getcoupon(id){
+				$.ajax({
+					url: "{:U('addcouponlist')}",
+					type: 'POST',
+					dataType: 'json',
+					data: {id:id},
+					success:function(data){
+						tipFun(data.info);
+					}
+				});
+				
+			}
+			
+			//iscroll 下拉加载+zeptoajax
+			/*function onload(){
+				loadBin = document.getElementById("loadBin");
+				myScroll = new IScroll('#wrapper',{
+					probeType: 3,
+					click:true
+				});
+				myScroll.on("scroll",scrollFun);
+				myScroll.on("scrollEnd",scrollEndFun);
+			}
+
+			var page=1;
+			var myScroll,
+					loadBin,
+					isload = false,
+					scrollFun = function(){
+						if((this.y - this.maxScrollY)>>0 < -50){
+							isload = true;
+							loadBin.innerHTML = "松开手指加载更多";
+							myScroll.refresh();
+							myScroll.off("scroll",scrollFun);
+						}
+					},
+					scrollEndFun = function(){
+						if(isload){
+							isload = false;
+							//我的优惠券未过期
+							if(currIndex==0){
+								$.ajax({
+									type: 'GET',
+									url: 'data/我的优惠券未过期.html',
+									dataType: 'json',
+									success: function(data){
+										page++;
+										for(var i=0;i<data.lists.length;i++){
+											$('#wrapper .list').append('<li><a href="javascript:;"><div class="left"><p class="title">'+data.lists[i].title+'</p><p class="info">使用期限<span class="starttime">'+data.lists[i].starttime+'</span>-<span class="endtime">'+data.lists[i].endtime+'</span></p></div><div class="right"><div class="area '+data.lists[i].class+'"><span class="leftcircle circle"></span><span class="rightcircle circle"></span><p class="title">&yen;<span>'+data.lists[i].quanMoney+'</span></p><p class="info">满&yen;<span>'+data.lists[i].manMoney+'</span>使用</p></div></div></a></li>');
+										}
+										loadBin.innerHTML = "";
+										myScroll.on("scroll",scrollFun);
+										myScroll.refresh();
+									},
+									error: function(xhr, type){
+										console.log('Ajax error!');
+									}
+								});
+							}else if(currIndex==1){
+								//我的优惠券已过期
+								$.ajax({
+									type: 'GET',
+									url: 'data/我的优惠券已过期.html',
+									dataType: 'json',
+									success: function(data){
+										page++;
+										for(var i=0;i<data.lists.length;i++){
+											$('#wrapper .list').append('<li><a href="javascript:;"><div class="left"><p class="title">'+data.lists[i].title+'</p><p class="info">使用期限<span class="starttime">'+data.lists[i].starttime+'</span>-<span class="endtime">'+data.lists[i].endtime+'</span></p></div><div class="right"><div class="area '+data.lists[i].class+'"><span class="leftcircle circle"></span><span class="rightcircle circle"></span><p class="title">&yen;<span>'+data.lists[i].quanMoney+'</span></p><p class="info">满&yen;<span>'+data.lists[i].manMoney+'</span>使用</p></div></div></a></li>');
+										}
+										loadBin.innerHTML = "";
+										myScroll.on("scroll",scrollFun);
+										myScroll.refresh();
+									},
+									error: function(xhr, type){
+										console.log('Ajax error!');
+									}
+								});
+							}
+						}
+					};*/
+
+			//tip
+			function tipFun(str){
+				$('.tip').text(str).css({
+					'opacity':'1',
+					'z-index':'9999'
+				});
+				setTimeout(function(){
+					$('.tip').css('opacity','0');
+					setTimeout(function(){
+						$('.tip').css('z-index','-1');
+					},300);
+				},1300);
+			}
+		</script>
+
+	</body>
+</html>
+

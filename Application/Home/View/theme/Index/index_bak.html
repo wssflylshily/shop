@@ -1,0 +1,202 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>{:C('WEB_SITE_TITLE')}</title>
+<meta name="description" content="{:C('WEB_SITE_DESCRIPTION')}" />
+<meta name="keywords" content="{:C('WEB_SITE_KEYWORD')}" />
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, width=device-width">
+<link href="__PUBLIC__/Home/css/weui.min.css" rel="stylesheet" />
+<link href="__PUBLIC__/Home/css/jquery-weui.css" rel="stylesheet" />
+<link href="__PUBLIC__/Home/css/swiper.min.css" rel="stylesheet" />
+<link href="__PUBLIC__/Home/css/common.css" rel="stylesheet" />
+<link href="__PUBLIC__/Home/css/style.css" rel="stylesheet" />
+<script src="__PUBLIC__/Home/js/jquery-1.8.3.min.js"></script>
+<script src="__PUBLIC__/Home/js/common.js"></script>
+<script src="__PUBLIC__/Home/js/swiper-3.3.1.jquery.min.js"></script>
+<script>
+$(function(){
+	var mySwiper = new Swiper ('.swiper-container', {
+		direction: 'horizontal',
+		loop: true,
+		autoplay : 3000,
+		autoplayDisableOnInteraction : false,
+		// 如果需要分页器
+		pagination: '.swiper-pagination',
+	  });
+
+	$(".sort .btn").click(function(){
+		$(this).next().toggle();
+	});
+	$(".sort_kind ul li").click(function(){
+		var html=$(this).html();
+		$(this).parents(".sort_kind").hide();
+		$(this).parents(".sort_kind").prev().html(html);
+		if(html=='综合排序')
+		{
+			order=0;
+		}
+		if(html=='销量最高')
+		{
+			order=1;
+		}
+		if(html=='好评最多')
+		{
+			order=2;
+		}
+		$.ajax({
+			url:"{:U('Index/ajaxlist')}",
+			data:{page:1,order:order},
+			error: function(){
+				wrx_alert("访问超时!");
+			},
+			dataType: 'json',
+			success:function(data){
+				var str='';
+				for( var i=0;i<data.length;i++)
+				{
+					str+='<li><a href="/Product/detail/id/'+data[i].id+'" class="clear">';
+					str+='<div class="img_div img_w l"><img src="'+data[i].image+'" /></div>';
+					str+='<div class="font_div r">';
+					str+='<h2>'+data[i].title+'</h2>';
+					str+='<ol class="clear"><span class="l s01">￥'+data[i].gprice+'</span><span class="r s03">已售<i>'+data[i].sell_num+'</i>件</span>';
+					str+='</ol></div></a></li>';
+				}
+				$("#p_list").html(str);
+			}
+		});
+	});
+})
+</script>
+</head>
+<body>
+<!--top-->
+<div class="g_wrap top">
+	<table>
+    	<tr>
+        	<td class="td01"><a href="{:U('Product/catelist')}"><img src="__PUBLIC__/Home/images/icon_03.png" class="img1" /></a></td>
+            <td class="td02">龙驰网信商城</td>
+            <td class="td03">&nbsp;</td>
+        </tr>
+    </table>
+</div>
+<!--content-->
+<div class="container g_wrap">
+    <!--搜索-->
+    <div class="weui_search_bar" id="search_bar">
+      <form class="weui_search_outer">
+        <div class="weui_search_inner">
+          <i class="weui_icon_search"></i>
+          <input type="search" class="weui_search_input" id="search_input" placeholder="搜索" required/>
+          <a href="javascript:" class="weui_icon_clear" id="search_clear"></a>
+        </div>
+        <label for="search_input" class="weui_search_text" id="search_text">
+          <i class="weui_icon_search"></i>
+          <span>搜索</span>
+        </label>
+      </form>
+      <a href="javascript:" class="weui_search_cancel" id="search_cancel">取消</a>
+    </div>
+    <!--banner-->
+    <div class="swiper-container g_wrap">
+        <div class="swiper-wrapper">
+			<volist name=":getfocus(1)" id="item">
+            <div class="swiper-slide"><a href='{$item.link_url}'><img src="{$item.image}" /></a></div>
+			</volist>
+        </div>
+        <!-- 如果需要分页器 -->
+        <div class="swiper-pagination"></div>
+    </div>
+    <!--热搜分类-->
+    <h2 class="index_h2">热搜分类</h2>
+    <div class="index_hot com_div">
+    	<ul class="clear">
+			<volist name="catelist" id="item">
+        	<li class="l col-sm-3"><a href="{:U('Product/index',array('id'=>$item['id']))}" class="a0{$key+1}">{$item.title}</a></li>
+			</volist>
+        </ul>
+    </div>
+    <h2 class="index_h2 clear">推荐商品
+    	<div class="sort r">
+            <a class="btn">综合排序</a>
+            <div class="sort_kind">
+                <ul>
+                    <li>销量最高</li>
+                    <li>好评最多</li>
+                    <li>综合排序</li>
+                </ul>
+            </div>
+        </div>
+    </h2>
+    <div class="pro_div">
+    	<ul id="p_list">
+			<volist name="productlist" id="item">
+        	<li>
+            	<a href="{:U('Product/detail',array('id'=>$item['id']))}" class="clear">
+                	<div class="img_div img_w l"><img src="{$item.image}" /></div>
+                    <div class="font_div r">
+                    	<h2>{$item.title}</h2>
+                        <ol class="clear">
+                        	<span class="l s01">￥
+							<if condition="$is_vip eq 1">
+							{$item.gvipprice}
+							<else />
+							{$item.gprice}
+							</if>
+							</span><span class="l s02">￥{$item.market_price}</span><span class="r s03">已售<i>{$item.sell_num}</i>件</span>
+                        </ol>
+                    </div>
+                </a>
+            </li>
+			</volist>
+        </ul>
+    </div>
+    <div class="weui-infinite-scroll">
+      <div class="infinite-preloader"></div>
+      正在加载
+    </div>
+</div>
+
+<include file="Public/footer"/>
+<script>
+var page=1;
+var loading = false;
+var order=0;
+$(document.body).infinite().on("infinite", function() {
+	if(loading) return;
+	loading = true;
+	setTimeout(function() {
+		page++;
+		$.ajax({
+			url:"{:U('Index/ajaxlist')}",
+			data:{page:page,order:order},
+			error: function(){
+				wrx_alert("访问超时!");
+			},
+			dataType: 'json',
+			success:function(data){
+				var str='';
+				for( var i=0;i<data.length;i++)
+				{
+					str+='<li><a href="#" class="clear">';
+					str+='<div class="img_div img_w l"><img src="__PUBLIC__/Home/images/icon_25.png" /></div>';
+					str+='<div class="font_div r">';
+					str+='<h2>无线路由器四天线wifi穿墙王300M</h2>';
+					str+='<ol class="clear"><span class="l s01">￥200</span><span class="r s03">已售<i>291</i>件</span>';
+					str+='</ol></div></a></li>';
+				}
+				$("#p_list").append(str);
+				if(data.length<1)
+				{
+					$('.weui-infinite-scroll').remove();
+				}
+				//$sort_name.html(html);
+			}
+		});
+	  /*$("#p_list").append("<li><a href='#' class='clear'><div class='img_div img_w l'><img src='__PUBLIC__/Home/images/icon_25.png' /></div><div class='font_div r'><h2>无线路由器四天线wifghi穿墙王300M</h2><ol class='clear'><span class='l s01'>￥200</span><span class='r s03'>已售<i>291</i>件</span></ol></div></a></li>");*/
+	  
+	  loading = false;
+	}, 2000);
+});
+</script>

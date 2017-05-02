@@ -1,0 +1,112 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>龙驰网信</title>
+<meta name="description" content="龙驰网信" />
+<meta name="keywords" content="龙驰网信" />
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, width=device-width">
+<link href="__PUBLIC__/Home/css/weui.min.css" rel="stylesheet" />
+<link href="__PUBLIC__/Home/css/jquery-weui.css" rel="stylesheet" />
+<link href="__PUBLIC__/Home/css/common.css" rel="stylesheet" />
+<link href="__PUBLIC__/Home/css/style.css" rel="stylesheet" />
+<script src="__PUBLIC__/Home/js/jquery-1.8.3.min.js"></script>
+<script src="__PUBLIC__/Home/js/common.js"></script>
+<script>
+$(function(){
+	$("#scbsm").click(function(){
+		$(".boxshadow").show();
+		$(".boxcontent").show();
+	});
+	$(".boxshadow").click(function(){
+		$(".boxshadow").hide();
+		$(".boxcontent").hide();
+	});
+	$(".gold_ul li").click(function(){
+		$(this).addClass("cur").siblings().removeClass("cur");
+		var $gold_list=$(".gold_list");
+		var html="";
+		$.ajax();
+	});
+})
+</script>
+</head>
+<body>
+<!--top-->
+<div class="g_wrap top">
+	<table>
+    	<tr>
+        	<td class="td01"><a href="/Member"><img src="__PUBLIC__/Home/images/icon1_03.png" class="img2" /></a></td>
+            <td class="td02">商城币</td>
+            <td class="td03">&nbsp;</td>
+        </tr>
+    </table>
+</div>
+<!--content-->
+<div class="container g_wrap"> 
+	<div class="gold_title clear">
+    	<div class="intro"><span id="scbsm"><img src="__PUBLIC__/Home/images/gold_03.png" width="16" />商城币说明</span></div>
+        <div class="img_div l"><img src="__PUBLIC__/Home/images/gold_07.png" width="70" /></div>
+        <div class="font_div r">
+        	<h2>总金额</h2>
+            <h3><span>{$row.integral}</span><a href="{:U('Member/Index/addshopmoney')}">充值</a></h3>
+        </div>
+    </div>
+    <ul class="gold_ul clear">
+    	<li data-id="1" class="cur"><a href='{:U('Index/shopmoney')}'>全部</a></li>
+        <li data-id="2"><a href='{:U('Index/shopmoney',array('type'=>0))}'>收入</a></li>
+        <li data-id="3"><a href='{:U('Index/shopmoney',array('type'=>1))}'>支出</a></li>
+    </ul>
+    <!--全部-->
+    <div class="gold_list">
+    	<ul>
+			<volist name="list" id="item">
+            <li class="clear">
+            	<div class="time_div l">{$item.addtime|date="Y-m-d",###}</div>
+                <div class="title_div l">
+				<if condition="$item['title'] eq null">
+				充值VIP会员
+				<else />
+				{$item.title}
+				</if>
+				</div>
+                <div class="pay_many r in">
+				<if condition="$item['type'] eq 0">
+				+
+				<else />
+				-
+				</if>
+				{$item.money}</div>
+            </li>
+			</volist>
+        </ul>
+    </div>
+</div>
+<!--boxshadow-->
+<div class="boxshadow"></div>
+<div class="boxcontent">
+	<h2 class="h2">商城币说明</h2>
+    <div>
+    	<p>一、商城币获取方式：
+1. 通过充值获取，每1元可兑换100商城币；
+2. 通过购买商品获取，每消费100元可获得1商城币；
+3. 通过升级VIP会员获得商城币；
+二、商城币的使用方式：
+1. 商城币在购买商品时可用于抵用商品价格，每100商城币相当于1元；
+2. 商城币只可用作购买商品用，不能取现。
+三、商城币使用方法最终解释权归天津龙驰网信科技有限公司所有。一、商城币获取方式：
+1. 通过充值获取，每1元可兑换100商城币；
+2. 通过购买商品获取，每消费100元可获得1商城币；
+3. 通过升级VIP会员获得商城币；
+二、商城币的使用方式：
+1. 商城币在购买商品时可用于抵用商品价格，每100商城币相当于1元；
+2. 商城币只可用作购买商品用，不能取现。
+三、商城币使用方法最终解释权归天津龙驰网信科技有限公司所有。</p>
+    </div>
+</div>
+<script src="__PUBLIC__/Home/js/jquery-2.1.4.js"></script>
+<script src="__PUBLIC__/Home/js/jquery-weui.js"></script>
+
+</body>
+</html>

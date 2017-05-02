@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html style="max-width:720px;min-height:100%;">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>{:C('WEB_SITE_TITLE')}</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css" />
+		<script src="__PUBLIC__/Home/js/zepto.js"></script>
+		<script src="__PUBLIC__/Home/js/common.js"></script>
+		<script src="__PUBLIC__/Home/js/delIOS_huitan.js"></script>
+		<script>
+$(function(){
+	$(".submitbtn").click(function() {
+        /*$.toast("登录成功", function() {
+          console.log('close');
+        });*/
+		//提示消失后点击成功
+		if($('.tip').css('z-index')==-1){
+			var tel=$('#login_user').val();
+			var pwd=$('#login_pass').val();
+			var code=$('#code').val();
+
+			if(!notEmpty(tel)){
+				tipFun('请输入手机号');
+				$('#login_user').val('');
+				return;
+			}
+			if(!checkTel(tel)){
+				tipFun('请输入有效的手机号码');
+				return;
+			}
+			if(!notEmpty(pwd)){
+				tipFun('请输入密码');
+				$('#login_pass').val('');
+				return;
+			}
+			if(!notEmpty(code)){
+				tipFun('请输入验证码');
+				$('#code').val('');
+				return;
+			}
+			
+			$.ajax({
+				type: "post",
+				dataType: "json",
+				url: "__URL__/index",
+				data: {login_user:$('#login_user').val(),login_pass:$('#login_pass').val(),code:$('#code').val()},
+				success: function(json){
+					if(json.status<1)
+					{
+						//$.toast(json.info,'cancel', function() {
+						//});
+						tipFun(json.info);
+					}
+					else
+					{
+						//$.toast(json.info, function() {
+						//window.location.href='/Member';
+						//});
+						window.location.href = json.url;
+					}
+				}
+			})
+		}
+    })
+})
+</script>
+		<script>
+		function verifycode()
+		{
+			var verifysrc='__URL__/verify&rand='+Math.random();
+			$('#verify_code').attr('src',verifysrc);
+		}
+		</script>
+	</head>
+	<body style="max-width:720px;min-height: 100%;" class="box">
+		<!--提示文字-->
+		<div class="tip" style="opacity: 0;z-index: -1"></div>
+		<!--正文区域-->
+		<div id="loginMain" class="lzMain maxWidth fastscroll">
+			<img src="__PUBLIC__/Home/img/logo2.png" class="top"/>
+			<div class="middle">
+				<div class="phone inputArea">
+					<span>手机号</span><input type="tel" placeholder="请输入手机号" id="login_user"/>
+				</div>
+				<div class="key inputArea">
+					<span>密码</span><input type="password" placeholder="请输入密码" id="login_pass"/>
+				</div>
+				<div class="ma inputArea">
+					<span>验证码</span><input type="text" placeholder="请输入验证码" id="code"/><img src="__URL__/verify" id="verify_code" onclick="verifycode()"/>
+				</div>
+				<div class="zhuceArea">
+					<a href="{:U('/Home/Reg/index')}" class="zhuce">注册</a>
+					<!-- <a href="{:U('Login/password1')}" class="wangji">忘记密码?</a> -->
+				</div>
+				<a href="javascript:;" class="submitbtn">登录</a>
+			</div>
+			<div class="bot">
+				<div class="title">
+					<div class="linel"></div>
+					<span>第三方账户快速登录</span>
+					<div class="liner"></div>
+				</div>
+				<div class="btns">
+					<p style="width:100%">
+						<a href="{$reurl}" class="weixin">
+							<img src="__PUBLIC__/Home/img/login/weixin.png" />
+						</a>
+					</p>
+				
+				</div>
+			</div>
+		</div>
+		
+		<script>
+			//tip
+			function tipFun(str){
+				$('.tip').text(str).css({
+					'opacity':'1',
+					'z-index':'9999'
+				});
+				setTimeout(function(){
+					$('.tip').css('opacity','0');
+					setTimeout(function(){
+						$('.tip').css('z-index','-1');
+					},300);
+				},1300);
+			}
+		</script>
+	</body>
+</html>

@@ -1,0 +1,64 @@
+<extend name="Public/base"/>
+
+<block name="body">
+	<script type="text/javascript" src="__STATIC__/uploadify/jquery.uploadify.min.js"></script>
+	<div class="main-title">
+		<h2>基本配置</h2>
+	</div>
+	<div class="tab-wrap">
+		<div class="tab-content">
+			<form action="" method="post" class="form-horizontal" enctype="multipart/form-data">
+				<!-- 基础 -->
+				<div id="tab1" class="tab-pane in tab1">
+					<div class="form-item">
+						<label class="item-label">
+							金额(元)<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+							<input type="text" name="vipprice" class="text" value="{$row.vipprice}"><span class="check-tips">(充值多少元成为VIP)</span>
+						</div>
+						<label class="item-label">
+							100商城币等于多少人民币<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+							<input type="text" name="rate" class="text" value="{$row.rate}"><span class="check-tips"></span>
+						</div>
+						<label class="item-label">
+							返还的商城币比例<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+							<input type="text" name="product_rate" class="text" value="{$row.product_rate}"><span class="check-tips"></span>
+						</div>
+						<label class="item-label">
+							QQ<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+							<input type="text" name="qq" class="text" value="{$row.qq}"><span class="check-tips"></span>
+						</div>
+						<!--
+						<label class="item-label">
+							运费<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+							<input type="text" name="freight" class="text" value="{$row.freight}"><span class="check-tips"></span>
+						</div>
+						<label class="item-label">
+							增加<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+							<input type="text" name="addnum" class="text" value="{$row.addnum}"><span class="check-tips">件增加<input type="text" name="addprice" class="text" value="{$row.addprice}">元</span>
+						</div>
+						-->
+					</div>
+				</div>
+
+				<div class="form-item">
+					<input type="hidden" name="__forward__" class="text input-large" value="{$__forward__}">
+					<input type="hidden" name="position_id" class="text input-large" value="{$Think.get.hid}"><span class="check-tips"></span>
+					<button type="submit" id="submit" class="btn submit-btn ajax-post" target-form="form-horizontal">确 定</button>
+					<button class="btn btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</block>

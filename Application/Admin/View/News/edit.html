@@ -1,0 +1,205 @@
+<extend name="Public/base"/>
+<block name="script">
+<script charset="utf-8" src="/Public/static/kindeditor/kindeditor-min.js"></script>
+<script charset="utf-8" src="/Public/static/kindeditor/zh_CN.js"></script>
+<script type="text/javascript">
+//导航高亮
+highlight_subnav("{:U('News/index')}");
+	var editor_content;
+	KindEditor.ready(function(K) {
+		editor_content = K.create('textarea[name="content"]', {
+			allowFileManager : false,
+			themesPath: K.basePath,
+			width: '100%',
+			height: '500px',
+			resizeType: 1,
+			pasteType : 2,
+			urlType : 'absolute',
+			fileManagerJson : '/admin.php?s=/Article/fileManagerJson.html',
+			//uploadJson : '/admin.php?s=/Article/uploadJson.html' }
+			uploadJson : '/admin.php?s=/Addons/execute/_addons/EditorForAdmin/_controller/Upload/_action/ke_upimg.html',
+			afterBlur: function () { this.sync(); }
+		});
+	});
+	KindEditor.ready(function(K) {
+		editor_content = K.create('textarea[name="en_content"]', {
+			allowFileManager : false,
+			themesPath: K.basePath,
+			width: '100%',
+			height: '500px',
+			resizeType: 1,
+			pasteType : 2,
+			urlType : 'absolute',
+			fileManagerJson : '/admin.php?s=/Article/fileManagerJson.html',
+			//uploadJson : '/admin.php?s=/Article/uploadJson.html' }
+			uploadJson : '/admin.php?s=/Addons/execute/_addons/EditorForAdmin/_controller/Upload/_action/ke_upimg.html',
+			afterBlur: function () { this.sync(); }
+		});
+	});
+
+	$(function(){
+		//传统表单提交同步
+		$('textarea[name="content"]').closest('form').submit(function(){
+			editor_content.sync();
+		});
+		$('textarea[name="en_content"]').closest('form').submit(function(){
+			editor_content.sync();
+		});
+		//ajax提交之前同步
+		$('button[type="submit"],#submit,.ajax-post,#autoSave').click(function(){
+			editor_content.sync();
+		});
+	})
+
+</script>
+<link rel="stylesheet" href="/Public/static/kindeditor/default/default.css" />
+</block>
+
+<block name="body">
+
+<link href="__STATIC__/datetimepicker/css/datetimepicker.css" rel="stylesheet" type="text/css">
+<php>if(C('COLOR_STYLE')=='blue_color') echo '<link href="__STATIC__/datetimepicker/css/datetimepicker_blue.css" rel="stylesheet" type="text/css">';</php>
+<link href="__STATIC__/datetimepicker/css/dropdown.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="__STATIC__/datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript" src="__STATIC__/datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+<script type="text/javascript">
+
+$('#submit').click(function(){
+    $('#form').submit();
+});
+
+$(function(){
+    $('.date').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language:"zh-CN",
+        minView:2,
+        autoclose:true
+    });
+    $('.time').datetimepicker({
+        format: 'yyyy-mm-dd hh:ii',
+        language:"zh-CN",
+        minView:2,
+        autoclose:true
+    });
+    showTab();
+
+});
+</script>
+	<script type="text/javascript" src="__STATIC__/uploadify/jquery.uploadify.min.js"></script>
+	<div class="main-title">
+		<h2>编辑文档</h2>
+	</div>
+	<div class="tab-wrap">
+		<div class="tab-content">
+			<form action="__URL__/update" method="post" class="form-horizontal" enctype="multipart/form-data">
+				<!-- 基础 -->
+				<div id="tab1" class="tab-pane in tab1">
+					<div class="form-item">
+						<input type="hidden" name="id" value="{$vo.id}" />
+						 <label class="item-label">
+							标题<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+							<input type="text" name="title" class="text input-large" value="{$vo.title}"><span class="check-tips">（标题不能为空）</span>
+						</div>
+						<label class="item-label">
+							描述<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+							<textarea name="desc" cols="100" rows="6">{$vo.desc}</textarea><span class="check-tips"></span>
+						</div>
+						<!--<label class="item-label">
+							所属分类
+						</label>
+						<div class="controls">
+							{$type_id_option}
+						</div>
+						<label class="item-label">
+							关键词<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+							<input type="text" name="keywords" class="text input-large" value="{$vo.keywords}"><span class="check-tips">（关键词不能为空）</span>
+						</div>
+						<label class="item-label">
+							图片（推荐尺寸110px*110px）<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+							<div class="controls">
+								<input type="file" id="z_image">
+								<input type="hidden" name="image" id="image_id" value="{$vo.image}"/>
+								<div class="upload-img-box">
+									<div class="upload-pre-item"><img src="{$vo.image}"/></div>
+								</div>
+							</div>
+							<script type="text/javascript">
+								//上传图片
+							    /* 初始化上传插件 */
+								$("#z_image").uploadify({
+							        "height"          : 30,
+							        "swf"             : "/Public/static/uploadify/uploadify.swf",
+							        "fileObjName"     : "download",
+							        "buttonText"      : "上传图片",
+							        "uploader"        : "/admin.php?s=/File/uploadPicture/session_id/{:session_id()}",
+							        "width"           : 120,
+							        'removeTimeout'	  : 1,
+							        'fileTypeExts'	  : '*.jpg; *.png; *.gif;',
+							        "onUploadSuccess" : z_image_id,
+							        'onFallback' : function() {
+							            alert('未检测到兼容版本的Flash.');
+							        }
+							    });
+								function z_image_id(file, data){
+							    	var data = $.parseJSON(data);
+							    	var src = '';
+							        if(data.status){
+							        	$("#image_id").val(data.path);
+							        	src = data.url || '' + data.path
+							        	$("#image_id").parent().find('.upload-img-box').html(
+							        		'<div class="upload-pre-item"><img src="' + src + '"/></div>'
+							        	);
+							        } else {
+							        	updateAlert(data.info);
+							        	setTimeout(function(){
+							                $('#top-alert').find('button').click();
+							                $(that).removeClass('disabled').prop('disabled',false);
+							            },1500);
+							        }
+							    }
+								</script>
+						</div>
+						<label class="item-label">
+							发布日期<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+							<input type="text" name="fb_date" class="text input-large date" value="{$vo.fb_date}"><span class="check-tips"></span>
+						</div>
+						<label class="item-label">
+							来源<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+							<input type="text" name="source" class="text input-large" value="{$vo.source}"><span class="check-tips"></span>
+						</div>
+						<label class="item-label">
+							浏览量<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+							<input type="text" name="views" class="text input-large" value="{$vo.views}"><span class="check-tips"></span>
+						</div> -->
+						<label class="item-label">
+							内容<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+							<textarea name="content">{$vo.content}</textarea>
+						</div>
+					</div>
+				</div>
+
+				<div class="form-item">
+					<button type="submit" id="submit" class="btn submit-btn ajax-post" target-form="form-horizontal">确 定</button>
+					<button class="btn btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</block>
+

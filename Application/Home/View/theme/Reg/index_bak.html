@@ -1,0 +1,279 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>{:C('WEB_SITE_TITLE')}</title>
+<meta name="description" content="{:C('WEB_SITE_DESCRIPTION')}" />
+<meta name="keywords" content="{:C('WEB_SITE_KEYWORD')}" />
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, width=device-width">
+<link href="__PUBLIC__/Home/css/weui.min.css" rel="stylesheet" />
+<link href="__PUBLIC__/Home/css/jquery-weui.css" rel="stylesheet" />
+<link href="__PUBLIC__/Home/css/common.css" rel="stylesheet" />
+<link href="__PUBLIC__/Home/css/style.css" rel="stylesheet" />
+<script src="__PUBLIC__/Home/js/jquery-1.8.3.min.js"></script>
+<script src="__PUBLIC__/Home/js/common.js"></script>
+<script>
+function verifycode()
+{
+	var verifysrc='__URL__/verify&rand='+Math.random();
+	$('#verify_code').attr('src',verifysrc);
+}
+function sendsms()
+{
+	$.ajax({
+		type: "post",
+		dataType: "json",
+		url: "__URL__/sendsms",
+		data: {mobile:$('#login_user').val()},
+		success: function(json){
+			if(json.status<1)
+			{
+				$.toast(json.info,'cancel', function() {
+				});
+			}
+			else
+			{
+				$('#successsms').val(json.info);
+			}
+		}
+	})
+}
+$(function(){
+	$('#sendyzm').click(function(){
+		var login_pass	=	$('#login_pass').val();
+		var myreg = /^(((13[0-9]{1})|(15[0-9]{1})|(18[0-9]{1}))+\d{8})$/; 
+		if($('#login_user').val()=='')
+		{
+			alert('请输入手机号');
+			$('#login_user').val('');
+			$('#login_user').focus();			
+		}
+		else if(!myreg.test($('#login_user').val())) 
+        { 
+			alert('请输入有效的手机号码！'); 
+			$('#login_user').focus();
+        }
+		else
+		{
+			
+		}
+	});
+	$(".show_box").click(function(){
+		$(".boxshadow").show();
+		$(".boxcontent").show();
+			
+	});
+	$(".boxshadow,.close_yz").click(function(){
+		$(".boxshadow").hide();
+		$(".boxcontent").hide();
+		$(".diolog").hide();
+	});
+	
+	$("#sendyzm").click(function(){
+		var myreg = /^(((13[0-9]{1})|(15[0-9]{1})|(18[0-9]{1}))+\d{8})$/;
+		if($('#login_user').val()=='')
+		{
+		}
+		else if(!myreg.test($('#login_user').val())) 
+        { 
+        }
+		else
+		{
+			//$(".boxshadow").show();
+			$(".diolog").show();
+		}
+	});
+	
+	$(".senda_yzm").click(function(){
+		//检测验证码
+		$.ajax({
+			type: "post",
+			dataType: "json",
+			url: "__URL__/checkcode",
+			data: {code:$('#code').val()},
+			success: function(json){
+				if(json.status<1)
+				{
+					$.toast('验证码错误','cancel', function() {
+					});
+				}
+				else
+				{
+					$.toast('已经发送验证码', function() {
+						sendsms();
+						$(".diolog").hide();
+						//window.location.href='/Member';
+					});
+				}
+			}
+		})
+	});
+	
+	$(".show-toast").click(function() {
+        /*$.toast("注册成功", function() {
+          console.log('close');
+        });*/
+		//alert($('#readdesc').is(':checked'));
+		var login_pass	=	$('#login_pass').val();
+		var repassword	=	$('#repassword').val();
+		var myreg = /^(((13[0-9]{1})|(15[0-9]{1})|(18[0-9]{1}))+\d{8})$/; 
+		if($('#login_user').val()=='')
+		{
+			alert('请输入手机号');
+			$('#login_user').val('');
+			$('#login_user').focus();
+			return false;
+		}
+		else if(!myreg.test($('#login_user').val())) 
+        { 
+			alert('请输入有效的手机号码！'); 
+			$('#login_user').focus();
+			return false; 
+        }
+		else if($('#sms').val()=='')
+		{
+			alert('请输入验证码!');
+			return false;
+		}
+		else if($('#sms').val()!=$('#successsms').val())
+		{
+			alert('验证码不正确'+$('#sms').val());
+			return false;
+		}
+		else if(login_pass.length<6)
+		{
+			alert('密码不能小于6位');
+			$('#login_pass').focus();
+			return false;
+		}
+		else if(login_pass!=repassword)
+		{
+			alert('两次密码不一致')
+			return false;
+		}
+		else if(!$('#readdesc').is(':checked'))
+		{
+			alert('请阅读服务条款')
+			return false;
+		}
+		else
+		{
+			$.ajax({
+				type: "post",
+				dataType: "json",
+				url: "__URL__/index",
+				data: {login_user:$('#login_user').val(),login_pass:login_pass,repassword:repassword,sms:$('#sms').val()},
+				success: function(json){
+					if(json.status==1)
+					{
+						$.toast(json.info, function() {
+							window.location.href='/Member';
+						});
+					}
+					else
+					{
+						$.toast(json.info,'cancel', function() {
+						});
+					}
+				}
+			})
+		}
+	})
+})
+</script>
+</head>
+<body style="background:#fff;">
+<!--top-->
+<div class="g_wrap top">
+	<table>
+    	<tr>
+        	<td class="td01"><a href="javascript:history.go(-1);"><img src="__PUBLIC__/Home/images/icon1_03.png" class="img2" /></a></td>
+            <td class="td02">注册会员</td>
+            <td class="td03"><a href="/Member/Login">登录</a></td>
+        </tr>
+    </table>
+</div>
+<!--content-->
+<div class="container g_wrap">    
+    <div class="login_div">
+    	<div style="height:255px;">    	
+        <table class="tablea">        	
+            <tr>
+            	<td width="20%" class="td01">手机号</td><td><input type="text" name="login_user" class="inp inpa eject" id="login_user" placeholder="请在此输入手机号" /></td>
+
+            </tr>
+            
+            <tr>
+            	<td width="20%" class="td01">验证码</td><td><input type="text" name="name" class="inp inpa w1 eject" id="sms" placeholder="请在此输入验证码" /><a href="javascript:;" class="senda" id="sendyzm">获取验证码</a></td>
+            </tr>   
+
+			<input type="hidden" id="successsms" value="" />
+
+            <tr>
+
+
+            	<td class="td01">密 码</td><td><input type="password" name="login_pass" id="login_pass" class="inp inpa eject" placeholder="请在此输入密码" /></td>
+            </tr>
+            <tr>
+            	<td class="td01">密 码</td><td><input type="password" name="repassword" id="repassword" class="inp inpa eject" placeholder="请再次输入密码" /></td>
+            </tr>
+			
+        </table>
+        <div class="read_div"><input type="checkbox" class="checkbox_btn" id='readdesc' /><a href="javascript:;" class="show_box">我已经阅读《龙驰合作社服务条款》</a></div>
+        </div>
+        <div class="login_btn"><a href="#" class="inp_btn show-toast">确认注册</a></div>
+        <!--<div class="login_sign"></div>-->
+    </div>
+</div>
+<!--协议-->
+<div class="boxshadow"></div>
+<div class="boxcontent">
+	<p align="center">注册协议</p>
+	<p style="text-indent:2em;">龙驰合作社网站有权根据需要不时地制订、修改本协议或各类规则，并以网站公示的方式进行公告，不再单独通知您。修订后的协议或将来可能发布或更新的各类规则一经在网站公布后，立即自动生效。如您不同意相关修订，应当立即停止使用龙驰合作社网站服务。您继续使用龙驰合作社网站服务，即表示您接受经修订的协议或规则。</p>
+    <p>一、 龙驰合作社的账户：</p>
+    <p style="text-indent:2em;">1、 用户在注册成为龙驰合作社用户时提供的信息应真实、完整、有效，并保证龙驰合作社可以通过该等信息与用户本人进行联系。同时，用户也有义务在相关资料发生变更时及时更新注册资料信息。</p>
+    <p style="text-indent:2em;">2、 在成功注册后，龙驰合作社会为每位用户开通一个账户，作为其使用龙驰合作社服务的唯一身份标识，用户应妥善保管该账户的用户名和密码，并对在其账户和密码下发生的所有活动承担责任。用户不得以任何形式转让或授权他人使用自己的龙驰合作社账户，也不应用他人账户在龙驰合作社进行注册和购买商品。</p>
+    <p style="text-indent:2em;">3、 每位用户只允许拥有一个龙驰合作社账户。如有证据证明或龙驰合作社有理由相信用户存在注册多个龙驰合作社账户的情形，龙驰合作社有权采取取消订单、冻结或关闭账户、拒绝提供服务等措施，给龙驰合作社造成损失的，用户还应承担赔偿责任。</p>
+    <p style="text-indent:2em;">4、 龙驰合作社用户必须是具有完全民事行为能力的自然人，或者是具有合法经营资格的实体组织。无民事行为能力、限制民事行为能力人以及无经营或特定经营资格的组织不得注册为龙驰合作社用户或超过其民事权利或行为能力范围与龙驰合作社进行交易，如与龙驰合作社进行交易的，则本协议自始无效，龙驰合作社有采取取消订单、冻结或关闭账户、拒绝提供服务等措施的权利，给龙驰合作社造成损失的，用户还应承担赔偿责任。</p>
+    <p>二、 合同订立</p>
+    <p style="text-indent:2em;">1、 龙驰合作社上展示的商品信息（如商品名称、价格、商品描述等）仅构成要约邀请，用户通过龙驰合作社网站订购商品，确认订单并完成支付即为购买商品的要约，由龙驰合作社将表示该批次商品“已发货”之配送状态发布到龙驰合作社网站，方构成龙驰合作社对该订单的承诺，此时合同即告成立。</p>
+    <p style="text-indent:2em;">2、 如果用户在一张订单中订购了多件商品，并且龙驰合作社只给用户发出了关于其中一部分商品的发货确认，那么直到龙驰合作社发出关于其他商品的发货确认信息，或龙驰合作社将该等商品发送至指定提货地址时，关于那部分商品的合同方告成立。</p>
+    <p style="text-indent:2em;">3、 当用户购买的商品离开龙驰合作社仓库时，该商品的所有权和灭失风险即转移给用户。</p>
+    <p style="text-indent:2em;">4、 用户同意龙驰合作社有保留在发现龙驰合作社网站上显示的商品信息错误或缺货的情况下，撤回或修改该等信息的权利，并保留对商品订购数量的限制权。用户下订单即表示其对在订单中提供的信息的真实性负责。</p>
+    <p style="text-indent:2em;">5、 龙驰合作社上显示的每一商品的送货费用根据龙驰合作社的配送政策和用户选择的送货方式另行计收。龙驰合作社有权更改上述有关价格和送货费用的信息，而不做另行通知。</p>
+    <p>三、 用户的权利和义务</p>
+    <p style="text-indent:2em;">1、 用户有权根据本协议的约定，以及龙驰合作社网站上发布的相关规则在龙驰合作社网站上查询商品信息、订购具体商品、发表使用体验、参与商品讨论、邀请关注好友、上传商品图片、参加龙驰合作社的有关活动（如适用），以及享受龙驰合作社提供的其它服务。</p>
+    <p style="text-indent:2em;">2、 用户应当保证在龙驰合作社网站购买商品过程中遵守诚实信用原则，不扰乱网上交易的正常秩序。</p>
+    <p style="text-indent:2em;">3、 用户享有言论自由权利，并拥有适度修改、删除自己发表的文章的权利。</p>
+    <p style="text-indent:2em;">4、 用户不得在龙驰合作社发表包含以下内容的言论：</p>
+    <p style="text-indent:3em;">① 反对宪法所确定的基本原则，煽动、抗拒、破坏宪法和法律、行政法规实施的；</p>
+    <p style="text-indent:3em;">② 煽动颠覆国家政权，推翻社会主义制度，煽动、分裂国家，破坏国家统一的；</p>
+    <p style="text-indent:3em;">③ 损害国家荣誉和利益的；</p>
+    <p style="text-indent:3em;">④ 煽动民族仇恨、民族歧视，破坏民族团结的；</p>
+    <p style="text-indent:3em;">⑤ 任何包含对种族、性别、宗教、地域内容等歧视的；</p>
+    <p style="text-indent:3em;">⑥ 捏造或者歪曲事实，散布谣言，扰乱社会秩序的；</p>
+    <p style="text-indent:3em;">⑦ 宣扬封建迷信、邪教、淫秽、色情、赌博、暴力、凶杀、恐怖、教唆犯罪的；</p>
+    <p style="text-indent:3em;">⑧ 公然侮辱他人或者捏造事实诽谤他人的，或者进行其他恶意攻击的；</p>
+    <p style="text-indent:3em;">⑨ 损害国家机关信誉的；</p>
+    <p style="text-indent:3em;">⑩ 其他违反宪法和法律行政法规的。</p><p style="text-indent:2em;">5、 用户在发表使用体验、商品讨论或图片等内容时，除遵守本条款外，还应遵守龙驰合作社网站的其他相关规定。</p><p style="text-indent:2em;">6、 未经龙驰合作社同意，禁止用户在龙驰合作社网站上发布任何形式的广告。</p><p>四、 龙驰合作社的权利和义务</p><p style="text-indent:2em;">1、 龙驰合作社有义务在现有技术上维护整个网站的正常运行，并努力提升和改进技术，使用户网上交易活动得以顺利进行。</p><p style="text-indent:2em;">2、 对于用户在龙驰合作社上作出下列行为的，龙驰合作社有权作出删除相关信息、终止提供服务等处理，而无须征得用户的同意：</p><p style="text-indent:3em;">① 龙驰合作社有权对用户的注册信息及购买行为进行查阅，发现注册信息或购买行为中存在任何问题的，有权向用户发出询问及要求改正的通知或者作出删除等处理；</p><p style="text-indent:3em;">② 用户违反本协议规定或有违反法律法规和地方规章的行为的，龙驰合作社有权停止传输并删除其信息，禁止用户发言，限制用户订购，注销用户账户并按照相关法律规定向相关主管部门进行披露；</p><p style="text-indent:3em;">③ 对于用户在龙驰合作社进行的下列行为，龙驰合作社有权对用户采取删除其信息、禁止用户发言、限制用户订购、注销用户账户等限制性措施：包括(i) 发布或以电子邮件或以其他方式传送存在恶意、虚假和侵犯他人人身财产权利内容的信息；(ii) 进行与网上购物无关或不是以购物为目的的活动，试图扰乱正常购物秩序；(iii) 将有关干扰、破坏或限制任何计算机软件、硬件或通讯设备功能的软件病毒或其他计算机代码、档案和程序之资料，加以上载、发布、发送电子邮件或以其他方式传送；(iv)干扰或破坏龙驰合作社网站和服务或与龙驰合作社网站和服务相连的服务器和网络；(v) 发布其他违反公共利益或可能严重损害龙驰合作社和其它用户合法利益的信息。</p><p style="text-indent:2em;">3、 用户在此免费授予龙驰合作社永久性的独家使用权，并有权对该权利进行再授权，使龙驰合作社有权在全球范围内全部或部分地使用、复制、修订、改写、发布、翻译和展示用户公示于龙驰合作社网站的各类信息，或制作其派生作品，和/或以现在已知或日后开发的任何形式、媒体或技术，将上述信息纳入其它作品内。</p><p>五、 网站规则</p><p style="text-indent:2em;">1、 价格变动规则 ：龙驰合作社将尽最大努力保证用户所购商品或服务价格与网站公布的价格一致，尽管做出最大的努力，龙驰合作社商品或服务中的一小部分仍可能会有定价误差。如果发现错误定价，龙驰合作社将采取下列措施：</p><p style="text-indent:3em;">① 如果某一商品或服务的正确定价低于错误定价，龙驰合作社将按照较低的定价向用户销售该等商品或服务；</p><p style="text-indent:3em;">② 如果某一商品或服务的正确定价高于错误定价，龙驰合作社会根据情况，在交付商品前联系用户达成共识，或者取消订单并通知用户。</p><p style="text-indent:2em;">2、 商品缺货规则：由于市场变化及各种以合理商业努力难以控制的因素的影响，龙驰合作社网站无法承诺用户通过提交订单所希望购买的商品都会有货；用户订购的商品或服务如果发生缺货，用户和龙驰合作社皆有权取消该订单。龙驰合作社可对缺货商品或服务进行预售登记，龙驰合作社会尽最大努力在最快时间内满足用户的购买需求，当缺货商品到货时，龙驰合作社将第一时间通过邮件、短信或电话通知用户，方便用户进行购买。预售登记并不做订单处理，不构成要约。</p><p style="text-indent:2em;">3、 邮件/短信服务规则：当用户访问龙驰合作社或给龙驰合作社发送电子邮件时，用户同意用电子方式与龙驰合作社进行联系，并同意以电子方式接受龙驰合作社的信息。龙驰合作社保留通过邮件和短信的形式，对龙驰合作社网站注册、购物用户发送订单信息、促销活动等的权利。如果用户访问龙驰合作社，或在龙驰合作社注册、购物，表明其已同意接受此项服务。 如用户不想接收来自龙驰合作社网站除订单信息以外的邮件和短信，龙驰合作社网站可根据用户申请办理退阅。</p><p style="text-indent:2em;">4、 送货、提货规则：龙驰合作社将会把商品送到龙驰合作社指定的提货地址，所有在龙驰合作社网站上列出的到货时间皆为参考时间，供用户参照使用，最终到货时间以龙驰合作社网站上的显示到货信息为准。当龙驰合作社的网站显示到货信息时，即视为通知用户能够取货，用户应当及时取货，用户所购已达提货地址的货物超过保质期未被领取的，龙驰合作社有权自行处理该批次货物，且用户已付费用不予退还；用户所购已达提货地址的货物超过3天未被领取的，从第4天起算，取货时间每延迟一天，用户应当向提货点交纳该批次商品总价10%的保管费用，超过10天仍未领取的，龙驰合作社有权自行处理该批次货物，用户已付价款不予退还。</p><p style="text-indent:2em;">5、 退换货、补货规则：龙驰合作社享有对商品退换货、补货的限制权，以及对其具体规则的解释权。龙驰合作社用户下订单即表明其接受龙驰合作社网站的退换货、补货规则。</p><p style="text-indent:2em;">6、 订单取消规则：</p><p style="text-indent:3em;">① 用户有权在下列情况下，取消订单：</p><p style="text-indent:3em;">a) 经用户和龙驰合作社协商达成一致的；</p><p style="text-indent:3em;">② 龙驰合作社在下列情况下，可以取消用户订单：</p><p style="text-indent:3em;">a) 经龙驰合作社和用户协商达成一致的；</p><p style="text-indent:3em;">b) 龙驰合作社上显示的商品信息明显错误或缺货的；</p><p style="text-indent:3em;">c) 用户订单信息明显错误或用户订购数量超出龙驰合作社网站备货量的；</p><p style="text-indent:3em;">d) 因不可抗力、龙驰合作社系统发生故障或遭受第三方攻击，及其它龙驰合作社网站无法控制的情形的；</p><p style="text-indent:3em;">e) 经龙驰合作社判断不符合公平原则或诚实信用原则的情形（如同一用户多次无理由拒收订购商品）；</p><p style="text-indent:3em;">f) 按龙驰合作社网站已经发布的或将来可能发布或更新的各类规则，可取消用户订单的情形。</p><p>六、 责任限制与不可抗力</p><p style="text-indent:2em;">1、 在法律法规所允许的限度内，因使用龙驰合作社服务而引起的任何损害或经济损失，龙驰合作社承担的全部责任均不超过用户所购买的与该索赔有关的商品价格。这些责任限制条款将在法律所允许的最大限度内适用，并在用户资格被撤销或终止后仍继续有效。</p><p style="text-indent:2em;">2、 龙驰合作社网站仅限在“按现状”和“按现有”的基础上，向用户提供全部的信息、内容、材料、产品(包括软件)和服务。除非另有明确的书面说明,龙驰合作社网站不对其包含在龙驰合作社网站上的信息、内容、材料、产品(包括软件)或服务作任何形式的、明示或默示的声明或担保，且不会承诺其提供给用户的全部信息或发出的电子邮件没有病毒或其他有害成分。</p><p style="text-indent:2em;">3、 不论在任何情况下，龙驰合作社均不对由于互联网正常的设备维护，互联网络连接故障，电脑、通讯或其他系统的故障，电力故障，罢工，暴乱，骚乱，灾难性天气（如火灾、洪水、风暴等），爆炸，战争，政府行为，司法行政机关的命令或第三方的不作为而造成的不能履行或延迟履行承担责任。</p><p>七、 服务的中断和终止：</p><p style="text-indent:2em;">1、 如用户向龙驰合作社提出注销用户账号时，经龙驰合作社审核同意，由龙驰合作社注销该用户账号，用户即解除与龙驰合作社的服务协议关系。但注销该用户账号后，龙驰合作社仍有权：</p><p style="text-indent:3em;">① 保留该用户的注册信息及过往的全部交易行为记录；</p><p style="text-indent:3em;">② 如用户在注销前在龙驰合作社上存在违法行为或违反本协议的行为，龙驰合作社仍可行使本协议所规定的权利。</p><p style="text-indent:2em;">2、 在下列情况下，龙驰合作社可以通过注销用户账户的方式终止服务：</p><p style="text-indent:3em;">① 在用户违反本协议相关规定时，龙驰合作社有权终止向该用户提供服务。如该用户在龙驰合作社终止提供服务后，再一次直接或间接或以他人名义注册为龙驰合作社用户的，龙驰合作社有权再次单方面终止向该用户提供服务；</p><p style="text-indent:3em;">② 如龙驰合作社通过用户提供的信息与用户联系时，发现用户在注册时填写的电话号码已不存在或无法接通时，经龙驰合作社以其它联系方式通知用户更改，而用户在三个工作日内仍未能提供新的有效电话信息地址的，龙驰合作社有权终止向该用户提供服务；</p><p style="text-indent:3em;">③ 一经龙驰合作社发现用户注册信息中的内容是虚假的，龙驰合作社有权随时终止向该用户提供服务；</p><p style="text-indent:3em;">④ 本协议终止或更新时，用户明示不愿接受新的服务协议的；</p><p style="text-indent:3em;">⑤ 龙驰合作社认为需终止服务的其他情况。</p><p>八、 适用的法律和管辖权：</p><p style="text-indent:2em;">本协议适用中华人民共和国的法律，所有的争端将诉诸于龙驰合作社所在地的人民法院。</p><p>九、 知识产权：</p><p style="text-indent:2em;">1、 龙驰合作社网站上的图表、标识、网页页眉、按钮图标、文字、服务品名等标示在网站上的信息都是龙驰合作社网站运营方及其关联方的财产，受中国和国际知识产权法的保护。未经龙驰合作社许可，任何人不得使用、复制或用作其他用途。在龙驰合作社网站上出现的其他商标是其商标权利人各自的财产，未经龙驰合作社运营方或相关商标所有人的书面许可，任何第三方都不得使用上述标示在龙驰合作社网站上的信息。</p><p style="text-indent:2em;">2、 龙驰合作社用户发表的文章仅代表作者本人观点，与龙驰合作社立场无关。作者文责自负。</p><p style="text-indent:2em;">3、 龙驰合作社及其关联方有权将用户在本网站发表的商品使用体验、商品讨论或图片进行使用或者与其他人合作使用，使用范围包括但不限于网站、电子杂志、杂志、刊物等，使用时需为作者署名，以发表文章时注明的署名为准。文章有附带版权声明者除外。</p><p style="text-indent:2em;">4、 用户在龙驰合作社网站上发表的文章及图片（包括转贴的文章及图片）版权仅归原作者所有，若作者有版权声明或原作从其它网站转载而附带有原版权声明者，其版权归属以附带声明为准。</p><p style="text-indent:2em;">5、 任何转载、引用发表于龙驰合作社的版权文章须符合以下规范：</p><p style="text-indent:3em;">① 用于非商业、非盈利、非广告性目的时需注明作者及文章及图片的出处为“龙驰合作社"；</p><p style="text-indent:3em;">② 用于商业、盈利、广告性目的时需征得文章或图片原作者的同意，并注明作者姓名、授权范围及原作出处“龙驰合作社"；</p><p style="text-indent:3em;">③ 任何文章或图片的修改或删除均应保持作者原意并征求原作者同意，并注明授权范围。</p><p>十、 信息保护：</p><p style="text-indent:2em;">1、 用户个人隐私：请阅读龙驰合作社的隐私声明以了解隐私政策。</p><p style="text-indent:2em;">2、 信息安全</p><p style="text-indent:3em;">① 龙驰合作社账户有密码保护，请用户妥善保管账户及密码信息；</p><p style="text-indent:3em;">② 如果用户发现自己的个人信息泄密，尤其是龙驰合作社账户及密码或提现密码发生泄露，请用户立即联络龙驰合作社客服，以便龙驰合作社采取相应措施。</p><p style="text-indent:2em;">3、 Cookie的使用规则</p><p style="text-indent:3em;">① 通过龙驰合作社所设Cookie所取得的有关信息，将适用本规则；</p><p style="text-indent:3em;">② 在龙驰合作社上发布信息的第三方通过其所发布信息在用户计算机上设定Cookies的，将按该第三方的隐私权政策使用；</p><p style="text-indent:3em;">③ 编辑和删除个人信息的权限：用户可以点击“我的龙驰合作社”对用户的个人信息进行编辑和删除，除非龙驰合作社另有规定。</p><p>十一、附则</p><p style="text-indent:2em;">1 本协议的订立、执行和解释及争议的解决均应适用中华人民共和国法律。</p><p style="text-indent:2em;">2 如本协议中的任何条款无论因何种原因完全或部分无效或不具有执行力，本协议的其余条款仍应有效并且有约束力。</p><p style="text-indent:2em;">3 本协议解释权及修订权归龙驰合作社所有者所有。</p>
+    </div>
+<!--dialog-->
+<div class="diolog">
+	<h2>输入验证码</h2>
+    <div class="sr_div">
+    	<input type="text" name="imgyz" id="code" class="eject" /><span><img id="verify_code" src="__URL__/verify" height="32" onclick="verifycode()"/></span>
+    </div>
+    <div class="button_div">
+    	<a href="javascript:;" class="close_yz">取消</a><a href="javascript:;" class="senda_yzm">确认</a>
+    </div>
+</div>
+
+<!--footer-->
+<div class="login_footer g_wrap footer_p">
+	龙驰合作社
+</div>
+<script src="__PUBLIC__/Home/js/jquery-2.1.4.js"></script>
+<script src="__PUBLIC__/Home/js/jquery-weui.js"></script>
+</body>
+</html>

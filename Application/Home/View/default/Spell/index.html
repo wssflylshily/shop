@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>{:C('WEB_SITE_TITLE')}</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/swiper-3.3.1.min.css">
+		<script src="__PUBLIC__/Home/js/swiper-3.3.1.min.js"></script>
+
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/jquery-1.8.3.min.js"></script>
+		<script src="__PUBLIC__/Home/js/common.js"></script>
+		<script src="__PUBLIC__/Home/js/iscroll-probe.js"></script>
+		<script src="__PUBLIC__/Home/js/delIOS_huitan.js"></script>
+		<include file="Public/weixin"/>
+		<style>
+			/*下拉加载样式*/
+			#wrapper {
+				position: absolute;
+				z-index: 1;
+				top: 0;
+				bottom: 0;
+				left: 0;
+				width: 100%;
+				overflow: hidden;
+			}
+			#loadBin{color: #5d5d5d;text-align: center;line-height: 30px;}
+		</style>
+	</head>
+	<body class="qianBg box" onLoad="onload()">
+		<!--正文区域-->
+		<!--<div id="pintuanTop">-->
+			<!--<div class="contain maxWidth">-->
+				<!--<div class="top1">拼团列表</div>-->
+			<!--</div>-->
+		<!--</div>-->
+		<div id="pintuanMain" class="fastscroll">
+			<div id="wrapper">
+				<div class="maxWidth">
+					<!-- 轮播区域-->
+					<div class="lunbo">
+						<div class="swiper-container">
+							<div class="swiper-wrapper">
+								<volist name="bannerlist" id="v">
+								<div class="swiper-slide">
+									<a href="{$v.link_url}">
+										<img src="{$v.image}"/>
+									</a>
+								</div>
+								</volist>
+							</div>
+							<div class="swiper-pagination"></div>
+						</div>
+					</div>
+					<ul class="list content clear maxWidth">
+						<!--
+							status1代表距离开始 status2代表距离结束
+							liendTimeStr='2016/12/24 16:46:10';
+							从后台读取的时间截止的毫秒数 1478350790050 传ms数或者，这种格式的字符串都行
+						-->
+						<volist name="list" id="item">
+						<li data-juStartTime="{:date('Y/m/d H:i:s',$item['start_date'])}" data-juEndTime="{:date('Y/m/d H:i:s',$item['end_date'])}" data-status="{$item.state}">
+							<a href="{:U('Spell/detail',array('id'=>$item['id']))}">
+								<img src="{$item.image}" />
+								<div class="line1 clear">
+									<div class="col-3">
+										<span class="qiangbiao">{$statearr[$item['state']]}</span>
+									</div>
+									<div class="col-9 textR">
+										<if condition="$item['state'] lt 3">
+										<b class="daojishiText">距结束</b> <span class="day">01</span> 天 <span class="shi">15</span> 时 <span class="fen">12</span> 分 <span class="miao">59</span> 秒
+										</if>
+									</div>
+								</div>
+								<div class="line2">{$item.title}</div>
+								<div class="line3 clear">
+									<div class="col-6">
+										<span class="xian">&yen;<span class="money">{$item.price}</span></span>
+										<del>&yen;<span class="money">{$item.oldprice}</span></del>
+									</div>
+									<div class="col-6 textR">
+										<span class="goKaituan">
+											{$item.num}人团<span class="line"></span>去开团
+										</span>
+									</div>
+								</div>
+							</a>
+						</li>
+						</volist>
+					</ul>
+					<div class="noData" style="display:none">没有更多数据了</div>
+					<div id="loadBin"></div>
+				</div>
+			</div>
+		</div>
+		<include file="Public:footer" />
+
+		<script>
+			//返回按钮
+			$('#fenleiTop .top1 .back').on('click',function(){
+				window.history.go(-1);
+			});
+
+			//money显示.0
+			CashToZero1('#pintuanMain .money');
+
+			//顶部轮播720 400
+			setTopLunboH();
+			function setTopLunboH(){
+				var w=$('#pintuanMain .lunbo .swiper-slide a img').width();
+				$('#pintuanMain .lunbo .swiper-slide a img').height(400*w/720);
+			}
+			var mySwiper = new Swiper('#pintuanMain .lunbo .swiper-container', {
+				autoplay: 3000,
+				loop:true,
+				autoplayDisableOnInteraction:false,
+				pagination : '.swiper-pagination'
+			});
+
+			//列表li中img的高度 700 370
+			setliproImgH();
+			function setliproImgH(){
+				var w=$('#pintuanMain .content li img').width();
+				$('#pintuanMain .content li img').height(370*w/700);
+			}
+
+			//iscroll 下拉加载+zeptoajax
+			function onload(){
+				loadBin = document.getElementById("loadBin");
+				myScroll = new IScroll('#wrapper',{
+					probeType: 3,
+					click:true
+				});
+				myScroll.on("scroll",scrollFun);
+				myScroll.on("scrollEnd",scrollEndFun);
+			}
+			var page=2;
+			var myScroll,
+				loadBin,
+				isload = false,
+				scrollFun = function(){
+					if((this.y - this.maxScrollY)>>0 < -50){
+						isload = true;
+						loadBin.innerHTML = "松开手指加载更多";
+						myScroll.refresh();
+						myScroll.off("scroll",scrollFun);
+					}
+				},
+				scrollEndFun = function(){
+					if(isload){
+						isload = false;
+						
+						 //var cat_id =GetQueryString('id');
+						 $.ajax({
+						 	type: 'POST',
+						 	url: "{:U('ajaxlist')}",
+						 	dataType: 'json',
+						 	data:{page:page},
+						 	success: function(data){
+						 		if(data!=""){
+							 		page++;
+	
+									var str='';
+									for(var i=0;i<data.length;i++){
+										str+='<li>\
+												<a href="/index.php?s=/Spell/detail/id/'+data[i].id+'.html">\
+													<img src="'+data[i].image+'" />\
+													<div class="line1 clear">\
+														<div class="col-4">\
+															<span class="qiangbiao">'+data[i].states+'</span>\
+														</div>\
+														<div class="col-8 textR">';
+										if(data[i].state < 3){
+											str +='距结束 <span class="day">01</span> 天 <span class="shi">15</span> 时 <span class="fen">12</span> 分 <span class="miao">59</span> 秒';
+											
+										}
+													str +=	'</div>\
+													</div>\
+													<div class="line2">'+data[i].title+'</div>\
+													<div class="line3">\
+														<div class="col-6">\
+															<span class="xian">&yen;<span class="money">'+data[i].cost+'</span></span>\
+														</div>\
+														<div class="col-6 textR">\
+															<span class="goKaituan">\
+																ajax5人团<span class="line"></span>去开团\
+															</span>\
+														</div>\
+													</div>\
+												</a>\
+											</li>';
+									}
+									//ajax数据插入到html中
+									$('#pintuanMain .list').append(str);
+									CashToZero1('#pintuanMain .money');
+	
+									loadBin.innerHTML = "";
+									myScroll.on("scroll",scrollFun);
+									myScroll.refresh();
+						 		}else{
+						 			//显示没有更多数据了
+									$('.noData').css('display','block');
+									loadBin.innerHTML = "";
+									//没有必要再看到 松开手指加载更多
+									scrollFun = function(){
+										loadBin.innerHTML = "";
+										myScroll.refresh();
+										myScroll.off("scroll",scrollFun);
+									}
+						 		}
+						 	},
+						 	error: function(xhr, type){
+						 		console.log('Ajax error!');
+						 	}
+						 });
+					}
+				};
+
+			//让图片的高度等于图片的宽度  图片宽度是不确定值
+			$('#fenleiMain .content li img').height($('#fenleiMain .content li img').width());
+		</script>
+		<script type="text/javascript">
+			function GetQueryString(name)
+			{
+			     var reg = new RegExp("(^|/)"+ name +"/([^&]*)(&|$)");
+			     var r = window.location.search.substr(1).match(reg);
+			     if(r!=null)return  unescape(r[2]); return null;
+			}
+
+			//拼团倒计时////////////////////////////////////////////////////////////////////////////////////////////
+			//距离结束 距离开始 公共调用的函数
+			function setPTtime(li,listatus,listartTimeStr,liendTimeStr,licurrTime,litimer){
+				var NowTime = new Date();
+				var t =licurrTime.getTime() - NowTime.getTime();
+				var d=0;
+				var h=0;
+				var m=0;
+				var s=0;
+				if(t>=0){
+					d=Math.floor(t/1000/60/60/24);
+					h=Math.floor(t/1000/60/60%24);
+					m=Math.floor(t/1000/60%60);
+					s=Math.floor(t/1000%60);
+				}else{
+					clearInterval(litimer);
+					//距离开始倒计时结束后，直接走距离结束的倒计时
+					if(listatus==1){
+						listatus=2;
+						juliEndTimer(li,listatus,listartTimeStr,liendTimeStr,licurrTime,litimer);
+						//ajax 把后台的status设置为2
+						$.ajax({
+							type: 'GET',
+							url: "{:U('Spell/updateSpell')}",
+							dataType: 'json',
+							success: function(data){
+
+							},
+							error: function(xhr, type){
+								console.log('Ajax error!');
+							}
+						});
+					}
+				}
+
+				$(li).find('.line1 .textR span.day').text(d);
+				$(li).find('.line1 .textR span.shi').text(zhuanTwo(h));
+				$(li).find('.line1 .textR span.fen').text(zhuanTwo(m));
+				$(li).find('.line1 .textR span.miao').text(zhuanTwo(s));
+			}
+			function zhuanTwo(v){
+				//时分秒转成两位数
+				if(v<10){
+					return '0'+v;
+				}else{
+					return ''+v;
+				}
+			}
+			//距离结束
+			function juliEndTimer(li,listatus,listartTimeStr,liendTimeStr,licurrTime,litimer){
+				var liEndTime= new Date(liendTimeStr);
+				licurrTime=liEndTime;
+				$(li).find('.daojishiText').text('距离结束');
+				litimer=setInterval(function(){
+					setPTtime(li,listatus,listartTimeStr,liendTimeStr,licurrTime,litimer);
+				},30);
+			}
+			//距离开始
+			function juliStartTimer(li,listatus,listartTimeStr,liendTimeStr,licurrTime,litimer){
+				var liStartTime= new Date(listartTimeStr);
+				licurrTime=liStartTime;
+				$(li).find('.daojishiText').text('距离开始');
+				litimer=setInterval(function(){
+					setPTtime(li,listatus,listartTimeStr,liendTimeStr,licurrTime,litimer);
+				},30);
+			}
+			//根据status走不同的定时器
+			function setliDaojishi(li,listatus,listartTimeStr,liendTimeStr,licurrTime,litimer){
+				if(listatus==1){
+					juliStartTimer(li,listatus,listartTimeStr,liendTimeStr,licurrTime,litimer);
+				}else if(listatus==2){
+					juliEndTimer(li,listatus,listartTimeStr,liendTimeStr,licurrTime,litimer);
+				}
+			}
+			//获取所有的li，执行倒计时操作
+			var allli=$('#pintuanMain .content li');
+			for(var x=0;x<allli.length;x++){
+				//设置
+				allli[x].timer=null;
+				allli[x].currTime=null;
+
+				//获取
+				var li=$(allli[x]);
+				var listatus=$(allli[x]).attr('data-status');
+				var listartTimeStr=$(allli[x]).attr('data-juStartTime');
+				var liendTimeStr=$(allli[x]).attr('data-juEndTime');
+				var licurrTime=allli[x].currTime;
+				var litimer=allli[x].timer;
+
+				//执行倒计时操作
+				setliDaojishi(li,listatus,listartTimeStr,liendTimeStr,licurrTime,litimer);
+			}
+		</script>
+	</body>
+</html>

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<meta name="format-detection" content="telephone=no">
+		<title>核销详情</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/zepto.js"></script>
+		<script src="__PUBLIC__/Home/js/delIOS_huitan.js"></script>
+	</head>
+	<body class="box">
+		<!-- 遮罩 -->
+		<div id="zhezhao" style="display:none"></div>
+		<!--alert-->
+		<div class="alert" style="display: none">
+			<div class="top"></div>
+			<div class="bot">确定</div>
+		</div>
+		<!--正文区域-->
+		<div id="dingdanDetailDanTop" class="topBackTitle">
+			<div class="contain maxWidth">
+				<a class="hz back" href="javascript:history.go(-1);">&#xe600;</a>核销详情
+			</div>
+		</div>
+		<div id="dingdanDetailDanMain" class="fastscroll dingdanMain">
+			<div class="contain maxWidth">
+				<div class="line"></div>
+				<!-- 没有权限的提示div 根据ajax结果判断是否显示-->
+				<div class="tipDiv" style="display:none"></div>
+				<!--  根据ajax结果判断是否显示 -->
+				<div class="hasQuanxian" style="display:none">
+					<div class="dingdanInfo">
+						<div class="ddqrTitleCom">
+							<span class="hz">&#xe602;</span>核销信息
+						</div>
+						<div class="bgulCon">
+							<ul>
+								<li class="other">
+									<p class="title">{:getstorename($hexiao['store_id'])}</p>
+									<p class="cont">
+										合销员: <span>{$hexiao.name}</span><br>
+										工号: <span>{$hexiao.card}</span>
+									</p>
+								</li>
+								<li class="other">
+									<div class="cont">
+										<p class="addr">门店地址: <span>{$hexiao.sadd}</span></p>
+									</div>
+								</li>
+							</ul>
+						</div>
+					</div>
+					<div class="dingdanInfo">  
+						<div class="ddqrTitleCom">
+							<span class="hz">&#xe602;</span>订单信息
+							<!-- 下面这个是订单编号 -->
+							<span class="orderNumright">{$orderinfo.sn}</span>
+						</div>
+						<div class="bgulCon">
+							<ul>
+								<li class="other">
+									<p class="title">收货信息</p>
+									<div class="cont">
+										收货人: <span>{$userAddress.name}</span><br>
+										联系方式: <span>{$userAddress.mobile}</span><br>
+										<p class="addr">收货地址: <span>{$userAddress.area}</span></p>
+									</div>
+								</li>
+								<li>
+									<span class="left">支付方式</span>
+									<span class="right"><if condition="$orderinfo['paytype'] eq 1">余额支付<else/>微信支付</if></span>
+								</li>
+								<li>
+									<span class="left">配送方式</span>
+									<span class="right"><if condition="$orderinfo['type'] eq 1">门店自提<else/>送货上门</if></span>
+								</li>
+							</ul>
+						</div>
+						<ul class="ulConNobg">
+							<li>
+								<span class="left">订单时间</span>
+								<span class="right">{$orderinfo.addtime|date="Y-m-d H:i:s",###}</span>
+							</li>
+							
+						</ul>
+					</div>
+					<div class="ddproList">
+						<p class="ddqrTitleCom">
+							<span class="hz">&#xe61e;</span>商品清单
+						</p>
+						<ul class="list">
+						<volist name="orderDetail" id="item">
+							<li class="clear">
+								<div class="left">
+									<img src="{:getproductimg($item['product_id'])}">
+								</div>
+								<div class="right">
+									<p class="title"><a href="javascript:;">{:getproducttitle($item['product_id'])}</a></p>
+									<p class="price">
+										<em>&yen;{$item['product_price']}</em><del>&yen;{:getProductmarketprice($item['product_id'])}</del><span class="r">&times;<span>{$item['product_num']}</span></span>
+									</p>
+								</div>
+							</li>
+						</volist>
+						</ul>
+					</div>
+					<div class="priceList">
+						<p class="ddqrTitleCom">
+							<span class="hz">&#xe61d;</span>价格清单
+						</p>
+						<div class="bgulCon">
+							<ul>
+								<li>
+									<span class="left">商品金额</span>
+									<span class="right">&yen;{$orderinfo.money}</span>
+								</li>
+								<li>
+									<span class="left">运费</span>
+									<span class="right">+&yen;{$orderinfo.express_money}</span>
+								</li>
+								<li>
+									<span class="left">优惠券</span>
+									<span class="right">-&yen;{$orderinfo.coupon_money}</span>
+								</li>
+								<li>
+									<span class="left">实付款</span>
+									<span class="right red">&yen;{$orderinfo['money']+$orderinfo['express_money']-$orderinfo['coupon_money']}</span>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- 根据ajax结果判断是否显示 -->
+		<div id="dingdanDetailDanBot" class="dingdanBot marok" style="display:none">
+			<div class="contain maxWidth">
+				<a href="#" class="hexiao">确认发货</a>
+			</div>
+		</div>
+
+		<script>
+			//根据图片的宽度，确定图片的高度
+			window.addEventListener('load',function(){
+				var imgw=$('#dingdanDetailDanMain .ddproList .list .clear .left img').width();
+				$('#dingdanDetailDanMain .ddproList .list .clear .left img').height(imgw);
+				$('#dingdanDetailDanMain .ddproList .list .clear .right').height(imgw);
+			},false);
+
+			//点击确认发货
+			$('.dingdanBot a.hexiao').on('click',function(){
+				var sn = "{$orderinfo.sn}";
+				$.ajax({
+					url: '{:U("updateorder")}',
+					type: 'POST',
+					dataType: 'json',
+					data: {sn: sn},
+					success:function(data){
+						$('.alert .top').text(data.msg);
+						$('#zhezhao').css('display','block');
+						$('.alert').css('display','block');
+						if(data.status==1){
+							//点击确定
+							$('.alert .bot').on('click',function(){
+								location.href='/Member';
+							});
+						}else{
+							//点击确定
+							$('.alert .bot').on('click',function(){
+								location.href=history.go(-1);
+							});
+						}
+					}
+				})
+			});
+
+			var ishexiao = {$is_hexiao};
+			var order = "{$orderinfo}";
+			if(ishexiao==0){
+				$('#dingdanDetailDanMain .tipDiv').text('对不起，您没有核销权限').css('display','block');
+				$('#dingdanDetailDanMain .hasQuanxian').css('display','none');
+				$('#dingdanDetailDanBot').css('display','none');
+			}else{
+				$('#dingdanDetailDanMain .hasQuanxian').css('display','block');
+				$('#dingdanDetailDanBot').css('display','block');
+			}
+			if(order==""){
+				$('#dingdanDetailDanMain .tipDiv').text('订单不存在').css('display','block');
+				$('#dingdanDetailDanMain .hasQuanxian').css('display','none');
+				$('#dingdanDetailDanBot').css('display','none');
+			}
+
+			/*var sn = "{$orderinfo.sn}";
+				$.ajax({
+					url: '{:U("updateorder")}',
+					type: 'POST',
+					dataType: 'json',
+					data: {sn: sn},
+					success:function(data){
+						if(data.status==1){
+							$('#dingdanDetailDanMain .tipDiv').text(data.msg).css('display','none');
+						 	$('#dingdanDetailDanMain .hasQuanxian').css('display','block');
+						 	$('#dingdanDetailDanBot').css('display','block');
+						}else{
+							$('#dingdanDetailDanMain .tipDiv').text(data.msg).css('display','block');
+							$('#dingdanDetailDanMain .hasQuanxian').css('display','none');
+							$('#dingdanDetailDanBot').css('display','none');
+						 }
+					}
+				})*/
+		</script>
+	</body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html> 
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>{:C('WEB_SITE_TITLE')}</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/zepto.js"></script>
+		<script src="__PUBLIC__/Home/js/delIOS_huitan.js"></script>
+<script>
+function deladdress(id)
+{
+	$.ajax({
+			//提交数据的类型 POST GET
+			type:"POST",
+			//提交的网址
+			url:"__URL__/del",
+			//提交的数据
+			data:{'id':id},
+			//返回数据的格式
+			datatype: "json",//"xml", "html", "script", "json", "jsonp", "text".
+			//在请求之前调用的函数
+			//成功返回之后调用的函数             
+			success:function(json){ 
+				tipFun(json.info);
+				setTimeout(function(){
+					window.location.reload();
+				},1000);
+			}
+		});
+}
+$(function(){	
+		$(".checkbox_btn").click(function(){
+		  $.ajax({
+				//提交数据的类型 POST GET
+				type:"POST",
+				//提交的网址
+				url:"__URL__/setdefault",
+				//提交的数据
+				data:{'id':$(this).attr('attrid')},
+				//返回数据的格式
+				datatype: "json",//"xml", "html", "script", "json", "jsonp", "text".
+				//在请求之前调用的函数
+				//成功返回之后调用的函数
+				success:function(json){
+					tipFun(json.info);
+					setTimeout(function(){
+						<if condition="$cart_id neq null">
+							window.location.href='/index.php?s=/Cart/step2.html&cart_id={$cart_id}&uaddress_id='+$(this).attr('attrid');
+						</if>
+					},1000);
+				}
+			});
+        });
+})
+</script>
+	</head>
+	<body class="box">
+		<!--提示文字-->
+		<div class="tip" style="opacity: 0;z-index: -1"></div>
+		<!--正文区域-->
+		<div id="dingdanShouhuoTop" class="topBackTitle">
+			<div class="contain maxWidth">
+				<a class="hz back" href="javascript:history.go(-1);">&#xe600;</a>收货地址
+			</div>
+		</div>
+		<div id="dingdanShouhuoMain" class="fastscroll">
+			<div class="contain maxWidth">
+				<ul>
+					<volist name="list" id="item">
+					<li>
+						<div class="content" onclick="javascript:tocart({$item.id});">
+							<p class="maininfo">
+								<span class="name">{$item.name}</span><span class="tel">{$item.mobile}</span>
+							</p>
+							<p class="addr">
+								{$item.area} {$item.address}
+							</p>
+						</div>
+						<div class="bot">
+							<div class="left setdefault">
+								<span class="circle checkbox_btn"  attrid="{$item.id}">
+									<span class="hz  <if condition="$item.is_default eq 1">active</if>">&#xe613;</span>
+								</span>
+								<a href="javascript:;" class="checkbox_btn" attrid="{$item.id}">设为默认</a>
+							</div>
+							<div class="right del">
+								<!--
+								{:U('UserAddress/del',array('id'=>$item['id'],'cart_id'=>$cart_id))}">
+								-->
+								<a href="javascript:deladdress({$item.id})">
+									<span class="hz">&#xe618;</span>删除
+								</a>
+							</div>
+							<div class="right edit">
+					<if condition="$cart_id neq null">
+                    <!--
+					<a href="/index.php?s=/Cart/step2.html&cart_id={$cart_id}&uaddress_id={$item.id}" class="r">选择</a>
+					-->
+					</if>
+								<a href="{:U('UserAddress/edit',array('id'=>$item['id'],'cart_id'=>$cart_id))}">
+									<span class="hz">&#xe619;</span>编辑
+								</a>
+							</div>
+						</div>
+					</li>
+					</volist>
+					
+				</ul>
+			</div>
+		</div>
+		<div id="dingdanShouhuoBot">
+			<div class="contain maxWidth">
+				<a href="javascript:;" onclick="javascript:toaddAddr();" class="addbtn">新建地址</a>
+			</div>
+		</div>
+
+		<script>
+		var cart = "{$cart_id}",paytype="{$_GET['paytype']}",sendtype="{$_GET['sendtype']}",couponid="{$_GET['coupon_id']}";
+		var spelid="{$_GET['spell_id']}",team_id="{$_GET['team_id']}",depot="{$_GET['depot']}";
+		function toaddAddr(){
+			var url = "__URL__/add";
+			if(cart!=""){
+				url+="&cart_id="+cart+"&paytype="+paytype+"&sendtype="+sendtype;
+				if(couponid!="")url+="&coupon_id="+couponid;
+				if(depot!="")url+="&depot="+depot;
+			}
+			if(spelid!=""){
+				url+="&team_id="+team_id+"&spell_id="+spelid+"&paytype="+paytype;
+			}
+			location.href=url;
+		}
+		//点击地址跳转到确认订单页面
+		function  tocart(id){
+			var cart = "{$cart_id}",paytype="{$_GET['paytype']}",sendtype="{$_GET['sendtype']}",couponid="{$_GET['coupon_id']}";
+			if(cart!=""){
+				url = "{:U('/Home/Cart/step2')}&cart_id="+cart+"&uaddress_id="+id+"&paytype="+paytype+"&sendtype="+sendtype;
+				if(couponid!="")url+="&coupon_id="+couponid;
+				if(depot!="")url+="&depot_id="+depot;
+				location.href=url;
+			}
+			var spelid="{$_GET['spell_id']}";
+			if(spelid!=""){
+				location.href = "{:U('/Home/Cart/step3')}&team_id"+team_id+"&spell_id="+spelid+"&uaddress_id="+id+"&paytype="+paytype;
+			}
+		}
+		
+			//返回按钮
+			//$('#dingdanShouhuoTop .back').on('tap',function(){
+				/*window.location.href='{:U('Index/baseinfo')}';*/
+				//location.href = history.go(-1);
+			//});
+
+			//tip
+			function tipFun(str){
+				$('.tip').text(str).css({
+					'opacity':'1',
+					'z-index':'9999'
+				});
+				setTimeout(function(){
+					$('.tip').css('opacity','0');
+					setTimeout(function(){
+						$('.tip').css('z-index','-1');
+					},300);
+				},1300);
+			}
+
+			//点击 设为默认
+			$('#dingdanShouhuoMain li .bot .left a').on('tap',function(){
+				$('#dingdanShouhuoMain li .bot .left .circle .active').removeClass('active');
+				$(this).siblings('.circle').find('.hz').addClass('active');
+			});
+
+			//点击 设为默认前面的圈
+			$('#dingdanShouhuoMain li .bot .left .circle').on('click',function(){
+				$('#dingdanShouhuoMain li .bot .left .circle .active').removeClass('active');
+				$(this).find('.hz').addClass('active');
+			});
+		</script>
+	</body>
+</html>

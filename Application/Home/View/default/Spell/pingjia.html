@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html>
+	<head> 
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>{:C('WEB_SITE_TITLE')}</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/zepto.js"></script>
+		<script src="__PUBLIC__/Home/js/iscroll-probe.js"></script>
+		<script src="__PUBLIC__/Home/js/delIOS_huitan.js"></script>
+		<script src="__PUBLIC__/Home/js/common.js"></script>
+
+		<!-- <link rel="stylesheet" href="../../../../../Public/Home/css/common.css">
+		<link rel="stylesheet" href="../../../../../Public/Home/css/main.css">
+		<script src="../../../../../Public/Home/js/zepto.js"></script>
+		<script src="../../../../../Public/Home/js/iscroll-probe.js"></script>
+		<script src="../../../../../Public/Home/js/delIOS_huitan.js"></script>
+		<script src="../../../../../Public/Home/js/common.js"></script> -->
+		<style>
+			/*下拉加载样式*/
+			.loadBinPj{color: #5d5d5d;text-align: center;line-height: 30px;}
+			#pingjiaMain .main .pingjiaCom{position: absolute;z-index: 1;top: 0;bottom: 0;left: 0;width: 100%;overflow: hidden;}
+		</style>
+		<script>
+			var myScrollpjone,myScrollpjtwo,myScrollpjthree;
+			var loadBinpj;
+			var isloadPjone=false,isloadPjtwo=false,isloadPjthree=false;
+			var pjonePage=2,pjtwoPage=2,pjthreePage=2;
+			var currPagePj=0;//当前评价在第一个上 第一个0
+
+			function onload () {
+				loadBinPj=document.querySelectorAll(".loadBinPj");
+				if(currPagePj==0){
+					myScrollpjone = new IScroll('#pingjiaMain .pjone',{probeType: 3,click:true});
+					myScrollpjone.on("scroll",scrollFunPj1);
+					myScrollpjone.on("scrollEnd",scrollEndFunPj1);
+				}
+				else if(currPagePj==1){
+					myScrollpjtwo = new IScroll('#pingjiaMain .pjtwo',{probeType: 3,click:true});
+					myScrollpjtwo.on("scroll",scrollFunPj2);
+					myScrollpjtwo.on("scrollEnd",scrollEndFunPj2);
+				}
+				else if(currPagePj==2){
+					myScrollpjthree = new IScroll('#pingjiaMain .pjthree',{probeType: 3,click:true});
+					myScrollpjthree.on("scroll",scrollFunPj3);
+					myScrollpjthree.on("scrollEnd",scrollEndFunPj3);
+				}
+			}
+
+			var scrollFunPj1=function(){
+				if((this.y - this.maxScrollY)>>0 < -50){
+					isloadPjone = true;
+					loadBinPj[0].innerHTML = "松开手指加载更多";
+					myScrollpjone.refresh();
+					myScrollpjone.off("scroll",scrollFunPj1);
+				}
+			}
+			//all评价下拉加载
+			 var scrollEndFunPj1=function(){
+			 	if(isloadPjone){
+			 		isloadPjone = false;
+			 		var proid = {$id};
+			 		 $.ajax({
+			 		 	type: 'GET',
+			 		 	url: "{:U('Product/ajaxGetEvaluate')}",
+			 		 	data:{page:pjonePage,proid:proid,state:0},
+			 		 	dataType: 'json',
+			 		 	success: function(data){
+			 		 		console.log(data);
+			 		 		if(data.length>0){
+			 		 			pjonePage++;
+			 		 			//列表
+			 					var str='';
+			 					for(var i=0;i<data.length;i++){
+			 						str+='<li>\
+			 								<div class="title clear">';
+			 									if(data[i].image!=""){
+			 										str+='<p class="touxiang" style="background-image: url('+data[i].image+')"></p>';
+			 									}else{
+			 										str+='<p class="touxiang" style="background-image: url(__PUBLIC__/Home/img/mytouxiang.png)"></p>';
+			 									}
+			 									str+='<span class="phone">'+data[i].name+'</span><span class="time">'+data[i].time+'</span>';
+			 								str+='</div>\
+			 								<div class="content">\
+												<p class="hua">';
+			 										for(var j=0;j<data[i].score;j++){
+			 											str+='<span class="hz huaorange">&#xe614;</span>';
+			 										}
+			 										for(var k=0;k<5-data[i].score;k++){
+			 											str+='<span class="hz huagray">&#xe614;</span>';
+			 										}
+			 										str+='<span class="zhi">'+data[i].score+'.0</span>\
+			 									</p>\
+			 									<p class="word">全部评价</p>\
+			 								</div>\
+			 							</li>';
+			 					}
+			 					$('#proDetailMain .four .main .pjone ul').append(str);
+					 			
+			 		 		}else{
+			 		 			//没有更多数据了
+			 					$('.noDataPingjiaAll').show();
+			 					scrollFunPj1=function(){
+			 						isloadPjone = true;
+			 						myScrollpjone.refresh();
+			 						myScrollpjone.off("scroll",scrollFunPj1);
+			 					}
+			 		 		}
+							
+			 				myScrollpjone.refresh();
+			 				telcenterStar('#proDetailMain .pingjia .main .pingjiaCom .title .phone');
+			 		 	},
+			 		 	error: function(xhr, type){
+			 		 		console.log('Ajax error!');
+			 		 	}
+			 		 });
+
+			 		loadBinPj[0].innerHTML = "";
+			 		myScrollpjone.on("scroll",scrollFunPj1);
+			 		myScrollpjone.refresh();
+			 	}
+			 }
+
+			var scrollFunPj2=function(){
+				if((this.y - this.maxScrollY)>>0 < -50){
+					isloadPjtwo = true;
+					loadBinPj[1].innerHTML = "松开手指加载更多";
+					myScrollpjtwo.refresh();
+					myScrollpjtwo.off("scroll",scrollFunPj2);
+				}
+			}
+			//好评下拉加载
+			 var scrollEndFunPj2=function(){
+			 	if(isloadPjtwo){
+			 		isloadPjtwo = false;
+			 		var proid={$info.id};
+			 		 $.ajax({
+			 		 	type: 'GET',
+			 		 	url: "{:U('Product/ajaxGetEvaluate')}",
+			 		 	data:{page:pjtwoPage,proid:proid,state:1},
+			 		 	dataType: 'json',
+			 		 	success: function(data){
+			 		 		if(data.length>0){
+			 		 			pjtwoPage++;
+			 					//列表
+			 					var str='';
+			 					for(var i=0;i<data.length;i++){
+			 						str+='<li>\
+			 								<div class="title clear">';
+			 									if(data[i].image!=""){
+			 										str+='<p class="touxiang" style="background-image: url('+data[i].image+')"></p>';
+			 									}else{
+			 										str+='<p class="touxiang" style="background-image: url(__PUBLIC__/Home/img/mytouxiang.png)"></p>';
+			 									}
+			 									str+='<span class="phone">'+data[i].name+'</span><span class="time">'+data[i].time+'</span>';
+			 								str+='</div>\
+			 								<div class="content">\
+			 									<p class="hua">';
+			 										for(var j=0;j<data[i].score;j++){
+			 											str+='<span class="hz huaorange">&#xe614;</span>';
+			 										}
+			 										for(var k=0;k<5-data[i].score;k++){
+			 											str+='<span class="hz huagray">&#xe614;</span>';
+			 										}
+			 										str+='<span class="zhi">'+data[i].score+'.0</span>\
+			 									</p>\
+			 									<p class="word">好评</p>\
+			 								</div>\
+			 							</li>';
+			 					}
+			 					$('#proDetailMain .four .main .pjtwo ul').append(str);
+					 			
+			 		 		}else{
+			 		 			//没有更多数据了
+			 					$('.noDataPingjiaAll').show();
+			 					scrollFunPj1=function(){
+			 						isloadPjtwo = true;
+			 						myScrollpjtwo.refresh();
+			 						myScrollpjtwo.off("scroll",scrollFunPj2);
+			 					}
+			 		 		}
+							
+			 				myScrollpjtwo.refresh();
+			 				telCenterStar('#proDetailMain .pingjia .main .pingjiaCom .title .phone');
+							
+			 		 	},
+			 		 	error: function(xhr, type){
+			 		 		console.log('Ajax error!');
+			 		 	}
+			 		 });
+
+			 		loadBinPj[1].innerHTML = "";
+			 		myScrollpjtwo.on("scroll",scrollFunPj2);
+			 		myScrollpjtwo.refresh();
+			 	}
+			 }
+
+			var scrollFunPj3=function(){
+				if((this.y - this.maxScrollY)>>0 < -50){
+					isloadPjthree = true;
+					loadBinPj[2].innerHTML = "松开手指加载更多";
+					myScrollpjthree.refresh();
+					myScrollpjthree.off("scroll",scrollFunPj3);
+				}
+			}
+			//差评下拉加载
+			 var scrollEndFunPj3=function(){
+			 	if(isloadPjthree){
+			 		isloadPjthree = false;
+			 		var proid={$info.id};
+			 		 $.ajax({
+			 			type: 'GET',
+			 		 	url: "{:U('Product/ajaxGetEvaluate')}",
+			 		 	dataType: 'json',
+			 		 	data:{page:pjthreePage,proid:proid,state:2},
+			 		 	success: function(data){
+			 		 		if(data.length>0){
+			 		 			pjthreePage++;
+			 					//列表
+			 					var str='';
+			 					for(var i=0;i<data.length;i++){
+			 						str+='<li>\
+			 								<div class="title clear">';
+			 									if(data[i].image!=""){
+			 										str+='<p class="touxiang" style="background-image: url('+data[i].image+')"></p>';
+			 									}else{
+			 										str+='<p class="touxiang" style="background-image: url(__PUBLIC__/Home/img/mytouxiang.png)"></p>';
+			 									}
+			 									str+='<span class="phone">'+data[i].name+'</span><span class="time">'+data[i].time+'</span>';
+			 								str+='</div>\
+			 								<div class="content">\
+			 									<p class="hua">';
+			 									for(var j=0;j<data[i].score;j++){
+			 										str+='<span class="hz huaorange">&#xe614;</span>';
+			 									}
+			 									for(var k=0;k<5-data[i].score;k++){
+			 										str+='<span class="hz huagray">&#xe614;</span>';
+			 									}
+			 									str+='<span class="zhi">5.0</span>\
+			 									</p>\
+			 									<p class="word">差评</p>\
+			 								</div>\
+			 							</li>';
+			 					}
+			 					$('#proDetailMain .four .main .pjthree ul').append(str);
+								
+			 		 		}else{
+			 		 			//没有更多数据了
+			 					$('.noDataPingjiaAll').show();
+			 					scrollFunPj1=function(){
+			 						isloadPjthree = true;
+			 						myScrollpjthree.refresh();
+			 						myScrollpjthree.off("scroll",scrollFunPj3);
+			 					}
+			 		 		}
+
+			 				myScrollpjthree.refresh();
+			 				telCenterStar('#proDetailMain .pingjia .main .pingjiaCom .title .phone');
+			 		 	},
+			 		 	error: function(xhr, type){
+			 		 		console.log('Ajax error!');
+			 		 	}
+			 		 });
+			 		loadBinPj[2].innerHTML = "";
+			 		myScrollpjthree.on("scroll",scrollFunPj3);
+			 		myScrollpjthree.refresh();
+			 	}
+			 }
+		</script>
+	</head>
+	<body class="box" style="max-width:720px;min-height: 100%;" onload="onload()">
+		<!--正文区域-->
+		<div id="pingjiaTop" class="topBackTitle">
+			<div class="contain maxWidth">
+				<a class="hz back" href="{:U('Product/detail',array('id'=>$id))}">&#xe600;</a>商品评价
+			</div>
+		</div>
+		<div id="pingjiaMain" class="fastscroll">
+			<div class="maxWidth">
+				<!-- 评价 -->
+				<div class="pingjia">
+					<div class="top">
+						<ul class="clear">
+							<li class="active">
+								<p>
+									<a href="javascript:;">全部(<span class="all">{$evaluate_num}</span>)</a>
+									<!-- <a href="javascript:;">全部(<span class="all">99</span>)</a> -->
+								</p>
+							</li>
+							<li>
+								<p>
+									<a href="javascript:;">好评(<span class="good">{:count($hao_evaluate_list)}</span>)</a>
+									<!-- <a href="javascript:;">好评(<span class="good">99</span>)</a> -->
+								</p>
+							</li>
+							<li>
+								<p>
+									<a href="javascript:;">差评(<span class="bad">{:count($cha_evaluate_list)}</span>)</a>
+									<!-- <a href="javascript:;">差评(<span class="bad">99</span>)</a> -->
+								</p>
+							</li>
+						</ul>
+					</div>
+					<div class="main">
+						<div class="contain maxWidth">
+							<!-- 所有评价 -->
+							<div class="pjone allPingjia pingjiaCom">
+								<div class="maxWidth">
+									<div class="summary clear">
+										<div class="left">
+											<p class="sumzhi">{$total_score}.0</p>
+											<!-- <p class="sumzhi">4.0</p> -->
+											<span>整体评价</span>
+										</div>
+										<div class="right">
+											<!-- <span class="hz huaorange">&#xe614;</span>
+											<span class="hz huaorange">&#xe614;</span>
+											<span class="hz huaorange">&#xe614;</span>
+											<span class="hz huaorange">&#xe614;</span>
+											<span class="hz huagray">&#xe614;</span> -->
+											<for start="0" end="$total_score">
+												<span class="hz huaorange">&#xe614;</span>
+											</for>
+											<for start="0" end="5-$total_score">
+												<span class="hz huagray">&#xe614;</span>
+											</for>
+										</div>
+									</div>
+									<ul class="marok">
+										<!--<li>
+											<div class="title clear">
+												<p class="touxiang" style="background-image: url(../../../../../Public/Home/img/mytouxiang.png)"></p>
+												<span class="phone">13702095930</span>
+												<span class="time">2015-10-10</span>
+											</div>
+											<div class="content">
+												<p class="hua">
+													<span class="hz huaorange">&#xe614;</span>
+													<span class="hz huaorange">&#xe614;</span>
+													<span class="hz huaorange">&#xe614;</span>
+													<span class="hz huaorange">&#xe614;</span>
+													<span class="hz huagray">&#xe614;</span>
+													<span class="zhi">4.0</span>
+												</p>
+												<p class="word">商品不错商品不错商品不错商品不错商品不错商品不错</p>
+											</div>
+										</li>
+										<li>
+											<div class="title clear">
+												<p class="touxiang" style="background-image: url(../../../../../Public/Home/img/mytouxiang.png)"></p>
+												<span class="phone">13702095930</span>
+												<span class="time">2015-10-10</span>
+											</div>
+											<div class="content">
+												<p class="hua">
+													<span class="hz huaorange">&#xe614;</span>
+													<span class="hz huaorange">&#xe614;</span>
+													<span class="hz huaorange">&#xe614;</span>
+													<span class="hz huaorange">&#xe614;</span>
+													<span class="hz huagray">&#xe614;</span>
+													<span class="zhi">4.0</span>
+												</p>
+												<p class="word">商品不错商品不错商品不错商品不错商品不错商品不错</p>
+											</div>
+										</li>
+										<li>
+											<div class="title clear">
+												<p class="touxiang" style="background-image: url(../../../../../Public/Home/img/mytouxiang.png)"></p>
+												<span class="phone">13702095930</span>
+												<span class="time">2015-10-10</span>
+											</div>
+											<div class="content">
+												<p class="hua">
+													<span class="hz huaorange">&#xe614;</span>
+													<span class="hz huaorange">&#xe614;</span>
+													<span class="hz huaorange">&#xe614;</span>
+													<span class="hz huaorange">&#xe614;</span>
+													<span class="hz huagray">&#xe614;</span>
+													<span class="zhi">4.0</span>
+												</p>
+												<p class="word">商品不错商品不错商品不错商品不错商品不错商品不错</p>
+											</div>
+										</li>-->
+										<volist name="all_evaluate_list" id="item">
+										<li>
+											<div class="title clear">
+												<if condition="$userarr[$item['user_id']]['image'] neq ''">
+												<p class="touxiang" style="background-image: url({$userarr[$item['user_id']]['image']})"></p>
+												<else/>
+												<p class="touxiang" style="background-image: url(__PUBLIC__/Home/img/mytouxiang.png)"></p>
+												</if>
+												<span class="phone">{$userarr[$item['user_id']]['login_user']}</span>
+												<span class="time">{:date('Y-m-d',$item['addtime'])}</span>
+											</div>
+											<div class="content">
+												<p class="hua">
+												<for start="0" end="$item['score']">
+													<span class="hz huaorange">&#xe614;</span>
+												</for>
+												<for start="0" end="5-$item['score']">
+													<span class="hz huagray">&#xe614;</span>
+												</for>
+													<span class="zhi">{$item.score}.0</span>
+												</p>
+												<p class="word">{$item.desc}</p>
+											</div>
+										</li>
+										</volist>
+									</ul>
+									<div class="noData noDataPingjiaAll" style="display:none">没有更多评价了</div>
+									<div class="loadBinPj"></div>
+								</div>
+							</div>
+							<!-- 好评 -->
+							<div style="display: none" class="pjtwo goodPingjia pingjiaCom">
+								<div class="maxWidth">
+									<ul class="marok">
+										<!--<li>
+											<div class="title clear">
+												<p class="touxiang" style="background-image: url(../../../../../Public/Home/img/mytouxiang.png)"></p>
+												<span class="phone">13702095930</span>
+												<span class="time">2015-10-10</span>
+											</div>
+											<div class="content">
+												<p class="hua">
+													<span class="hz huaorange">&#xe614;</span>
+													<span class="hz huaorange">&#xe614;</span>
+													<span class="hz huaorange">&#xe614;</span>
+													<span class="hz huaorange">&#xe614;</span>
+													<span class="hz huagray">&#xe614;</span>
+													<span class="zhi">4.0</span>
+												</p>
+												<p class="word">1商品不错商品不错商品不错商品不错商品不错商品不错</p>
+											</div>
+										</li>
+										<li>
+											<div class="title clear">
+												<p class="touxiang" style="background-image: url(../../../../../Public/Home/img/mytouxiang.png)"></p>
+												<span class="phone">13702095930</span>
+												<span class="time">2015-10-10</span>
+											</div>
+											<div class="content">
+												<p class="hua">
+													<span class="hz huaorange">&#xe614;</span>
+													<span class="hz huaorange">&#xe614;</span>
+													<span class="hz huaorange">&#xe614;</span>
+													<span class="hz huaorange">&#xe614;</span>
+													<span class="hz huagray">&#xe614;</span>
+													<span class="zhi">4.0</span>
+												</p>
+												<p class="word">1商品不错商品不错商品不错商品不错商品不错商品不错</p>
+											</div>
+										</li>
+										<li>
+											<div class="title clear">
+												<p class="touxiang" style="background-image: url(../../../../../Public/Home/img/mytouxiang.png)"></p>
+												<span class="phone">13702095930</span>
+												<span class="time">2015-10-10</span>
+											</div>
+											<div class="content">
+												<p class="hua">
+													<span class="hz huaorange">&#xe614;</span>
+													<span class="hz huaorange">&#xe614;</span>
+													<span class="hz huaorange">&#xe614;</span>
+													<span class="hz huaorange">&#xe614;</span>
+													<span class="hz huagray">&#xe614;</span>
+													<span class="zhi">4.0</span>
+												</p>
+												<p class="word">1商品不错商品不错商品不错商品不错商品不错商品不错</p>
+											</div>
+										</li>-->
+										<volist name="hao_evaluate_list" id="item">
+										<li>
+											<div class="title clear">
+												<if condition="$userarr[$item['user_id']]['image'] neq ''">
+												<p class="touxiang" style="background-image: url({$userarr[$item['user_id']]['image']})"></p>
+												<else/>
+												<p class="touxiang" style="background-image: url(__PUBLIC__/Home/img/mytouxiang.png)"></p>
+												</if>
+												<span class="phone">{$userarr[$item['user_id']]['login_user']}</span>
+												<span class="time">{:date('Y-m-d',$item['addtime'])}</span>
+											</div>
+											<div class="content">
+												<p class="hua">
+												<for start="0" end="$item['score']">
+													<span class="hz huaorange">&#xe614;</span>
+												</for>
+												<for start="0" end="5-$item['score']">
+													<span class="hz huagray">&#xe614;</span>
+												</for>
+													<span class="zhi">{$item.score}.0</span>
+												</p>
+												<p class="word">{$item.desc}</p>
+											</div>
+										</li>
+										</volist>
+									</ul>
+									<div class="noData noDataPingjiaAll" style="display:none">没有更多评价了</div>
+									<div class="loadBinPj"></div>
+								</div>
+							</div>
+							<!-- 差评 -->
+							<div style="display: none" class="pjthree chaPingjia pingjiaCom">
+								<div class="maxWidth">
+									<ul class="marok">
+										<!--<li>
+											<div class="title clear">
+												<p class="touxiang" style="background-image: url(../../../../../Public/Home/img/mytouxiang.png)"></p>
+												<span class="phone">13702095930</span>
+												<span class="time">2015-10-10</span>
+											</div>
+											<div class="content">
+												<p class="hua">
+													<span class="hz huaorange">&#xe614;</span>
+													<span class="hz huaorange">&#xe614;</span>
+													<span class="hz huaorange">&#xe614;</span>
+													<span class="hz huaorange">&#xe614;</span>
+													<span class="hz huagray">&#xe614;</span>
+													<span class="zhi">4.0</span>
+												</p>
+												<p class="word">2商品不错商品不错商品不错商品不错商品不错商品不错</p>
+											</div>
+										</li>
+										<li>
+											<div class="title clear">
+												<p class="touxiang" style="background-image: url(../../../../../Public/Home/img/mytouxiang.png)"></p>
+												<span class="phone">13702095930</span>
+												<span class="time">2015-10-10</span>
+											</div>
+											<div class="content">
+												<p class="hua">
+													<span class="hz huaorange">&#xe614;</span>
+													<span class="hz huaorange">&#xe614;</span>
+													<span class="hz huaorange">&#xe614;</span>
+													<span class="hz huaorange">&#xe614;</span>
+													<span class="hz huagray">&#xe614;</span>
+													<span class="zhi">4.0</span>
+												</p>
+												<p class="word">2商品不错商品不错商品不错商品不错商品不错商品不错</p>
+											</div>
+										</li>
+										<li>
+											<div class="title clear">
+												<p class="touxiang" style="background-image: url(../../../../../Public/Home/img/mytouxiang.png)"></p>
+												<span class="phone">13702095930</span>
+												<span class="time">2015-10-10</span>
+											</div>
+											<div class="content">
+												<p class="hua">
+													<span class="hz huaorange">&#xe614;</span>
+													<span class="hz huaorange">&#xe614;</span>
+													<span class="hz huaorange">&#xe614;</span>
+													<span class="hz huaorange">&#xe614;</span>
+													<span class="hz huagray">&#xe614;</span>
+													<span class="zhi">4.0</span>
+												</p>
+												<p class="word">2商品不错商品不错商品不错商品不错商品不错商品不错</p>
+											</div>
+										</li>-->
+										<volist name="cha_evaluate_list" id="item">
+										<li>
+											<div class="title clear">
+												<if condition="$userarr[$item['user_id']]['image'] neq ''">
+												<p class="touxiang" style="background-image: url({$userarr[$item['user_id']]['image']})"></p>
+												<else/>
+												<p class="touxiang" style="background-image: url(__PUBLIC__/Home/img/mytouxiang.png)"></p>
+												</if>
+												<span class="phone">{$userarr[$item['user_id']]['login_user']}</span>
+												<span class="time">{:date('Y-m-d',$item['addtime'])}</span>
+											</div>
+											<div class="content">
+												<p class="hua">
+												<for start="0" end="$item['score']">
+													<span class="hz huaorange">&#xe614;</span>
+												</for>
+												<for start="0" end="5-$item['score']">
+													<span class="hz huagray">&#xe614;</span>
+												</for>
+													<span class="zhi">{$item.score}.0</span>
+												</p>
+												<p class="word">{$item.desc}</p>
+											</div>
+										</li>
+										</volist>
+									</ul>
+									<div class="noData noDataPingjiaAll" style="display:none">没有更多评价了</div>
+									<div class="loadBinPj"></div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<include file="Public:footer" />
+		<!-- <div id="botBar">
+			<div class="contain maxWidth">
+				<div>
+					<a href="/" class="{$home_active}">
+						<span class="hz">&#xe604;</span>
+						<em>首页</em>
+					</a>
+				</div>
+				<div>
+					<a href="{:U('Product/index')}" class="{$category_active}">
+						<span class="hz">&#xe632;</span>
+						<em>解馋区</em>
+					</a>
+				</div>
+				<div>
+					<a href="{:U('Cart/index')}" class="{$cart_active}">
+						<span class="hz">&#xe601;</span>
+						<em>购物车</em>
+					</a>
+				</div>
+				<!-- <div>
+					<a href="{:U('/Member/Order/index')}" class="{$order_active}">
+						<span class="hz">&#xe602;</span>
+						<em>订单</em>
+					</a>
+				</div> -->
+				<!-- <div>
+					<a href="{:U('/Member/Index/index')}" class="{$member_active}">
+						<span class="hz">&#xe605;</span>
+						<em>我的</em>
+					</a>
+				</div>
+			</div>
+		</div> -->
+		<!-- tip -->
+		<div class="tip" style="opacity:0;z-index:-1"></div>
+
+		<script>
+			//点击tab切换
+			$('#pingjiaMain .pingjia .top li').on('click',function(){
+				var index=$(this).index();
+				$(this).addClass('active').siblings().removeClass('active');
+				$('#pingjiaMain .pingjiaCom').hide();
+				if(index==0){
+					$('#pingjiaMain .pjone').show();
+				}else if(index==1){
+					$('#pingjiaMain .pjtwo').show();
+				}else if(index==2){
+					$('#pingjiaMain .pjthree').show();
+				}
+
+				currPagePj=index;
+				onload();
+			});
+		</script>
+	</body>
+</html>							

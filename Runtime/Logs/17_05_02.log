@@ -1,0 +1,253 @@
+[ 2017-05-02T09:53:18+08:00 ] 127.0.0.1 /
+INFO: [ app_init ] --START--
+SQL: SHOW COLUMNS FROM `onethink_hooks` [ RunTime:0.002702s ]
+SQL: SELECT `name`,`addons` FROM `onethink_hooks`  [ RunTime:0.000651s ]
+SQL: SHOW COLUMNS FROM `onethink_addons` [ RunTime:0.002771s ]
+SQL: SELECT `id`,`name` FROM `onethink_addons` WHERE ( `status` = 1 ) AND ( `name` IN ('ReturnTop') )  [ RunTime:0.000566s ]
+SQL: SELECT `id`,`name` FROM `onethink_addons` WHERE ( `status` = 1 ) AND ( `name` IN ('Attachment') )  [ RunTime:0.000686s ]
+SQL: SELECT `id`,`name` FROM `onethink_addons` WHERE ( `status` = 1 ) AND ( `name` IN ('Attachment','SocialComment') )  [ RunTime:0.000670s ]
+SQL: SELECT `id`,`name` FROM `onethink_addons` WHERE ( `status` = 1 ) AND ( `name` IN ('Attachment') )  [ RunTime:0.000656s ]
+SQL: SELECT `id`,`name` FROM `onethink_addons` WHERE ( `status` = 1 ) AND ( `name` IN ('Editor') )  [ RunTime:0.000693s ]
+SQL: SELECT `id`,`name` FROM `onethink_addons` WHERE ( `status` = 1 ) AND ( `name` IN ('EditorForAdmin') )  [ RunTime:0.000685s ]
+SQL: SELECT `id`,`name` FROM `onethink_addons` WHERE ( `status` = 1 ) AND ( `name` IN ('SiteStat','SystemInfo','DevTeam') )  [ RunTime:0.000692s ]
+SQL: SELECT `id`,`name` FROM `onethink_addons` WHERE ( `status` = 1 ) AND ( `name` IN ('Editor') )  [ RunTime:0.000685s ]
+INFO: Run Common\Behavior\InitHook [ RunTime:0.051062s ]
+INFO: [ app_init ] --END-- [ RunTime:0.051828s ]
+INFO: [ app_begin ] --START--
+INFO: Run Behavior\ReadHtmlCache [ RunTime:0.009889s ]
+INFO: [ app_begin ] --END-- [ RunTime:0.009936s ]
+SQL: SHOW COLUMNS FROM `onethink_config` [ RunTime:0.003047s ]
+SQL: SELECT `type`,`name`,`value` FROM `onethink_config` WHERE ( `status` = 1 )  [ RunTime:0.001336s ]
+NOTIC: [8] Undefined index: user F:\qampp\htdocs\FQMALL_v1.1.1\Application\Home\Controller\HomeController.class.php 第 26 行.
+NOTIC: [8] Undefined index: user F:\qampp\htdocs\FQMALL_v1.1.1\Application\Home\Controller\HomeController.class.php 第 35 行.
+SQL: SHOW COLUMNS FROM `onethink_user` [ RunTime:0.003258s ]
+SQL: SELECT * FROM `onethink_user` WHERE ( id= ) LIMIT 1   [ RunTime:0.000627s ]
+ERR: 1064:You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ') LIMIT 1' at line 1
+ [ SQL语句 ] : SELECT * FROM `onethink_user` WHERE ( id= ) LIMIT 1  
+SQL: SHOW COLUMNS FROM `onethink_grade` [ RunTime:0.002280s ]
+NOTIC: [8] Undefined index: lv F:\qampp\htdocs\FQMALL_v1.1.1\Application\Home\Controller\HomeController.class.php 第 41 行.
+SQL: SELECT * FROM `onethink_grade` WHERE ( id= ) LIMIT 1   [ RunTime:0.000660s ]
+ERR: 1064:You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ') LIMIT 1' at line 1
+ [ SQL语句 ] : SELECT * FROM `onethink_grade` WHERE ( id= ) LIMIT 1  
+SQL: SHOW COLUMNS FROM `onethink_spell` [ RunTime:0.002999s ]
+SQL: UPDATE `onethink_spell` SET `state`=1 WHERE ( start_date > 1493689998 and join_num < num and state<>1 and `status`=1 ) [ RunTime:0.000630s ]
+ERR: 1054:Unknown column 'join_num' in 'where clause'
+ [ SQL语句 ] : UPDATE `onethink_spell` SET `state`=1 WHERE ( start_date > 1493689998 and join_num < num and state<>1 and `status`=1 )
+SQL: UPDATE `onethink_spell` SET `state`=2 WHERE ( start_date <= 1493689998 and end_date > 1493689998 and state<>2 and `status`=1 ) [ RunTime:0.000679s ]
+SQL: SELECT * FROM `onethink_spell` WHERE ( end_date <= 1493689998 and state<>3 and status=1 )  [ RunTime:0.001543s ]
+NOTIC: [2] Invalid argument supplied for foreach() F:\qampp\htdocs\FQMALL_v1.1.1\Application\Home\Controller\HomeController.class.php 第 67 行.
+SQL: SELECT * FROM `onethink_spell` WHERE ( state=2 and status=1 )  [ RunTime:0.001399s ]
+SQL: SHOW COLUMNS FROM `onethink_spell_teams` [ RunTime:0.002447s ]
+SQL: UPDATE `onethink_spell_teams` SET `status`=1 WHERE ( spell_id=15 and join_num >= 5 ) [ RunTime:0.000663s ]
+SQL: UPDATE `onethink_spell_teams` SET `status`=1 WHERE ( spell_id=17 and join_num >= 5 ) [ RunTime:0.000713s ]
+SQL: UPDATE `onethink_spell_teams` SET `status`=1 WHERE ( spell_id=19 and join_num >= 2 ) [ RunTime:0.000718s ]
+SQL: UPDATE `onethink_spell_teams` SET `status`=1 WHERE ( spell_id=21 and join_num >= 21 ) [ RunTime:0.000698s ]
+SQL: SHOW COLUMNS FROM `onethink_category` [ RunTime:0.003182s ]
+SQL: SELECT `id`,`title` FROM `onethink_category` WHERE ( `status` = 1 ) AND ( `pid` = 0 ) ORDER BY sort ASC,id ASC  [ RunTime:0.000625s ]
+SQL: SHOW COLUMNS FROM `onethink_focus` [ RunTime:0.002423s ]
+SQL: SELECT * FROM `onethink_focus` WHERE ( `pos_id` = 1 ) ORDER BY order_num desc,id desc LIMIT 100   [ RunTime:0.000859s ]
+SQL: SELECT * FROM `onethink_focus` WHERE ( `pos_id` = 2 ) ORDER BY order_num desc,id desc LIMIT 100   [ RunTime:0.000674s ]
+SQL: SELECT * FROM `onethink_focus` WHERE ( `pos_id` = 3 ) ORDER BY order_num desc,id desc LIMIT 100   [ RunTime:0.000890s ]
+SQL: SELECT * FROM `onethink_focus` WHERE ( `pos_id` = 4 ) ORDER BY order_num desc,id desc LIMIT 100   [ RunTime:0.000655s ]
+SQL: SELECT * FROM `onethink_focus` WHERE ( `pos_id` = 5 ) ORDER BY order_num desc,id desc LIMIT 100   [ RunTime:0.000656s ]
+SQL: SELECT `id` FROM `onethink_category` WHERE ( id=14 or pid=14 )  [ RunTime:0.000655s ]
+SQL: SHOW COLUMNS FROM `onethink_product` [ RunTime:0.004688s ]
+SQL: SELECT * FROM `onethink_product` WHERE ( `category_id` IN ('14') ) AND ( `status` = 1 ) AND ( `is_home` = 1 ) ORDER BY order_num asc  [ RunTime:0.001348s ]
+SQL: SELECT `id` FROM `onethink_category` WHERE ( id=16 or pid=16 )  [ RunTime:0.001427s ]
+SQL: SELECT * FROM `onethink_product` WHERE ( `category_id` IN ('16','17') ) AND ( `status` = 1 ) AND ( `is_home` = 1 ) ORDER BY order_num asc  [ RunTime:0.001440s ]
+SQL: SELECT `id` FROM `onethink_category` WHERE ( id=17 or pid=17 )  [ RunTime:0.001431s ]
+SQL: SELECT * FROM `onethink_product` WHERE ( `category_id` IN ('17','18') ) AND ( `status` = 1 ) AND ( `is_home` = 1 ) ORDER BY order_num asc  [ RunTime:0.001441s ]
+SQL: SHOW COLUMNS FROM `onethink_web_site` [ RunTime:0.002626s ]
+SQL: SELECT * FROM `onethink_web_site` LIMIT 1   [ RunTime:0.000615s ]
+NOTIC: [8] Undefined variable: info_num F:\qampp\htdocs\FQMALL_v1.1.1\Application\Home\Controller\IndexController.class.php 第 114 行.
+SQL: SELECT * FROM `onethink_spell` WHERE ( state<3 and status=1 and is_home=1 ) ORDER BY order_num asc,id DESC  [ RunTime:0.001416s ]
+SQL: SELECT * FROM `onethink_product` WHERE ( status=1 ) ORDER BY sell_num DESC LIMIT 5   [ RunTime:0.002162s ]
+SQL: SHOW COLUMNS FROM `onethink_order` [ RunTime:0.003152s ]
+SQL: SELECT `id` FROM `onethink_order` WHERE (  (`addtime` BETWEEN 1493654400 AND 1493689997 ) )  [ RunTime:0.000580s ]
+SQL: SHOW COLUMNS FROM `onethink_order_detail` [ RunTime:0.002496s ]
+NOTIC: [2] implode(): Invalid arguments passed F:\qampp\htdocs\FQMALL_v1.1.1\ThinkPHP\Library\Think\Db.class.php 第 498 行.
+SQL: SELECT `product_id` FROM `onethink_order_detail` WHERE ( `order_id` IN () ) GROUP BY product_id ORDER BY sum(product_num) DESC LIMIT 5   [ RunTime:0.000664s ]
+ERR: 1064:You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ') ) GROUP BY product_id ORDER BY sum(product_num) DESC LIMIT 5' at line 1
+ [ SQL语句 ] : SELECT `product_id` FROM `onethink_order_detail` WHERE ( `order_id` IN () ) GROUP BY product_id ORDER BY sum(product_num) DESC LIMIT 5  
+NOTIC: [2] implode(): Invalid arguments passed F:\qampp\htdocs\FQMALL_v1.1.1\ThinkPHP\Library\Think\Db.class.php 第 498 行.
+SQL: SELECT * FROM `onethink_product` WHERE ( `id` IN () ) AND ( `status` = 1 )  [ RunTime:0.000639s ]
+ERR: 1064:You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ') ) AND ( `status` = 1 )' at line 1
+ [ SQL语句 ] : SELECT * FROM `onethink_product` WHERE ( `id` IN () ) AND ( `status` = 1 ) 
+SQL: SELECT `id` FROM `onethink_order` WHERE (  (`addtime` BETWEEN 1493568000 AND 1493689997 ) )  [ RunTime:0.000663s ]
+NOTIC: [2] implode(): Invalid arguments passed F:\qampp\htdocs\FQMALL_v1.1.1\ThinkPHP\Library\Think\Db.class.php 第 498 行.
+SQL: SELECT `product_id` FROM `onethink_order_detail` WHERE ( `order_id` IN () ) GROUP BY product_id ORDER BY sum(product_num) DESC LIMIT 5   [ RunTime:0.000672s ]
+ERR: 1064:You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ') ) GROUP BY product_id ORDER BY sum(product_num) DESC LIMIT 5' at line 1
+ [ SQL语句 ] : SELECT `product_id` FROM `onethink_order_detail` WHERE ( `order_id` IN () ) GROUP BY product_id ORDER BY sum(product_num) DESC LIMIT 5  
+NOTIC: [2] implode(): Invalid arguments passed F:\qampp\htdocs\FQMALL_v1.1.1\ThinkPHP\Library\Think\Db.class.php 第 498 行.
+SQL: SELECT * FROM `onethink_product` WHERE ( `id` IN () ) AND ( `status` = 1 )  [ RunTime:0.000677s ]
+ERR: 1064:You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ') ) AND ( `status` = 1 )' at line 1
+ [ SQL语句 ] : SELECT * FROM `onethink_product` WHERE ( `id` IN () ) AND ( `status` = 1 ) 
+INFO: [ view_parse ] --START--
+INFO: [ template_filter ] --START--
+INFO: Run Behavior\ContentReplace [ RunTime:0.000167s ]
+INFO: [ template_filter ] --END-- [ RunTime:0.000197s ]
+NOTIC: [8] Undefined variable: user F:\qampp\htdocs\FQMALL_v1.1.1\Runtime\Cache\Home\769e70f2e46f34ceb60619bbda5e4691.php 第 123 行.
+NOTIC: [8] Undefined variable: user F:\qampp\htdocs\FQMALL_v1.1.1\Runtime\Cache\Home\769e70f2e46f34ceb60619bbda5e4691.php 第 128 行.
+NOTIC: [8] Undefined variable: spell_active F:\qampp\htdocs\FQMALL_v1.1.1\Runtime\Cache\Home\769e70f2e46f34ceb60619bbda5e4691.php 第 424 行.
+NOTIC: [8] Undefined variable: cart_active F:\qampp\htdocs\FQMALL_v1.1.1\Runtime\Cache\Home\769e70f2e46f34ceb60619bbda5e4691.php 第 430 行.
+NOTIC: [8] Undefined variable: order_active F:\qampp\htdocs\FQMALL_v1.1.1\Runtime\Cache\Home\769e70f2e46f34ceb60619bbda5e4691.php 第 436 行.
+NOTIC: [8] Undefined variable: member_active F:\qampp\htdocs\FQMALL_v1.1.1\Runtime\Cache\Home\769e70f2e46f34ceb60619bbda5e4691.php 第 442 行.
+INFO: Run Behavior\ParseTemplate [ RunTime:0.028546s ]
+INFO: [ view_parse ] --END-- [ RunTime:0.028573s ]
+INFO: [ view_filter ] --START--
+INFO: Run Behavior\WriteHtmlCache [ RunTime:0.000712s ]
+INFO: [ view_filter ] --END-- [ RunTime:0.000735s ]
+INFO: [ app_end ] --START--
+INFO: Run Behavior\ShowPageTrace [ RunTime:0.000842s ]
+INFO: [ app_end ] --END-- [ RunTime:0.000876s ]
+
+[ 2017-05-02T09:53:29+08:00 ] 127.0.0.1 /admin
+INFO: [ app_init ] --START--
+INFO: Run Common\Behavior\InitHook [ RunTime:0.001636s ]
+INFO: [ app_init ] --END-- [ RunTime:0.001895s ]
+INFO: [ app_begin ] --START--
+INFO: Run Behavior\ReadHtmlCache [ RunTime:0.000516s ]
+INFO: [ app_begin ] --END-- [ RunTime:0.000554s ]
+
+[ 2017-05-02T09:53:29+08:00 ] 127.0.0.1 /index.php?s=/Admin/Public/login.html
+INFO: [ app_init ] --START--
+INFO: Run Common\Behavior\InitHook [ RunTime:0.001602s ]
+INFO: [ app_init ] --END-- [ RunTime:0.001861s ]
+INFO: [ app_begin ] --START--
+INFO: Run Behavior\ReadHtmlCache [ RunTime:0.000437s ]
+INFO: [ app_begin ] --END-- [ RunTime:0.000463s ]
+SQL: SHOW COLUMNS FROM `onethink_config` [ RunTime:0.002760s ]
+SQL: SELECT `type`,`name`,`value` FROM `onethink_config` WHERE ( `status` = 1 )  [ RunTime:0.001390s ]
+INFO: [ view_parse ] --START--
+INFO: [ template_filter ] --START--
+INFO: Run Behavior\ContentReplace [ RunTime:0.000049s ]
+INFO: [ template_filter ] --END-- [ RunTime:0.000081s ]
+INFO: Run Behavior\ParseTemplate [ RunTime:0.014799s ]
+INFO: [ view_parse ] --END-- [ RunTime:0.014826s ]
+INFO: [ view_filter ] --START--
+INFO: Run Behavior\WriteHtmlCache [ RunTime:0.000314s ]
+INFO: [ view_filter ] --END-- [ RunTime:0.000336s ]
+INFO: [ app_end ] --START--
+INFO: Run Behavior\ShowPageTrace [ RunTime:0.000472s ]
+INFO: [ app_end ] --END-- [ RunTime:0.000494s ]
+
+[ 2017-05-02T09:53:30+08:00 ] 127.0.0.1 /index.php?s=/Admin/Public/verify.html
+INFO: [ app_init ] --START--
+INFO: Run Common\Behavior\InitHook [ RunTime:0.001765s ]
+INFO: [ app_init ] --END-- [ RunTime:0.002034s ]
+INFO: [ app_begin ] --START--
+INFO: Run Behavior\ReadHtmlCache [ RunTime:0.000478s ]
+INFO: [ app_begin ] --END-- [ RunTime:0.000509s ]
+INFO: [ app_end ] --START--
+INFO: Run Behavior\ShowPageTrace [ RunTime:0.000550s ]
+INFO: [ app_end ] --END-- [ RunTime:0.000599s ]
+
+[ 2017-05-02T09:53:42+08:00 ] 127.0.0.1 /index.php?s=/Admin/Public/login.html
+INFO: [ app_init ] --START--
+INFO: Run Common\Behavior\InitHook [ RunTime:0.001613s ]
+INFO: [ app_init ] --END-- [ RunTime:0.001858s ]
+INFO: [ app_begin ] --START--
+INFO: Run Behavior\ReadHtmlCache [ RunTime:0.000454s ]
+INFO: [ app_begin ] --END-- [ RunTime:0.000479s ]
+SQL: SHOW COLUMNS FROM `onethink_ucenter_member` [ RunTime:0.002997s ]
+SQL: SELECT * FROM `onethink_ucenter_member` WHERE ( `username` = 'admin' ) LIMIT 1   [ RunTime:0.001320s ]
+
+[ 2017-05-02T09:53:43+08:00 ] 127.0.0.1 /index.php?s=/Admin/Public/verify.html&random=0.8392725247512007
+INFO: [ app_init ] --START--
+INFO: Run Common\Behavior\InitHook [ RunTime:0.001604s ]
+INFO: [ app_init ] --END-- [ RunTime:0.001844s ]
+INFO: [ app_begin ] --START--
+INFO: Run Behavior\ReadHtmlCache [ RunTime:0.000455s ]
+INFO: [ app_begin ] --END-- [ RunTime:0.000483s ]
+INFO: [ app_end ] --START--
+INFO: Run Behavior\ShowPageTrace [ RunTime:0.000581s ]
+INFO: [ app_end ] --END-- [ RunTime:0.000617s ]
+
+[ 2017-05-02T09:53:49+08:00 ] 127.0.0.1 /index.php?s=/Admin/Public/login.html
+INFO: [ app_init ] --START--
+INFO: Run Common\Behavior\InitHook [ RunTime:0.001556s ]
+INFO: [ app_init ] --END-- [ RunTime:0.001798s ]
+INFO: [ app_begin ] --START--
+INFO: Run Behavior\ReadHtmlCache [ RunTime:0.000456s ]
+INFO: [ app_begin ] --END-- [ RunTime:0.000482s ]
+SQL: SHOW COLUMNS FROM `onethink_ucenter_member` [ RunTime:0.002685s ]
+SQL: SELECT * FROM `onethink_ucenter_member` WHERE ( `username` = 'admin' ) LIMIT 1   [ RunTime:0.001363s ]
+SQL: UPDATE `onethink_ucenter_member` SET `last_login_time`=1493690029,`last_login_ip`='2130706433' WHERE ( `id` = 1 ) [ RunTime:0.000646s ]
+SQL: SHOW COLUMNS FROM `onethink_member` [ RunTime:0.002947s ]
+SQL: SELECT `uid`,`nickname`,`sex`,`birthday`,`qq`,`score`,`login`,`reg_ip`,`reg_time`,`last_login_ip`,`last_login_time`,`status` FROM `onethink_member` WHERE ( `uid` = 1 ) LIMIT 1   [ RunTime:0.001336s ]
+SQL: SHOW COLUMNS FROM `onethink_action` [ RunTime:0.002672s ]
+SQL: SELECT * FROM `onethink_action` WHERE ( `name` = 'user_login' ) LIMIT 1   [ RunTime:0.000665s ]
+SQL: SHOW COLUMNS FROM `onethink_member` [ RunTime:0.002500s ]
+SQL: SELECT `nickname` FROM `onethink_member` WHERE ( `uid` = 1 ) LIMIT 1   [ RunTime:0.000660s ]
+SQL: SHOW COLUMNS FROM `onethink_action_log` [ RunTime:0.002710s ]
+SQL: INSERT INTO `onethink_action_log` (`action_id`,`user_id`,`action_ip`,`model`,`record_id`,`create_time`,`remark`) VALUES (1,1,2130706433,'member',1,1493690029,'admin在2017-05-02 09:53登录了后台') [ RunTime:0.064864s ]
+SQL: SELECT * FROM `onethink_action` WHERE ( `name` = 'user_login' ) LIMIT 1   [ RunTime:0.001424s ]
+NOTIC: [8] Undefined offset: 1 F:\qampp\htdocs\FQMALL_v1.1.1\Application\Common\Common\function.php 第 697 行.
+NOTIC: [2] array_key_exists() expects parameter 2 to be array, null given F:\qampp\htdocs\FQMALL_v1.1.1\Application\Common\Common\function.php 第 697 行.
+SQL: SELECT COUNT(*) AS tp_count FROM `onethink_action_log` WHERE ( `action_id` = 1 ) AND ( `user_id` = 1 ) AND ( `create_time` > 1493603629 ) LIMIT 1   [ RunTime:0.001369s ]
+SQL: UPDATE `onethink_member` SET `score`=score+10 WHERE ( uid=1 AND status>-1 ) [ RunTime:0.000760s ]
+SQL: UPDATE `onethink_member` SET `login`=`login`+1,`last_login_time`=1493690029,`last_login_ip`='2130706433' WHERE ( `uid` = 1 ) [ RunTime:0.000707s ]
+
+[ 2017-05-02T09:53:49+08:00 ] 127.0.0.1 /index.php?s=/Admin/Index/index.html
+INFO: [ app_init ] --START--
+INFO: Run Common\Behavior\InitHook [ RunTime:0.001593s ]
+INFO: [ app_init ] --END-- [ RunTime:0.001831s ]
+INFO: [ app_begin ] --START--
+INFO: Run Behavior\ReadHtmlCache [ RunTime:0.000464s ]
+INFO: [ app_begin ] --END-- [ RunTime:0.000493s ]
+SQL: SHOW COLUMNS FROM `onethink_menu` [ RunTime:0.002918s ]
+SQL: SELECT * FROM `onethink_menu` WHERE ( `pid` = 0 ) AND ( `hide` = 0 ) ORDER BY sort asc  [ RunTime:0.022771s ]
+SQL: SELECT `id` FROM `onethink_menu` WHERE ( url like '%Index/index%' ) LIMIT 1   [ RunTime:0.000805s ]
+SQL: SHOW COLUMNS FROM `onethink_menu` [ RunTime:0.002815s ]
+SQL: SELECT `id`,`pid`,`title` FROM `onethink_menu` WHERE ( id=1 ) LIMIT 1   [ RunTime:0.000865s ]
+SQL: SELECT DISTINCT  `group` FROM `onethink_menu` WHERE ( pid = 1 )  [ RunTime:0.000690s ]
+SQL: SELECT `id`,`url` FROM `onethink_menu` WHERE ( `pid` = 1 ) AND ( `hide` = 0 )  [ RunTime:0.000670s ]
+INFO: [ view_parse ] --START--
+INFO: [ template_filter ] --START--
+INFO: Run Behavior\ContentReplace [ RunTime:0.000083s ]
+INFO: [ template_filter ] --END-- [ RunTime:0.000110s ]
+INFO: [ AdminIndex ] --START--
+SQL: SHOW COLUMNS FROM `onethink_addons` [ RunTime:0.002364s ]
+SQL: SELECT `config` FROM `onethink_addons` WHERE ( `name` = 'SiteStat' ) AND ( `status` = 1 ) LIMIT 1   [ RunTime:0.000586s ]
+SQL: SHOW COLUMNS FROM `onethink_member` [ RunTime:0.002403s ]
+SQL: SELECT COUNT(*) AS tp_count FROM `onethink_member` LIMIT 1   [ RunTime:0.000692s ]
+SQL: SHOW COLUMNS FROM `onethink_action_log` [ RunTime:0.003024s ]
+SQL: SELECT COUNT(*) AS tp_count FROM `onethink_action_log` LIMIT 1   [ RunTime:0.000892s ]
+SQL: SHOW COLUMNS FROM `onethink_document` [ RunTime:0.003202s ]
+SQL: SELECT COUNT(*) AS tp_count FROM `onethink_document` LIMIT 1   [ RunTime:0.000580s ]
+SQL: SHOW COLUMNS FROM `onethink_category` [ RunTime:0.002989s ]
+SQL: SELECT COUNT(*) AS tp_count FROM `onethink_category` LIMIT 1   [ RunTime:0.000618s ]
+SQL: SHOW COLUMNS FROM `onethink_model` [ RunTime:0.003126s ]
+SQL: SELECT COUNT(*) AS tp_count FROM `onethink_model` LIMIT 1   [ RunTime:0.000632s ]
+INFO: [ view_parse ] --START--
+INFO: [ template_filter ] --START--
+INFO: Run Behavior\ContentReplace [ RunTime:0.000017s ]
+INFO: [ template_filter ] --END-- [ RunTime:-0.047223s ]
+INFO: Run Behavior\ParseTemplate [ RunTime:0.009255s ]
+INFO: [ view_parse ] --END-- [ RunTime:0.009282s ]
+INFO: [ view_filter ] --START--
+INFO: Run Behavior\WriteHtmlCache [ RunTime:0.000341s ]
+INFO: [ view_filter ] --END-- [ RunTime:0.000362s ]
+INFO: Run SiteStat [ RunTime:0.047497s ]
+SQL: SELECT `config` FROM `onethink_addons` WHERE ( `name` = 'SystemInfo' ) AND ( `status` = 1 ) LIMIT 1   [ RunTime:0.000899s ]
+INFO: [ view_parse ] --START--
+INFO: [ template_filter ] --START--
+INFO: Run Behavior\ContentReplace [ RunTime:0.000020s ]
+INFO: [ template_filter ] --END-- [ RunTime:-0.211433s ]
+SQL: select version() as v; [ RunTime:0.000849s ]
+INFO: Run Behavior\ParseTemplate [ RunTime:0.002457s ]
+INFO: [ view_parse ] --END-- [ RunTime:-0.162369s ]
+INFO: [ view_filter ] --START--
+INFO: Run Behavior\WriteHtmlCache [ RunTime:0.000005s ]
+INFO: [ view_filter ] --END-- [ RunTime:-0.164492s ]
+INFO: Run SystemInfo [ RunTime:0.164505s ]
+INFO: [ AdminIndex ] --END-- [ RunTime:0.212027s ]
+INFO: Run Behavior\ParseTemplate [ RunTime:0.002539s ]
+INFO: [ view_parse ] --END-- [ RunTime:-0.162369s ]
+INFO: [ view_filter ] --START--
+INFO: Run Behavior\WriteHtmlCache [ RunTime:0.000003s ]
+INFO: [ view_filter ] --END-- [ RunTime:-0.164571s ]
+INFO: [ app_end ] --START--
+INFO: Run Behavior\ShowPageTrace [ RunTime:0.000569s ]
+INFO: [ app_end ] --END-- [ RunTime:0.000594s ]
+

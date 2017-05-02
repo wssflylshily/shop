@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html class="h100">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>我的订单</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/zepto.js"></script>
+		<!-- <script src="__PUBLIC__/Home/js/iscroll-probe.js"></script> -->
+		<style>
+			/*下拉加载样式*/
+			/*#wrapper {
+				position: absolute;
+				z-index: 1;
+				top: 0;
+				bottom: 0;
+				left: 0;
+				width: 100%;
+				overflow: hidden;
+			}*/
+			/*#wrapper > div > .list > li{margin-bottom: 10px;}*/
+			/*#wrapper > div > .list > li:last-child{margin-bottom: 0;}*/
+			/*#loadBin{color: #5d5d5d;text-align: center;line-height: 30px;}*/
+		</style>
+	<script>
+	function delorder(id)
+	{
+		if(confirm("确认删除订单？"))
+		{
+			$.ajax({
+				//提交数据的类型 POST GET
+				type:"POST",
+				//提交的网址
+				url:"__URL__/delorder",
+				//提交的数据
+				data:{'id':id},
+				//返回数据的格式
+				datatype: "json",//"xml", "html", "script", "json", "jsonp", "text".
+				//在请求之前调用的函数
+				//成功返回之后调用的函数             
+				success:function(json){ 
+						// alert(json.info);
+					$('.textTip').text(json.info).css({
+						'opacity':1,
+						'display':'block'
+					});
+					setTimeout(function(){
+						$('.textTip').css('opacity',0);
+						setTimeout(function(){
+							$('.textTip').css('display','none');
+							window.location.reload();
+						},500);
+					},1500);
+				}
+			});
+		}
+	}
+	</script>
+	</head>
+	<!-- <body class="h100 ohid" onload="onload()"> -->
+	<body class="h100 ohid">
+		<!--正文区域-->
+		<div id="mydingdanTop" class="topBackTitle">
+			<div class="contain maxWidth">
+				<div class="top1">
+					<a class="hz back" href="javascript:;">&#xe600;</a>我的订单<!--<a href="订单查询.html" class="hz search">&#xe607;</a>-->
+				</div>
+				<div class="top2">
+					<ul class="clear">
+						<li class="{$statuscss[-1]}"><a href="{:U('Order/index')}">全部</a></li>
+						<li class="{$statuscss[0]}"><a href="{:U('Order/index',array('status'=>0))}">待付款</a></li>
+						<li class="{$statuscss[1]}"><a href="{:U('Order/index',array('status'=>1))}">待发货</a></li>
+						<li class="{$statuscss[2]}"><a href="{:U('Order/index',array('status'=>2))}">待收货</a></li>
+						<li class="{$statuscss[3]}"><a href="{:U('Order/index',array('status'=>3))}">已完成</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div id="mydingdanMain" class="fastscroll">
+			<div class="contain maxWidth">
+				<div id="wrapper">
+					<div class="maxWidth">
+						<!--全部 待付款 待发货 待收货 待评价 共用1个ul-->
+						<ul class="list">
+						<volist name="list" id="item">
+							<li>
+								<div class="bgulCon titlebgulCon">
+									<ul>
+										<li>
+											<a href="{:U('Order/view',array('id'=>$item['id']))}">
+												<span class="left">订单编号:{$item.sn}</span>
+												<span class="right red">{$statusarr[$item['status']]}</span>
+											</a>
+										</li>
+									</ul>
+								</div>
+								<div class="ddproList">
+									<ul class="lis">
+			<?php
+			$product_num=0;
+			?>
+									<volist name="item.list" id="vo">
+										<li class="clear">
+											<div class="left">
+												<img src="{$vo.image}">
+											</div>
+											<div class="right">
+												<p class="title"><a href="{:U('/Product/detail',array('id'=>$vo['product_id']))}">{$vo.title}</a></p>
+												<?php
+						$product_num+=$vo['product_num'];
+						$attrlist=explode(',',$vo['product_attr']);
+						$attr=array();
+						foreach($attrlist as $item1)
+						{
+							list($name,$value)=explode('=',$item1);
+							$attr[]=$name.'：'.$value;
+						}
+						?>
+												<p class="price">
+													<em>{$vo.product_price}</span></em><del>&yen;{$vo.market_price}</del><span class="r">	<span>{$vo.product_num}</span></span>
+												</p>
+												<if condition="$item.status eq 2">
+													<a href="http://wpa.qq.com/msgrd?v=3&uin={$website.qq}" class="spriteBtnGray btn">申请售后</a>
+												</if>
+				<!-- <if condition="$vo['pl'] eq 0">
+												<p class="price">
+				<a href="/Member/Evaluate/add/order_detail_id/{$vo.id}" class="right spriteBtnGray">去评价</a>
+												</p>
+				</if> -->
+											</div>
+										</li>
+									</volist>
+									</ul>
+								</div>
+								<div class="bgulCon bot">
+									<ul>
+										<li>
+											<span class="right">共<span class="num">{$product_num}</span>件商品 合计:&yen;<span class="sumMoney">{$item['money']+$item['express_money']-$item['coupon_money']}</span>(含运费&yen;<span class="yunMoney">{$item.express_money}</span>)</span>
+										</li>
+										<li>
+										<!--
+										/Member/Order/payok?order_id={$item.id}
+										-->
+											<if condition="$item.status eq 0">
+											<a href="/wxpay/example/jsapi.php?order_id={$item.id}" class="right spriteBtnRed">付款</a>
+											<!--
+											<a href="/wxpay/example/jsapi.php?order_id={$item.id}" class="right spriteBtnRed">付款</a>
+											-->
+											<a href="javascript:cancelorder({$item.id})" class="right spriteBtnGray">取消订单</a>
+											</if>
+				<if condition="$item.status eq 2">
+				<a href="{:U('Order/upstatus',array('id'=>$item['id'],'status'=>3))}" class="right spriteBtnRed">确认收货</a>
+				</if>
+											<if condition="$vo['pl'] eq 0">
+												<a href="/Member/Evaluate/add/order_detail_id/{$vo.id}" class="right spriteBtnRed pingjia">去评价</a>
+											</if>
+											<if condition="$item.status eq 1">
+												<a href="http://wpa.qq.com/msgrd?v=3&uin={$website.qq}" class="spriteBtnGray right">申请售后</a>
+											</if>
+											<if condition="$item.status eq 3">
+												<a href="javascript:delorder({$item.id});" class="right spriteBtnGray delDingdan">删除订单</a
+											</if>
+											<if condition="$item.status eq 4">
+												<a href="javascript:;" class="right spriteBtnGray delDingdan">删除订单</a
+											</if>
+										</li>
+									</ul>
+								</div>
+							</li>
+							</volist>
+						</ul>
+						<div id="loadBin"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+<script>
+function cancelorder(order_id)
+{
+	var url='{:U('Order/upstatus')}';
+	if(confirm("确认取消订单?"))
+	{
+		$.ajax({
+            //提交数据的类型 POST GET
+            type:"POST",
+            //提交的网址
+            url:url,
+            //提交的数据
+            data:{status:4,id:order_id},
+            //返回数据的格式
+            datatype: "json",//"xml", "html", "script", "json", "jsonp", "text".
+            //在请求之前调用的函数
+            //成功返回之后调用的函数             
+            success:function(data){
+				alert(data.info);
+				if(data.status>0)
+				{
+					window.location.reload();
+				}
+				//alert(data.info);
+				//window.location.reload();
+				//$("#msg").html(decodeURI(data));            
+            }   ,
+            //调用执行后调用的函数
+            complete: function(XMLHttpRequest, textStatus){
+               //alert(XMLHttpRequest.responseText);
+               //alert(textStatus);
+                //HideLoading();
+            },
+            error: function(){
+            }         
+         });
+	}
+}
+</script>
+		<include file="Public:footer" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		<script>
+			//返回按钮
+			$('#mydingdanTop .back').on('tap',function(){
+				window.history.go(-1);
+			});
+
+
+			//iscroll 下拉加载+zeptoajax
+			// function onload(){
+			// 	loadBin = document.getElementById("loadBin");
+			// 	myScroll = new IScroll('#wrapper',{
+			// 		probeType: 3,
+			// 		click:true,
+			// 		tap:true
+			// 	});
+			// 	myScroll.on("scroll",scrollFun);
+			// 	myScroll.on("scrollEnd",scrollEndFun);
+			// }
+			// var page=1;
+			// var myScroll,
+			// 	loadBin,
+			// 	isload = false,
+			// 	scrollFun = function(){
+			// 		if((this.y - this.maxScrollY)>>0 < -50){
+			// 			isload = true;
+			// 			loadBin.innerHTML = "松开手指加载更多";
+			// 			myScroll.refresh();
+			// 			myScroll.off("scroll",scrollFun);
+			// 		}
+			// 	},
+			// 	scrollEndFun = function(){
+			// 		if(isload){
+			// 			isload = false;
+
+			// 			$.ajax({
+			// 				type: 'GET',
+			// 				url: '__PUBLIC__/Home/data/myOrderListAll.html',
+			// 				dataType: 'json',
+			// 				success: function(data){
+			// 					page++;
+			// 					var str='';
+			// 					for(var i=0;i<data.lists.length;i++){
+			// 						if(data.lists[i].type=='daifukuan'){
+			// 							//待付款
+			// 							str+='<li><div class="bgulCon titlebgulCon"><ul><li><span class="left">订单编号:'+data.lists[i].top.dingdanNum+'</span><span class="right red">'+data.lists[i].top.dingdanstate+'</span></li></ul></div><div class="ddproList"><ul class="lis">';
+			// 							for(var j=0;j<data.lists[i].pro.length;j++){
+			// 								str+='<li class="clear"><div class="left"><img src="'+data.lists[i].pro[j].img+'"></div><div class="right"><p class="title"><a href="javascript:;">'+data.lists[i].pro[j].title+'</a></p><p class="price"><em>&yen;<span>'+data.lists[i].pro[j].chipPrice+'</span></em><del>&yen;'+data.lists[i].pro[j].guiPrice+'</del><span class="r">&times;<span>'+data.lists[i].pro[j].num+'</span></span></p></div></li>';
+			// 							}
+			// 							str+='</ul></div><div class="bgulCon bot"><ul><li><span class="right">共<span class="num">'+data.lists[i].bot.sumNum+'</span>件商品 合计:&yen;<span class="sumMoney">'+data.lists[i].bot.sumMoney+'</span>(含运费&yen;<span class="yunMoney">'+data.lists[i].bot.yunfeiMoney+'</span>)</span></li>';
+			// 							str+='<li><a href="javascript:;" class="right spriteBtnRed payMoney">付款</a><a href="javascript:;" class="right spriteBtnGray cancelDingdan">取消订单</a></li></ul></div></li>';
+			// 						}else if(data.lists[i].type=='daifahuo'){
+			// 							//待发货
+			// 							str+='<li><div class="bgulCon titlebgulCon"><ul><li><span class="left">订单编号:'+data.lists[i].top.dingdanNum+'</span><span class="right red">'+data.lists[i].top.dingdanstate+'</span></li></ul></div><div class="ddproList"><ul class="lis">';
+			// 							for(var j=0;j<data.lists[i].pro.length;j++){
+			// 								str+='<li class="clear"><div class="left"><img src="'+data.lists[i].pro[j].img+'"></div><div class="right"><p class="title"><a href="javascript:;">'+data.lists[i].pro[j].title+'</a></p><p class="price"><em>&yen;<span>'+data.lists[i].pro[j].chipPrice+'</span></em><del>&yen;'+data.lists[i].pro[j].guiPrice+'</del><span class="r">&times;<span>'+data.lists[i].pro[j].num+'</span></span></p></div></li>';
+			// 							}
+			// 							str+='</ul></div><div class="bgulCon bot"><ul><li><span class="right">共<span class="num">'+data.lists[i].bot.sumNum+'</span>件商品 合计:&yen;<span class="sumMoney">'+data.lists[i].bot.sumMoney+'</span>(含运费&yen;<span class="yunMoney">'+data.lists[i].bot.yunfeiMoney+'</span>)</span></li><li><a href="申请退款.html" class="right spriteBtnGray">申请售后</a></li></ul></div></li>';
+			// 						}else if(data.lists[i].type=='daishouhuo'){
+			// 							//待收货
+			// 							str+='<li><div class="bgulCon titlebgulCon"><ul><li><span class="left">订单编号:'+data.lists[i].top.dingdanNum+'</span><span class="right red">'+data.lists[i].top.dingdanstate+'</span></li></ul></div><div class="ddproList"><ul class="lis">';
+			// 							for(var j=0;j<data.lists[i].pro.length;j++){
+			// 								str+='<li class="clear"><div class="left"><img src="'+data.lists[i].pro[j].img+'"></div><div class="right"><p class="title"><a href="javascript:;">'+data.lists[i].pro[j].title+'</a></p><p class="price"><em>&yen;<span>'+data.lists[i].pro[j].chipPrice+'</span></em><del>&yen;'+data.lists[i].pro[j].guiPrice+'</del><span class="r">&times;<span>'+data.lists[i].pro[j].num+'</span></span></p>';
+			// 								if(data.lists[i].pro[j].type=='shenqingShouhou'){
+			// 									str+='<a href="申请退款.html" class="spriteBtnGray btn">申请售后</a></div></li>';
+			// 								}else if(data.lists[i].pro[j].type=='tuikuanzhong'){
+			// 									str+='<span class="tuikuan">退款中</span></div></li>';
+			// 								}
+			// 							}
+			// 							str+='</ul></div><div class="bgulCon bot"><ul><li><span class="right">共<span class="num">'+data.lists[i].bot.sumNum+'</span>件商品 合计:&yen;<span class="sumMoney">'+data.lists[i].bot.sumMoney+'</span>(含运费&yen;<span class="yunMoney">'+data.lists[i].bot.yunfeiMoney+'</span>)</span></li><li><a href="javascript:;" class="right spriteBtnRed querenShouhuo">确认收货</a></li></ul></div></li>';
+			// 						}else if(data.lists[i].type=='daipingjia'){
+			// 							//待评价
+			// 							str+='<li><div class="bgulCon titlebgulCon"><ul><li><span class="left">订单编号:'+data.lists[i].top.dingdanNum+'</span><span class="right red">'+data.lists[i].top.dingdanstate+'</span></li></ul></div><div class="ddproList"><ul class="lis">';
+			// 							for(var j=0;j<data.lists[i].pro.length;j++){
+			// 								str+='<li class="clear"><div class="left"><img src="'+data.lists[i].pro[j].img+'"></div><div class="right"><p class="title"><a href="javascript:;">'+data.lists[i].pro[j].title+'</a></p><p class="price"><em>&yen;<span>'+data.lists[i].pro[j].chipPrice+'</span></em><del>&yen;'+data.lists[i].pro[j].guiPrice+'</del><span class="r">&times;<span>'+data.lists[i].pro[j].num+'</span></span></p>';
+			// 								if(data.lists[i].pro[j].type=='shenqingShouhou'){
+			// 									str+='<a href="申请退款.html" class="spriteBtnGray btn">申请售后</a></div></li>';
+			// 								}else if(data.lists[i].pro[j].type=='tuikuanzhong'){
+			// 									str+='<span class="tuikuan">退款中</span></div></li>';
+			// 								}
+			// 							}
+			// 							str+='</ul></div><div class="bgulCon bot"><ul><li><span class="right">共<span class="num">'+data.lists[i].bot.sumNum+'</span>件商品 合计:&yen;<span class="sumMoney">'+data.lists[i].bot.sumMoney+'</span>(含运费&yen;<span class="yunMoney">'+data.lists[i].bot.yunfeiMoney+'</span>)</span></li><li><a href="javascript:;" class="right spriteBtnRed pingjia">评价</a><a href="javascript:;" class="right spriteBtnGray delDingdan">删除订单</a></li></ul></div></li>';
+			// 						}
+
+			// 						$('#wrapper .list').append(str);
+			// 					}
+			// 					loadBin.innerHTML = "";
+			// 					myScroll.on("scroll",scrollFun);
+			// 					myScroll.refresh();
+			// 				},
+			// 				error: function(xhr, type){
+			// 					console.log('Ajax error!');
+			// 				}
+			// 			});
+			// 		}
+			// 	};
+		</script>
+	</body>
+</html>

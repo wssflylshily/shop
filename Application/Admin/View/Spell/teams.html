@@ -1,0 +1,87 @@
+<extend name="Public/base"/>
+
+<block name="body">
+	<div class="main-title">
+		<h2>{$spell.title} - 开团列表</h2>
+	</div>
+
+	<div class="cf">
+		<a class="btn" href="__URL__/index">返 回</a>
+		
+		<a class="btn" href="__URL__/teams/id/{$_GET['id']}">全部</a>
+		<a class="btn" href="{:U('teams',array('id'=>$_GET['id'],'status'=>0))}">未成团</a>
+		<a class="btn" href="{:U('teams',array('id'=>$_GET['id'],'status'=>1))}">已成团</a>
+	</div>
+
+	<div class="data-table table-striped">
+		<table>
+			<thead>
+				<tr>
+					<th class="row-selected">
+						<input class="checkbox check-all" type="checkbox">
+					</th>
+					<th>ID</th>
+					<th>团长id</th>
+					<th>用户名</th>
+					<th>开团时间</th>
+					<th>参团人数</th>
+                    <th>参团状态</th>
+					<th>操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				<notempty name="list">
+				<volist name="list" id="item">
+					<tr>
+						<td><input class="ids row-selected" type="checkbox" name="ids" id="" value="{$item['id']}"> </td>
+						<td>{$item.id}</td>
+						<td width="500"><a href="{:U('Member/edit',array('id'=>$item['user_id']))}">{$item.user_id}</a></td>
+                        <td><a href="{:U('Member/edit',array('id'=>$item['user_id']))}">{$item.name}</a></td>
+                        <td>{:date('Y-m-d H:i:s',$item['addtime'])}</td>
+                        <td><span>{$item.join_num}</td>
+                        <td>
+                        	{$statusarr[$item['status']]}
+                   			
+                        </td>
+						<td>
+						<a title="参团人员" href="__URL__/detail/spell_id/{$item.spell_id}/team_id/{$item.id}">参团人员</a>&nbsp;&nbsp;
+						
+						</td>
+					</tr>
+				</volist>
+				<else/>
+				<td colspan="8" class="text-center"> aOh! 暂时还没有内容! </td>
+				</notempty>
+			</tbody>
+		</table>
+	</div>
+		<div class="page">
+        {$page}
+		</div>
+</block>
+
+<block name="script">
+<script type="text/javascript">
+	//导航高亮
+	highlight_subnav('{:U('Spell/index')}');
+    $(function() {
+    	//点击排序
+    	$('.list_sort').click(function(){
+    		var url = $(this).attr('url');
+    		var ids = $('.ids:checked');
+    		var param = '';
+    		if(ids.length > 0){
+    			var str = new Array();
+    			ids.each(function(){
+    				str.push($(this).val());
+    			});
+    			param = str.join(',');
+    		}
+
+    		if(url != undefined && url != ''){
+    			window.location.href = url + '/ids/' + param;
+    		}
+    	});
+    });
+</script>
+</block>

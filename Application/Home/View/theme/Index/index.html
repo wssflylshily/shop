@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html style="max-width: 720px">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>{:C('WEB_SITE_TITLE')}</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/swiper-3.3.1.min.css">
+		<script src="__PUBLIC__/Home/js/swiper-3.3.1.min.js"></script>
+
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/zepto.js"></script>
+	</head>
+	<body style="max-width: 720px">
+		<!--遮罩层-->
+		<div id="zhezhao" style="display:none"></div>
+		<!--点击左上角会员按钮出现的 侧边栏-->
+		<div id="indexleftBar" style="display: none">
+			<div class="top">
+				<div class="contain maxWidth">
+					<p class="img">
+						<span class="touxiang" style="background-image:url(__PUBLIC__/Home/img/index/touxiang.png)"></span>
+					</p>
+					<p class="nologin"><a href="/Reg">注册</a><em>|</em><a href="/Member">登录</a></p>
+					<p class="login" style="display: none">{$user.login_user}</p>
+				</div>
+			</div>
+			<div class="main">
+				<div class="contain maxWidth">
+					<a href="/Search/pageindex">
+						<span class="hz">&#xe607;</span>
+						<span>搜索</span>
+					</a>
+					<a href="/Member/Order" class="active">
+						<span class="hz">&#xe610;</span>
+						<span>全部订单</span>
+					<?php
+					if($is_login==1)
+					{
+					?>
+						<em class="dingdanNum">{$order_num}</em>
+					<?php
+					}
+					?>
+					</a>
+					<a href="/Member/UserAddress">
+						<span class="hz">&#xe60d;</span>
+						<span>收货地址</span>
+					</a>
+					<a href="/Member/Collection">
+						<span class="hz">&#xe60f;</span>
+						<span>我的收藏</span>
+					</a>
+					<a href="/Cart">
+						<span class="hz">&#xe601;</span>
+						<span>我的购物车</span>
+					<?php
+					if($is_login==1)
+					{
+					?>
+						<em class="cartNum">{$cart_num}</em>
+					<?php
+					}
+					?>
+					</a>
+					<a href="/Member/Index/couponlist">
+						<span class="hz">&#xe611;</span>
+						<span>我的优惠券</span>
+					<?php
+					if($is_login==1)
+					{
+					?>
+						<em class="dingdanNum">{$coupon_num}</em>
+					<?php
+					}
+					?>
+					</a>
+				</div>
+			</div>
+		</div>
+		<!--正文区域-->
+		<div id="indexTop">
+			<div class="contain maxWidth">
+				<span class="hz me">&#xe605;</span>
+				<a class="hz fenlei" href="/Product">&#xe603;</a>
+				<img src="__PUBLIC__/Home/img/logo.jpg">
+			</div>
+		</div>
+		<div id="indexMain" class="fastscroll">
+			<div class="lunbo maxWidth">
+				<div class="inputArea">
+					<span class="hz search">&#xe607;</span>
+					<input type="text" placeholder="请输入要查询的产品名称">
+				</div>
+				<div class="swiper-container">
+					<div class="swiper-wrapper">
+						<volist name="focuslist" id="item">
+						<div class="swiper-slide">
+							<a href="{$item.link_url}" style="background-image:url({$item.image})"></a>
+						</div>
+						</volist>
+					</div>
+					<div class="swiper-pagination"></div>
+				</div>
+			</div>
+			<div class="newMai maxWidth">
+				<p class="title">新特卖·每天早10晚8点上新</p>
+				<volist name="focuslist6" id="item">
+				<a class="newMaiad" href="{$item.link_url}">
+				<img src="{$item.image}"></a>
+				</volist>
+				<ul>
+				<volist name="focuslist9" id="item">
+				<?php
+				$difftime=strtotime($item['end_date'])-strtotime(date('Y-m-d'));
+				$diffday=ceil($difftime/86400);
+				?>
+					<li>
+						<p class="tit">
+							<!--<em>0.9折</em>-->{$item.title}<span>剩{$diffday}天</span>
+						</p>
+						<a href="{$item.link_url}" class="bar"><img src="{$item.image}"></a>
+					</li>
+				</volist>
+				</ul>
+			</div>
+		</div>
+		<include file="Public:footer" />
+
+		<script>
+			//轮播
+			var mySwiper = new Swiper('#indexMain .lunbo .swiper-container', {
+				autoplay: 3000,
+				loop:true,
+				autoplayDisableOnInteraction:false,
+				pagination : '.swiper-pagination'
+			});
+
+			//购物车等 超过99则显示99+
+			var dingdanNum=$('#indexleftBar .main a .dingdanNum').text();
+			var cartNum=$('#indexleftBar .main a .cartNum').text();
+			if(dingdanNum>99){
+				$('#indexleftBar .main a .dingdanNum').text('99+');
+			}
+			if(cartNum>99){
+				$('#indexleftBar .main a .cartNum').text('99+');
+			}
+
+			//点击左上角的会员按钮 出现侧边栏和遮罩
+			$('#indexTop .me').on('tap',function(){
+				$('#zhezhao').css('display','block');
+				$('#indexleftBar').css('display','block');
+				$('#indexleftBar').animate({'left':0},500,'ease',function(){
+					//侧边栏出现的时候页面不许滑动
+					$('#indexMain').css('overflow-y','hidden');
+				});
+			});
+
+			//点击遮罩 侧边栏滑回去
+			$('#zhezhao').on('tap',function(){
+				$('#indexleftBar').animate({'left':'-65%'},500,'ease',function(){
+					$('#zhezhao').css('display','none');
+					$('#indexleftBar').css('display','none');
+					//侧边栏收起的时候页面允许滑动
+					$('#indexMain').css('overflow-y','auto');
+				});
+			});
+
+			//侧边栏菜单 点击哪个 哪个选中状态
+			$('#indexleftBar .main a').on('tap',function(){
+				$(this).addClass('active').siblings().removeClass('active');
+			});
+
+			//点击输入框的时候 跳转到搜索界面
+			$('#indexMain .lunbo .inputArea').on('tap',function(){
+				location.href='/Search/pageindex';
+			})
+
+			//判断当前用户是不是已登录 已登录则侧边栏不显示注册和登录 显示电话号
+			<?php
+			if($is_login==1)
+			{
+			?>
+			var loginState=true;//true表示 已登录
+			<?php
+			}
+			else
+			{
+			?>
+			var loginState=false;//true表示 已登录
+			<?php	
+			}
+			?>
+			
+			if(loginState){
+				$('#indexleftBar .nologin').css('display','none');
+				$('#indexleftBar .login').css('display','block');
+			}else{
+				$('#indexleftBar .nologin').css('display','block');
+				$('#indexleftBar .login').css('display','none');
+			}
+		</script>
+	</body>
+</html>

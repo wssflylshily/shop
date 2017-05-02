@@ -1,0 +1,126 @@
+<?php
+require_once "./sample/php/jssdk.php";
+$jssdk = new JSSDK("wx73f8f21829bef9c6", "00ea7e3072f302d457e88b7402dc6429");
+$signPackage = $jssdk->GetSignPackage();
+?>
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>门店地址</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/zepto.js"></script>
+		<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+		<script src="__PUBLIC__/Home/js/delIOS_huitan.js"></script>
+		<style>
+			#myCardMain .ullist1line li{height: auto;padding:3%;}
+			#myCardMain .ullist1line li a{display:block;}
+			#myCardMain .ullist1line .l{width: 25%;padding-right:10px;}
+			#myCardMain .ullist1line .l img{width: 100%;}
+			#myCardMain .ullist1line .r{width: 75%;}
+		</style>
+	</head>
+	<body class="box">
+		<!--正文区域-->
+		<div id="myCardTop" class="topBackTitle">
+			<div class="contain maxWidth">
+				<a class="hz back" href="{:U('Member/Index/index')}">&#xe600;</a>门店地址
+			</div>
+		</div>
+		<div id="myCardMain" class="fastscroll top50bot0">
+			<div class="contain maxWidth">
+				<ul class="ullist1line">
+					<volist name="list" id="item">
+					<li>
+						<a href="javascript:;" onclick="javascript:openlocat({$item.sweidu},{$item.sjingdu},'{$item.sname}','{$item.sadd}');" class="clear">
+						<!-- onclick="javascript:getAddr('{$item.sjingdu}','{$item.sweidu}','{$item.sname}','{$item.sadd}');" -->
+							<if condition="$item['image'] neq ''">
+							<div class="l">
+								<img src="{$item.image}">
+							</div>
+							</if>
+							<div class="r">
+								<p class="title">{$item.sname}</p>
+								<p class="info">{$item.sadd}</p>
+								<p class="info">距离：{$item.distance} 米</p>
+							</div>
+						</a>
+					</li>
+					</volist>
+				</ul>
+				<!-- <div class="delArea" style="display:block;">
+					<a href="javascript:;" class="orangeBtn">获取地理位置</a>
+				</div> -->
+			</div>
+		</div>
+
+		<script>
+			//img w=h
+			setImgH();
+			function setImgH(){
+				var w=$('#myCardMain .ullist1line .l img').width();
+				$('#myCardMain .ullist1line .l img').height(w);
+			}
+
+			wx.config({
+			      debug: false,
+			      appId: '<?php echo $signPackage["appId"];?>',
+			      timestamp: <?php echo $signPackage["timestamp"];?>,
+			      nonceStr: '<?php echo $signPackage["nonceStr"];?>',
+			      signature: '<?php echo $signPackage["signature"];?>',
+			      jsApiList: [
+			        'getLocation',
+			        'openLocation'
+			      ]
+			  });
+
+			function openlocat(lat,lng,name,addr){
+				 wx.ready(function () {
+					wx.openLocation({
+			      		latitude: lat,
+			      		longitude: lng,
+			      		name: name,
+			      		address: addr,
+			      		scale: 20
+			    	});
+				 });
+			}
+			/*wx.ready(function () {
+				
+				$('li').each(function(i,e){
+					var jingdu = $('#jingdu'+i).val();
+					var weidu = $('#weidu'+i).val();
+					var title = $('#title'+i).val();
+					var addr = $('#addr'+i).val();
+					
+					/*$('#openlocat'+i).click(function(){
+						wx.openLocation({
+				      		latitude: weidu,
+				      		longitude: jingdu,
+				      		name: title,
+				      		address: addr,
+				      		scale: 20
+				    	});
+					});
+					
+					document.querySelector('#openlocat'+i).onclick = function () {
+						//alert(jingdu);
+						wx.openLocation({
+				      		latitude: $('#weidu'+i).val(),
+				      		longitude: $('#jingdu'+i).val(),
+				      		name: title,
+				      		address: addr,
+				      		scale: 20
+				      		//infoUrl: 'http://weixin.qq.com'
+				    	});
+					}
+					
+					//$('#openlocat'+i).on('click',function(){})
+				});
+				
+			 });*/
+		</script>
+	</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>{$x_title}</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/zepto.js"></script>
+	</head>
+	<body>
+		<!-- 提示框 -->
+		<div class="textTip" style="opacity:0;display: none;"></div>
+		<!--正文区域-->
+		<div id="gerenGaiNameTop" class="topBackTitle">
+			<div class="contain maxWidth">
+				<a class="hz back" href="javascript:;">&#xe600;</a>姓名<a href="javascript:;" class="save">保存</a>
+			</div>
+		</div>
+		<div id="gerenGaiNameMain" class="fastscroll top50bot0">
+		<input type="hidden" name="id" id="id" value="{$user.id}" />
+			<div class="contain maxWidth">
+				<div class="inputs">
+					<input type="text" name="{$field_name}" id="{$field_name}" placeholder="{$placeholder}" value="{$value}">
+					<span class="close">
+						<span class="hz x">&#xe625;</span>
+					</span>
+				</div>
+				<p class="info">{$ts}</p>
+			</div>
+		</div>
+
+		<script>
+			//返回按钮
+			$('#gerenGaiNameTop .back').on('tap',function(){
+				//window.history.go(-1);
+				window.location.href='{:U('Index/baseinfo')}';
+			});
+
+			//点击 x
+			$('#gerenGaiNameMain .inputs .close').on('tap',function(){
+				$('#gerenGaiNameMain .inputs input').val('');
+			});
+
+			//点击 保存
+			$('#gerenGaiNameTop .save').on('tap',function(){
+				//console.log('保存操作');
+				$.ajax({
+					//提交数据的类型 POST GET
+					type:"POST",
+					//提交的网址
+					url:"__URL__/save",
+					//提交的数据
+					data:{{$field_name}:$('#{$field_name}').val(),id:$('#id').val()},
+					//返回数据的格式
+					datatype: "json",//"xml", "html", "script", "json", "jsonp", "text".
+					//在请求之前调用的函数
+					//成功返回之后调用的函数             
+					success:function(data){
+						if(data.status==0)
+						{
+							// alert(data.info);
+							$('.textTip').text(data.info).css({
+								'opacity':1,
+								'display':'block'
+							});
+							setTimeout(function(){
+								$('.textTip').css('opacity',0);
+								setTimeout(function(){
+									$('.textTip').css('display','none');
+								},500);
+							},1500);
+							/*$.toast(data.info,'cancel', function() {
+							});*/
+						}
+						else
+						{
+							alert(data.info);
+							//$.toast(data.info, function() {
+							//});
+						}
+						//alert(data.info);
+						//window.location.reload();
+						//$("#msg").html(decodeURI(data));            
+					}   ,
+					//调用执行后调用的函数
+					complete: function(XMLHttpRequest, textStatus){
+					   //alert(XMLHttpRequest.responseText);
+					   //alert(textStatus);
+						//HideLoading();
+					},
+					error: function(){
+					}         
+				 });
+			});
+		</script>
+	</body>
+</html>

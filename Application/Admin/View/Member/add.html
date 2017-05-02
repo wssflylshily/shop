@@ -1,0 +1,185 @@
+<extend name="Public/base"/>
+
+<!-- 子导航 -->
+<block name="sidebar">
+    <include file="sidemenu" />
+</block>
+
+<block name="body">
+	<script type="text/javascript" src="__STATIC__/uploadify/jquery.uploadify.min.js"></script>
+    <div class="main-title">
+        <h2>新增会员</h2>
+    </div>
+    <form action="__URL__/insert" method="post" class="form-horizontal">
+        <!--
+		<div class="form-item">
+            <label class="item-label">类别<span class="check-tips"></span></label>
+            <div class="controls">
+                <select name="type">
+				<option value="0">普通</option>
+				<option value="1">VIP</option>
+				</select>
+            </div>
+        </div>
+		-->
+        <div class="form-item">
+			<label class="item-label">
+				会员等级<span class="check-tips"></span>
+			</label>
+			<div class="controls">
+				<?php $grade = getGradelist();?>
+				<select name="lv">
+					<option value="">请选择</option>
+					<volist name="grade" id="v">
+					<option value="{$v.id}">{$v.gname}</option>
+					</volist>
+				</select>
+			</div>
+		</div>
+        <div class="form-item">
+            <label class="item-label">用户名<span class="check-tips"></span></label>
+            <div class="controls">
+                <input type="text" class="text input-large" name="login_user" value="">
+            </div>
+        </div>
+        <div class="form-item">
+            <label class="item-label">密码<span class="check-tips">（用户密码不能少于6位）</span></label>
+            <div class="controls">
+                <input type="password" class="text input-large" name="login_pass" value="">
+            </div>
+        </div>
+        <div class="form-item">
+            <label class="item-label">确认密码</label>
+            <div class="controls">
+                <input type="password" class="text input-large" name="repassword" value="">
+            </div>
+        </div>
+        <div class="form-item">
+            <label class="item-label">支付密码<span class="check-tips">（支付密码不能少于6位）</span></label>
+            <div class="controls">
+                <input type="password" class="text input-large" name="paypwd" value="">
+            </div>
+        </div>
+        <div class="form-item">
+            <label class="item-label2">
+				头像<span class="check-tips"></span>
+			</label>
+			<div class="controls">
+				<div class="controls">
+					<input type="file" id="z_img">
+					<input type="hidden" name="image" id="z_img_id" value=""/>
+					<div class="upload-img-box"></div>
+				</div>
+				<script type="text/javascript">
+					//上传图片
+					/* 初始化上传插件 */
+					$("#z_img").uploadify({
+						"height"          : 30,
+						"swf"             : "/Public/static/uploadify/uploadify.swf",
+						"fileObjName"     : "download",
+						"buttonText"      : "上传图片",
+						"uploader"        : "{:U('File/uploadPicture',array('session_id'=>session_id()))}",
+						"width"           : 120,
+						'removeTimeout'	  : 1,
+						'fileTypeExts'	  : '*.jpg; *.png; *.gif;',
+						"onUploadSuccess" : z_img_id,
+						'onFallback' : function() {
+							alert('未检测到兼容版本的Flash.');
+						}
+					});
+					function z_img_id(file, data){
+						var data = $.parseJSON(data);
+						var src = '';
+						if(data.status){
+							$("#z_img_id").val(data.path);
+							src = data.url || '' + data.path
+							$("#z_img_id").parent().find('.upload-img-box').html(
+								'<div class="upload-pre-item"><img src="' + src + '"/></div>'
+							);
+						} else {
+							updateAlert(data.info);
+							setTimeout(function(){
+								$('#top-alert').find('button').click();
+								$(that).removeClass('disabled').prop('disabled',false);
+							},1500);
+						}
+					}
+					</script>
+			</div>
+        </div>
+        <div class="form-item">
+            <label class="item-label">姓名<span class="check-tips"></span></label>
+            <div class="controls">
+                <input type="text" class="text input-large" name="name" value="">
+            </div>
+        </div>
+        <div class="form-item">
+            <label class="item-label">性别<span class="check-tips"></span></label>
+            <div class="controls">
+                <select name="sex">
+				<option value="0">保密</option>
+				<option value="1">男</option>
+				<option value="2">女</option>
+				</select>
+            </div>
+        </div>
+        <!-- <div class="form-item">
+            <label class="item-label">地区<span class="check-tips"></span></label>
+            <div class="controls">
+                <select name="area_id">
+				<volist name="arealist" id="item">
+				<option value="{$item.id}">{$item.title}</option>
+				</volist>
+				</select>
+            </div>
+        </div> -->
+        <div class="form-item">
+            <label class="item-label">手机<span class="check-tips"></span></label>
+            <div class="controls">
+                <input type="text" class="text input-large" name="mobile" value="">
+            </div>
+        </div>
+        <!-- <div class="form-item">
+            <label class="item-label">邮箱<span class="check-tips"></span></label>
+            <div class="controls">
+                <input type="text" class="text input-large" name="email" value="">
+            </div>
+        </div> -->
+        <div class="form-item">
+            <label class="item-label">积分<span class="check-tips"></span></label>
+            <div class="controls">
+                <input type="text" class="text input-large" name="integral" value="0">
+            </div>
+        </div>
+        <div class="form-item">
+            <label class="item-label">余额<span class="check-tips"></span></label>
+            <div class="controls">
+                <input type="text" class="text input-large" name="money" value="0">
+            </div>
+        </div>
+        <div class="form-item">
+            <label class="item-label">佣金<span class="check-tips"></span></label>
+            <div class="controls">
+                <input type="text" class="text input-large" name="jie_money" value="0">
+            </div>
+        </div>
+        <div class="form-item">
+            <label class="item-label">用户状态<span class="check-tips"></span></label>
+            <div class="controls">
+                <input type="radio" name="status" value="1" checked> 启用&nbsp;&nbsp;
+                <input type="radio" name="status" value="0" /> 禁用
+            </div>
+        </div>
+        <div class="form-item">
+            <button class="btn submit-btn ajax-post" id="submit" type="submit" target-form="form-horizontal">确 定</button>
+            <button class="btn btn-return" onclick="javascript:window.location.href='__URL__';return false;">返 回</button>
+        </div>
+    </form>
+</block>
+
+<block name="script">
+    <script type="text/javascript">
+        //导航高亮
+        highlight_subnav("{:U('Member/index')}");
+    </script>
+</block>

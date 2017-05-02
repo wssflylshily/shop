@@ -1,0 +1,158 @@
+<extend name="Public/base"/>
+
+<!-- 子导航 -->
+<block name="sidebar">
+    <include file="sidemenu" />
+</block>
+
+<block name="body">
+	<div class="main-title">
+		<h2>会员分佣明细</h2>
+	</div>
+
+	<div class="cf">
+			<a class="btn" href="__URL__/index">返 回</a>
+        <!--<button class="btn ajax-post" target-form="ids" url="{:U("Member/upgrade")}">升为VIP</button>
+        <button class="btn ajax-post" target-form="ids" url="{:U("Member/cancelupgrade")}">设为普通</button>
+		<a class="btn" href="__URL__/add">新 增</a>
+		<a class="btn ajax-post confirm" target-form="ids" href="__URL__/setStatus/status/-1">删 除</a>
+		<a class="btn ajax-post confirm" target-form="ids" href="__URL__/setStatus/status/1">启 用</a>
+		<a class="btn ajax-post confirm" target-form="ids" href="__URL__/setStatus/status/0">禁 用</a>
+		<button class="btn" target-form="ids" onclick="javascript:exportexl();">导出Excel</button>-->
+		<!-- 高级搜索 -->
+		<!--<div class="search-form fr cf">
+			<div class="btn-group-click adv-sch-pannel fl">
+                <button class="btn">高 级<i class="btn-arrowdown"></i></button>
+                <div class="dropdown cf">
+                	<div class="row">
+                		<label>注册时间：</label>
+                		<input type="text" id="time_start" name="time_start" class="text input-2x" value="" placeholder="起始时间" /> -
+                		<input type="text" id="time_end" name="time_end" class="text input-2x" value="" placeholder="结束时间" />
+                	</div>
+                </div>
+            </div>
+			<div class="sleft">
+				<input type="text" name="title" id="order_id" class="search-input" value="{:I('title')}" placeholder="请输入用户名或手机号">
+				<a class="sch-btn" href="javascript:;" id="search" url="{:U('Member/index')}"><i class="btn-search"></i></a>
+			</div>
+		</div>-->
+	</div>
+
+	<div class="data-table table-striped">
+		<table>
+			<thead>
+				<tr>
+					<th class="row-selected">
+						<input class="checkbox check-all" type="checkbox">
+					</th>
+					<th>ID</th>
+					<th>会员</th>
+					<th>分佣比例</th>
+					<th>分佣金额</th>
+					<th>分佣时间</th>
+					<!-- <th>操作</th> -->
+				</tr>
+			</thead>
+			<tbody>
+				<notempty name="list">
+				<volist name="list" id="item">
+					<tr>
+						<td><input class="ids row-selected" type="checkbox" name="ids[]" id="" value="{$item['id']}"> </td>
+						<td>{$item.id}</td>
+                        <td>{$item.user}</td>
+						<td>{$item['ratio']*100}%</td>
+                        <td>{$item.money}</td>
+                        <td>{:date('Y-m-d',$item['addtime'])}</td>
+                        
+						<!-- <td>
+							<a title="编辑" href="__URL__/edit/id/{$item.id}">编辑</a>
+							<a class="confirm ajax-get" title="删除" href="__URL__/del/id/{$item.id}">删除</a>
+							<a href="{:U('Order/index',array('user_id'=>$item['id']))}">购买记录</a>
+						</td> -->
+					</tr>
+				</volist>
+				<else/>
+				<td colspan="6" class="text-center"> aOh! 暂时还没有内容! </td>
+				</notempty>
+			</tbody>
+		</table>
+	</div>
+		<div class="page">
+        {$page}
+		</div>
+</block>
+
+<block name="script">
+
+<link href="__STATIC__/datetimepicker/css/datetimepicker.css" rel="stylesheet" type="text/css">
+<php>if(C('COLOR_STYLE')=='blue_color') echo '<link href="__STATIC__/datetimepicker/css/datetimepicker_blue.css" rel="stylesheet" type="text/css">';</php>
+<link href="__STATIC__/datetimepicker/css/dropdown.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="__STATIC__/datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript" src="__STATIC__/datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+<script type="text/javascript">
+	//导航高亮
+	highlight_subnav("{:U('Member/index')}");
+    $(function() {
+    	//点击排序
+    	$('.list_sort').click(function(){
+    		var url = $(this).attr('url');
+    		var ids = $('.ids:checked');
+    		var param = '';
+    		if(ids.length > 0){
+    			var str = new Array();
+    			ids.each(function(){
+    				str.push($(this).val());
+    			});
+    			param = str.join(',');
+    		}
+
+    		if(url != undefined && url != ''){
+    			window.location.href = url + '/ids/' + param;
+    		}
+    	});
+    	//搜索功能
+    	$("#search").click(function(){
+    		var url = $(this).attr('url');
+            var query  = $('.search-form').find('input').serialize();
+            query = query.replace(/(&|^)(\w*?\d*?\-*?_*?)*?=?((?=&)|(?=$))/g,'');
+            query = query.replace(/^&/g,'');
+            if( url.indexOf('?')>0 ){
+                url += '&' + query;
+            }else{
+                url += '?' + query;
+            }
+    		window.location.href = url;
+    	});
+    	//回车搜索
+    	$(".search-input").keyup(function(e){
+    		if(e.keyCode === 13){
+    			$("#search").click();
+    			return false;
+    		}
+    	});
+
+        $('#time_start').datetimepicker({
+            format: 'yyyy-mm-dd',
+            language:"zh-CN",
+    	    minView:2,
+    	    autoclose:true
+        });
+
+        $('#time_end').datetimepicker({
+            format: 'yyyy-mm-dd',
+            language:"zh-CN",
+    	    minView:2,
+    	    autoclose:true
+        });
+    });
+    function exportexl(){
+    	var ids = "";
+    	$(".ids").each(function(i,e){
+    		if($(this).is(":checked")){
+    			ids += $(this).val()+",";
+    		}
+    	});
+    	location.href = "{$excel_url}&ids="+ids;
+    }
+</script>
+</block>

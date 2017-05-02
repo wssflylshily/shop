@@ -1,0 +1,97 @@
+[ 2017-02-07T15:32:06+08:00 ] 127.0.0.1 /clientapi.php/index/index
+INFO: [ app_init ] --START--
+INFO: Run Common\Behavior\InitHook [ RunTime:0.024030s ]
+INFO: [ app_init ] --END-- [ RunTime:0.024368s ]
+INFO: [ app_begin ] --START--
+INFO: Run Behavior\ReadHtmlCache [ RunTime:0.000417s ]
+INFO: [ app_begin ] --END-- [ RunTime:0.000494s ]
+SQL: SHOW COLUMNS FROM `onethink_config` [ RunTime:0.002744s ]
+SQL: SELECT `type`,`name`,`value` FROM `onethink_config` WHERE ( `status` = 1 )  [ RunTime:0.001160s ]
+NOTIC: [8] Undefined index: user E:\qampp\htdocs\FQMALL_v1.1.1\Application\Home\Controller\HomeController.class.php 第 26 行.
+NOTIC: [8] Undefined index: user E:\qampp\htdocs\FQMALL_v1.1.1\Application\Home\Controller\HomeController.class.php 第 35 行.
+SQL: SHOW COLUMNS FROM `onethink_user` [ RunTime:0.002934s ]
+SQL: SELECT * FROM `onethink_user` WHERE ( id= ) LIMIT 1   [ RunTime:0.000495s ]
+ERR: 1064:You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ') LIMIT 1' at line 1
+ [ SQL语句 ] : SELECT * FROM `onethink_user` WHERE ( id= ) LIMIT 1  
+SQL: SHOW COLUMNS FROM `onethink_grade` [ RunTime:0.002198s ]
+NOTIC: [8] Undefined index: lv E:\qampp\htdocs\FQMALL_v1.1.1\Application\Home\Controller\HomeController.class.php 第 41 行.
+SQL: SELECT * FROM `onethink_grade` WHERE ( id= ) LIMIT 1   [ RunTime:0.000442s ]
+ERR: 1064:You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ') LIMIT 1' at line 1
+ [ SQL语句 ] : SELECT * FROM `onethink_grade` WHERE ( id= ) LIMIT 1  
+SQL: SHOW COLUMNS FROM `onethink_spell` [ RunTime:0.002730s ]
+SQL: UPDATE `onethink_spell` SET `state`=1 WHERE ( start_date > 1486452725 and join_num < num and state<>1 and `status`=1 ) [ RunTime:0.000489s ]
+ERR: 1054:Unknown column 'join_num' in 'where clause'
+ [ SQL语句 ] : UPDATE `onethink_spell` SET `state`=1 WHERE ( start_date > 1486452725 and join_num < num and state<>1 and `status`=1 )
+SQL: UPDATE `onethink_spell` SET `state`=2 WHERE ( start_date <= 1486452725 and end_date > 1486452725 and state<>2 and `status`=1 ) [ RunTime:0.000668s ]
+SQL: SELECT * FROM `onethink_spell` WHERE ( end_date <= 1486452725 and state<>3 and status=1 )  [ RunTime:0.001439s ]
+NOTIC: [2] Invalid argument supplied for foreach() E:\qampp\htdocs\FQMALL_v1.1.1\Application\Home\Controller\HomeController.class.php 第 67 行.
+SQL: SELECT * FROM `onethink_spell` WHERE ( state=2 and status=1 )  [ RunTime:0.001416s ]
+NOTIC: [2] Invalid argument supplied for foreach() E:\qampp\htdocs\FQMALL_v1.1.1\Application\Home\Controller\HomeController.class.php 第 76 行.
+SQL: SHOW COLUMNS FROM `onethink_category` [ RunTime:0.003160s ]
+SQL: SELECT `id`,`title` FROM `onethink_category` WHERE ( `status` = 1 ) AND ( `pid` = 0 ) ORDER BY sort ASC,id ASC  [ RunTime:0.000674s ]
+SQL: SHOW COLUMNS FROM `onethink_focus` [ RunTime:0.002451s ]
+SQL: SELECT * FROM `onethink_focus` WHERE ( `pos_id` = 1 ) ORDER BY order_num desc,id desc LIMIT 100   [ RunTime:0.001300s ]
+SQL: SELECT * FROM `onethink_focus` WHERE ( `pos_id` = 2 ) ORDER BY order_num desc,id desc LIMIT 100   [ RunTime:0.000642s ]
+SQL: SELECT * FROM `onethink_focus` WHERE ( `pos_id` = 3 ) ORDER BY order_num desc,id desc LIMIT 100   [ RunTime:0.000671s ]
+SQL: SELECT * FROM `onethink_focus` WHERE ( `pos_id` = 4 ) ORDER BY order_num desc,id desc LIMIT 100   [ RunTime:0.000659s ]
+SQL: SELECT * FROM `onethink_focus` WHERE ( `pos_id` = 5 ) ORDER BY order_num desc,id desc LIMIT 100   [ RunTime:0.000673s ]
+SQL: SELECT `id` FROM `onethink_category` WHERE ( id=14 or pid=14 )  [ RunTime:0.000664s ]
+SQL: SHOW COLUMNS FROM `onethink_product` [ RunTime:0.004297s ]
+NOTIC: [2] implode(): Invalid arguments passed E:\qampp\htdocs\FQMALL_v1.1.1\ThinkPHP\Library\Think\Db.class.php 第 498 行.
+SQL: SELECT * FROM `onethink_product` WHERE ( `category_id` IN () ) AND ( `status` = 1 ) AND ( `is_home` = 1 ) ORDER BY order_num asc  [ RunTime:0.000400s ]
+ERR: 1064:You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ') ) AND ( `status` = 1 ) AND ( `is_home` = 1 ) ORDER BY order_num asc' at line 1
+ [ SQL语句 ] : SELECT * FROM `onethink_product` WHERE ( `category_id` IN () ) AND ( `status` = 1 ) AND ( `is_home` = 1 ) ORDER BY order_num asc 
+SQL: SELECT `id` FROM `onethink_category` WHERE ( id=16 or pid=16 )  [ RunTime:0.000655s ]
+NOTIC: [2] implode(): Invalid arguments passed E:\qampp\htdocs\FQMALL_v1.1.1\ThinkPHP\Library\Think\Db.class.php 第 498 行.
+SQL: SELECT * FROM `onethink_product` WHERE ( `category_id` IN () ) AND ( `status` = 1 ) AND ( `is_home` = 1 ) ORDER BY order_num asc  [ RunTime:0.000685s ]
+ERR: 1064:You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ') ) AND ( `status` = 1 ) AND ( `is_home` = 1 ) ORDER BY order_num asc' at line 1
+ [ SQL语句 ] : SELECT * FROM `onethink_product` WHERE ( `category_id` IN () ) AND ( `status` = 1 ) AND ( `is_home` = 1 ) ORDER BY order_num asc 
+SQL: SELECT `id` FROM `onethink_category` WHERE ( id=17 or pid=17 )  [ RunTime:0.000678s ]
+NOTIC: [2] implode(): Invalid arguments passed E:\qampp\htdocs\FQMALL_v1.1.1\ThinkPHP\Library\Think\Db.class.php 第 498 行.
+SQL: SELECT * FROM `onethink_product` WHERE ( `category_id` IN () ) AND ( `status` = 1 ) AND ( `is_home` = 1 ) ORDER BY order_num asc  [ RunTime:0.001189s ]
+ERR: 1064:You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ') ) AND ( `status` = 1 ) AND ( `is_home` = 1 ) ORDER BY order_num asc' at line 1
+ [ SQL语句 ] : SELECT * FROM `onethink_product` WHERE ( `category_id` IN () ) AND ( `status` = 1 ) AND ( `is_home` = 1 ) ORDER BY order_num asc 
+SQL: SHOW COLUMNS FROM `onethink_web_site` [ RunTime:0.002139s ]
+SQL: SELECT * FROM `onethink_web_site` LIMIT 1   [ RunTime:0.000656s ]
+NOTIC: [8] Undefined variable: info_num E:\qampp\htdocs\FQMALL_v1.1.1\Application\Home\Controller\IndexController.class.php 第 114 行.
+SQL: SELECT * FROM `onethink_spell` WHERE ( state<3 and status=1 and is_home=1 ) ORDER BY order_num asc,id DESC  [ RunTime:0.001392s ]
+SQL: SELECT * FROM `onethink_product` WHERE ( status=1 ) ORDER BY sell_num DESC LIMIT 5   [ RunTime:0.002216s ]
+SQL: SHOW COLUMNS FROM `onethink_order` [ RunTime:0.002827s ]
+SQL: SELECT `id` FROM `onethink_order` WHERE (  (`addtime` BETWEEN 1486396800 AND 1486452725 ) )  [ RunTime:0.000465s ]
+SQL: SHOW COLUMNS FROM `onethink_order_detail` [ RunTime:0.002289s ]
+NOTIC: [2] implode(): Invalid arguments passed E:\qampp\htdocs\FQMALL_v1.1.1\ThinkPHP\Library\Think\Db.class.php 第 498 行.
+SQL: SELECT `product_id` FROM `onethink_order_detail` WHERE ( `order_id` IN () ) GROUP BY product_id ORDER BY sum(product_num) DESC LIMIT 5   [ RunTime:0.000581s ]
+ERR: 1064:You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ') ) GROUP BY product_id ORDER BY sum(product_num) DESC LIMIT 5' at line 1
+ [ SQL语句 ] : SELECT `product_id` FROM `onethink_order_detail` WHERE ( `order_id` IN () ) GROUP BY product_id ORDER BY sum(product_num) DESC LIMIT 5  
+NOTIC: [2] implode(): Invalid arguments passed E:\qampp\htdocs\FQMALL_v1.1.1\ThinkPHP\Library\Think\Db.class.php 第 498 行.
+SQL: SELECT * FROM `onethink_product` WHERE ( `id` IN () ) AND ( `status` = 1 )  [ RunTime:0.001033s ]
+ERR: 1064:You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ') ) AND ( `status` = 1 )' at line 1
+ [ SQL语句 ] : SELECT * FROM `onethink_product` WHERE ( `id` IN () ) AND ( `status` = 1 ) 
+SQL: SELECT `id` FROM `onethink_order` WHERE (  (`addtime` BETWEEN 1485878400 AND 1486452725 ) )  [ RunTime:0.000612s ]
+NOTIC: [2] implode(): Invalid arguments passed E:\qampp\htdocs\FQMALL_v1.1.1\ThinkPHP\Library\Think\Db.class.php 第 498 行.
+SQL: SELECT `product_id` FROM `onethink_order_detail` WHERE ( `order_id` IN () ) GROUP BY product_id ORDER BY sum(product_num) DESC LIMIT 5   [ RunTime:0.000623s ]
+ERR: 1064:You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ') ) GROUP BY product_id ORDER BY sum(product_num) DESC LIMIT 5' at line 1
+ [ SQL语句 ] : SELECT `product_id` FROM `onethink_order_detail` WHERE ( `order_id` IN () ) GROUP BY product_id ORDER BY sum(product_num) DESC LIMIT 5  
+NOTIC: [2] implode(): Invalid arguments passed E:\qampp\htdocs\FQMALL_v1.1.1\ThinkPHP\Library\Think\Db.class.php 第 498 行.
+SQL: SELECT * FROM `onethink_product` WHERE ( `id` IN () ) AND ( `status` = 1 )  [ RunTime:0.000613s ]
+ERR: 1064:You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ') ) AND ( `status` = 1 )' at line 1
+ [ SQL语句 ] : SELECT * FROM `onethink_product` WHERE ( `id` IN () ) AND ( `status` = 1 ) 
+INFO: [ view_parse ] --START--
+INFO: [ template_filter ] --START--
+INFO: Run Behavior\ContentReplace [ RunTime:0.000185s ]
+INFO: [ template_filter ] --END-- [ RunTime:0.000235s ]
+NOTIC: [8] Undefined variable: user E:\qampp\htdocs\FQMALL_v1.1.1\Application\Runtime\Cache\Home\769e70f2e46f34ceb60619bbda5e4691.php 第 123 行.
+NOTIC: [8] Undefined variable: user E:\qampp\htdocs\FQMALL_v1.1.1\Application\Runtime\Cache\Home\769e70f2e46f34ceb60619bbda5e4691.php 第 128 行.
+NOTIC: [8] Undefined variable: spell_active E:\qampp\htdocs\FQMALL_v1.1.1\Application\Runtime\Cache\Home\769e70f2e46f34ceb60619bbda5e4691.php 第 424 行.
+NOTIC: [8] Undefined variable: cart_active E:\qampp\htdocs\FQMALL_v1.1.1\Application\Runtime\Cache\Home\769e70f2e46f34ceb60619bbda5e4691.php 第 430 行.
+NOTIC: [8] Undefined variable: order_active E:\qampp\htdocs\FQMALL_v1.1.1\Application\Runtime\Cache\Home\769e70f2e46f34ceb60619bbda5e4691.php 第 436 行.
+NOTIC: [8] Undefined variable: member_active E:\qampp\htdocs\FQMALL_v1.1.1\Application\Runtime\Cache\Home\769e70f2e46f34ceb60619bbda5e4691.php 第 442 行.
+INFO: Run Behavior\ParseTemplate [ RunTime:0.652763s ]
+INFO: [ view_parse ] --END-- [ RunTime:0.652829s ]
+INFO: [ view_filter ] --START--
+INFO: Run Behavior\WriteHtmlCache [ RunTime:0.014920s ]
+INFO: [ view_filter ] --END-- [ RunTime:0.014975s ]
+INFO: [ app_end ] --START--
+INFO: Run Behavior\ShowPageTrace [ RunTime:0.006395s ]
+INFO: [ app_end ] --END-- [ RunTime:0.006498s ]
+

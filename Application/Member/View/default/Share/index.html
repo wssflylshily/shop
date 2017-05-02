@@ -1,0 +1,52 @@
+d<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<meta name="format-detection" content="telephone=no">
+		<title>{:C('WEB_SITE_TITLE')}</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/zepto.js"></script>
+		<script src="__PUBLIC__/Home/js/delIOS_huitan.js"></script>
+	</head>
+	<body class="shareGetGoldBg box">
+		<!--正文区域-->
+		<div id="shareGetGoldTop" class="topBackTitle">
+			<div class="contain maxWidth">
+				<a class="hz back" href="/Member">&#xe600;</a>分享得真金
+			</div>
+		</div>
+		<div id="shareGetGoldMain" class="fastscroll top50bot0">
+			<div class="contain maxWidth">
+				<div class="img" style="background-image: url(__PUBLIC__/Home/img/shareGetGold.jpg)"></div>
+				<ul class="lie clear">
+					<li>
+						<p class="title">实际已赚</p>
+						<p class="info money">&yen;<span>{$total_money}</span></p>
+					</li>
+					<li>
+						<p class="title">待到账</p>
+						<p class="info money">&yen;<span>{$share_total_price}</span></p>
+					</li>
+					<li>
+						<p class="title">累计好友购买次数</p>
+						<p class="info ci"><span>{$share_num}</span>次</p>
+					</li>
+					<li>
+						<p class="title">累计分享次数</p>
+						<p class="info ci"><span>0</span>次</p>
+					</li>
+				</ul>
+				<a href="/Search?share=1" class="goGetCash">去赚钱</a>
+			</div>
+		</div>
+
+		<script>
+			//返回按钮
+			$('#shareGetGoldTop .back').on('click',function(){
+				window.history.go(-1);
+			});
+		</script>
+	</body>
+</html>

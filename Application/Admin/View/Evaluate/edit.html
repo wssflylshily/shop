@@ -1,0 +1,42 @@
+<extend name="Public/base" />
+
+<!-- 子导航 -->
+<block name="sidebar">
+    <include file="sidemenu" />
+</block>
+
+<block name="body">
+	<script type="text/javascript" src="__STATIC__/uploadify/jquery.uploadify.min.js"></script>
+	<div class="main-title cf">
+		<h2>
+			编辑评论
+		</h2>
+	</div>
+	<!-- 标签页导航 -->
+<div class="tab-wrap">
+	<div class="tab-content">
+		<!-- 表单 -->
+		<form id="form" action="{:U('update')}" method="post" class="form-horizontal">
+        <div id="tab0" class="tab-pane in tab0">
+                <div class="form-item cf">
+						<input type="hidden" name="id" value="{$vo.id}" />
+						<label class="item-label">分数<span class="check-tips"></span></label>
+						<div class="controls">
+                        <input type="text" class="text input-large" name="score" value="{$vo.score}">
+						</div>
+						<div class="controls">
+						<textarea name="desc" cols=60 rows=5>{$vo.desc}</textarea>
+						</div>
+		<div class="form-item cf">
+			<button class="btn submit-btn ajax-post hidden" id="button" type="submit" target-form="form-horizontal">确 定</button>
+			<a class="btn btn-return" href="{:U('index')}">返 回</a>
+		</div>
+				</div>
+		</div>
+</block>
+<block name="script">
+	<script type="text/javascript">
+		//导航高亮
+		highlight_subnav('{:U('Evaluate/index')}');
+	</script>
+</block>

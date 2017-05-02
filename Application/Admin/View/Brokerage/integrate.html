@@ -1,0 +1,71 @@
+<extend name="Public/base"/>
+
+<block name="body">
+	<div class="main-title">
+		<h2>积分比例设置</h2>
+	</div>
+		<div class="tab-wrap">
+		<div class="tab-content">
+	<form action="{:U('integrate')}" method="post" class="form-horizontal">
+	
+		<div class="form-item">
+			<label class="item-label">注册积分比例<span class="check-tips">新用户注册可得的积分数</span> </label>
+			<div class="controls">
+			<input type="text" class="text input-small" name="regist_ratio" value="{$info.regist_ratio|default=0}"/>
+			
+			</div>
+		</div>
+		<div class="form-item">
+			<label class="item-label">签到积分比例<span class="check-tips">会员每次签到可得的积分数</span> </label>
+			<div class="controls">
+			<input type="text" class="text input-small" name="sign_ratio" value="{$info.sign_ratio|default=1}"/>
+			
+			</div>
+		</div>
+		<div class="form-item">
+			<label class="item-label">支付积分比例<span class="check-tips">每支付一元可得的积分数</span> </label>
+			<div class="controls">
+			<input type="text" class="text input-small" name="pay_ratio" value="{$info.pay_ratio|default=0}"/> 
+			
+			</div>
+		</div>
+		<div class="form-item">
+			<label class="item-label">充值积分比例<span class="check-tips">每充值一元可得的积分数</span> </label>
+			<div class="controls">
+			<input type="text" class="text input-small" name="charge_ratio" value="{$info.charge_ratio|default=0}"/>
+			
+			</div>
+		</div>
+		
+		<div class="form-item">
+			<label class="item-label">运费<span class="check-tips"></span> </label>
+			<div class="controls">
+			订单满
+			<input type="text" class="text input-small" name="totalmoney" value="{$info.totalmoney|default=0}"/> 元
+			免运费
+			<input type="text" class="text input-small" name="expenses" value="{$info.expenses|default=0}"/> 元
+			</div>
+		</div>
+		
+		<div class="form-item">
+			<label class="item-label">佣金提现最低限制<span class="check-tips"></span> </label>
+			<div class="controls">
+			<input type="text" class="text input-small" name="withdraw_limit" value="{$info.withdraw_limit|default=0}"/> 元
+			</div>
+		</div>
+		<div class="form-item">
+			<label class="item-label"></label>
+			<div class="controls">
+				<button type="submit" class="btn submit-btn ajax-post" target-form="form-horizontal">确 定</button>
+				
+				<!-- <button class="btn btn-return" onclick="javascript:history.back(-1);return false;">返 回</button> -->
+			</div>
+		</div>
+	</form>
+			</div>
+	</div>
+</block>
+
+<block name="script">
+
+</block>

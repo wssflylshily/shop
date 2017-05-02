@@ -1,0 +1,434 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>{:C('WEB_SITE_TITLE')}</title>
+<meta name="description" content="{:C('WEB_SITE_DESCRIPTION')}" />
+<meta name="keywords" content="{:C('WEB_SITE_KEYWORD')}" />
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, width=device-width">
+<link href="__PUBLIC__/Home/css/weui.min.css" rel="stylesheet" />
+<link href="__PUBLIC__/Home/css/jquery-weui.css" rel="stylesheet" />
+<link href="__PUBLIC__/Home/css/swiper.min.css" rel="stylesheet" />
+<link href="__PUBLIC__/Home/css/common.css" rel="stylesheet" />
+<link href="__PUBLIC__/Home/css/style.css" rel="stylesheet" />
+<style>
+.boxshadow:before{ content:""; display:inline-block; width:0px; height:100%; vertical-align:middle;}
+.boxshadow img{ vertical-align:middle; width:auto; height:auto; max-width:98%; max-height:100%;}
+</style>
+
+<script src="__PUBLIC__/Home/js/jquery-1.8.3.min.js"></script>
+<script src="__PUBLIC__/Home/js/common.js"></script>
+<script src="__PUBLIC__/Home/js/swiper-3.3.1.jquery.min.js"></script>
+<script>
+var is_vip={$is_vip};
+</script>
+<script src="__PUBLIC__/Home/js/numbers.js"></script>
+<script>
+$(function(){
+	var mySwiper = new Swiper ('.swiper-container', {
+		direction: 'horizontal',
+		loop: true,
+		autoplay : 3000,
+		autoplayDisableOnInteraction : false,
+		// 如果需要分页器
+		pagination: '.swiper-pagination',
+	  });
+	/*收藏*/
+	$(".collect_btn").click(function(){
+		//$(this).toggleClass("cur"); 
+	});
+	/*评价分类选项卡*/	
+	/*$(".evalu_menu li").click(function(){
+			
+			var dataid=$(this).attr("data-id");
+			
+			$(this).addClass("cur").siblings().removeClass("cur");
+			
+			var $evaluate_con=$(".evaluate_con");
+	})*/
+	
+	$(".evaluate_star").each(function(index, element) {
+        var c=parseInt($(this).children("input").val());
+		$(this).children("span").each(function(index, element) {
+            if(index<c)
+			{
+				$(this).addClass("cur");	
+			}
+			else
+			{
+				$(this).removeClass("cur");
+			}
+        });
+    });
+	
+	/*$(".add_car").click(function() {
+        $.toptip('已加入购物车', 'success');
+      });*/
+	$(".xz_adcar").click(function() {
+		var cstr=$(".text_t").html();
+		if(cstr.indexOf("请")>=0){			
+			 var pro_num=$(".pro_num"),
+ 	 			pro_box=$(".pro_box");
+			 	pro_box.show();
+			 	pro_num[0].style.webkitTransform = "translate(0,0)";
+			$(".pro_num .gmbtn").show();
+			$(".pro_num .gmbtn").attr("data-zt","购物车");
+			$(".pro_num .gmbtn1").hide();
+		}
+		else{
+        	$.toptip('已加入购物车', 'success');
+		}
+      });
+	  
+	$(".liji_buy").click(function() {
+		var cstr=$(".text_t").html();
+		if(cstr.indexOf("请")>=0){			
+			 var pro_num=$(".pro_num"),
+				pro_box=$(".pro_box");
+				pro_box.show();
+				pro_num[0].style.webkitTransform = "translate(0,0)";
+			$(".pro_num .gmbtn").show();
+			$(".pro_num .gmbtn").attr("data-zt","立即购买");
+			$(".pro_num .gmbtn1").hide();
+		}
+		else{
+			window.location.href="/Cart";
+		}
+	  });
+	  
+	  
+	$(".disimg").click(function(){		
+		$(".boxshadow").show();
+		$(".boxshadow img").attr("src",$(this).attr("src"));
+		
+	});
+	$(".boxshadow").click(function(){
+		$(this).hide();
+	});
+
+})
+var product_id={$info.id};
+var is_login={$is_login};
+function addcart()
+{
+	if(is_login==0)
+	{
+		window.location.href='/Member/Login?href={$info.id}';
+	}
+	else
+	{
+		var str="已选择";
+		var stra="请选择";
+		var strb="";
+		$(".pro_xz_content .num_kind").each(function(index, element) {
+            var ssele=$(this).children("h2").html();
+			if($(this).find(".cur").length==0)
+			{
+				//stra+=ssele+"&nbsp;";
+				stra+=ssele;
+			}
+			else{
+				str+=$(this).find(".cur").html()+"&nbsp;";
+				strb+=ssele+"="+$(this).find(".cur").html()+",";
+			}
+        });
+		//alert(stra);
+		if(stra=="请选择")
+		{
+			$.ajax({
+				//提交数据的类型 POST GET
+				type:"POST",
+				//提交的网址
+				url:"{:U('Cart/insert')}",
+				//提交的数据
+				data:{'amount':$("#amount").val(),'attr':$('#sel_attr').val(),'product_id':product_id},
+				//返回数据的格式
+				datatype: "json",//"xml", "html", "script", "json", "jsonp", "text".
+				//在请求之前调用的函数
+				//成功返回之后调用的函数             
+				success:function(json){
+					//alert($(".pro_num .gmbtn").attr("data-zt"));
+					if(json.status<1)
+					{
+						/*$.toast(json.info,'cancel', function() {
+						});*/
+						alert(json.info);
+					}
+					else
+					{
+						//$.toast(json.info, function() {
+							//alert($(".pro_num .gmbtn").attr("data-zt"));
+							if($(".pro_num .gmbtn").attr("data-zt")=='立即购买')
+							{
+								window.location.href='{:U('Cart/index')}';
+							}
+							else
+							{
+								if(confirm("加入购物车成功,是否立即前往?"))
+								{
+									window.location.href='{:U('Cart/index')}';
+								}
+							}
+						//});
+					}
+					//alert(data.info);
+					//window.location.reload();
+					//$("#msg").html(decodeURI(data));            
+				}   ,
+				//调用执行后调用的函数
+				complete: function(XMLHttpRequest, textStatus){
+				   //alert(XMLHttpRequest.responseText);
+				   //alert(textStatus);
+					//HideLoading();
+				},
+				error: function(){
+				}         
+			 });
+		}
+	}
+	//$.toptip($('#sel_attr').val(),'success');
+}
+function collection(product_id)
+{
+	if(is_login==0)
+	{
+		window.location.href='/Member/Login?href={$info.id}';
+	}
+	else
+	{
+		$.ajax({
+				//提交数据的类型 POST GET
+				type:"POST",
+				//提交的网址
+				url:"{:U('Product/addcollection')}",
+				//提交的数据
+				data:{'product_id':product_id},
+				//返回数据的格式
+				datatype: "json",//"xml", "html", "script", "json", "jsonp", "text".
+				//在请求之前调用的函数
+				//成功返回之后调用的函数             
+				success:function(json){
+					//alert($(".pro_num .gmbtn").attr("data-zt"));
+					if(json.status<1)
+					{
+						$.toast(json.info,'cancel', function() {
+						});
+					}
+					else
+					{
+						$.toast(json.info, function() {
+							/*var cstr=$(".td03").html();
+							if(cstr.indexOf("cur")>=0){
+							}*/
+							$('.collect_btn').toggleClass("cur");
+						});
+					}
+				}   ,  
+			 });
+	}
+}
+</script>
+
+
+</head>
+<body>
+<!--top-->
+<div class="g_wrap top">
+	<table>
+    	<tr>
+        	<td class="td01"><a href="javascript:history.go(-1);"><img src="__PUBLIC__/Home/images/icon1_03.png" class="img2" /></a></td>
+            <td class="td02">产品信息</td>
+            <td class="td03"><a href="javascript:collection({$info.id});" class="collect_btn <if condition="$is_coll eq 1">cur</if>"></a></td>
+        </tr>
+    </table>
+</div>
+<!--content-->
+<div class="container g_wrap">    
+    <!--banner-->
+    <div class="swiper-container pro_detail_banner g_wrap">
+        <div class="swiper-wrapper">
+			<volist name="piclist" id="item">
+            <div class="swiper-slide"><img src="{$item.path}" /></div>
+			</volist>
+        </div>
+        <!-- 如果需要分页器 -->
+        <div class="swiper-pagination"></div>
+    </div>
+    <!--产品title-->
+    <div class="pro_detail_title">
+    	<h2>{$info.title}</h2>
+        <div class="div1 clear">
+        	<span class="l s01">￥{$info.gprice}</span><span class="l s02">￥{$info.market_price}</span><span class="l s04">库存<i>{$info.depot_num}</i>件</span><span class="r s03">已售<i>{$info.sell_num}</i>件</span>
+        </div>
+    </div>    
+    <a href="javascript:;" class="pro_a com_div shop_num">
+    	<div class="div1 text_t">选择{$info.attrs_titles}</div>
+    </a>
+    <div class="pro_condition">
+    	<ul class="clear first_menu first_menua">
+        	<li class="l col-sm-4">图文详情</li>
+			<volist name=":parse_config_attr($model['field_group'])" id="group">
+			<if condition="$group neq '基础'">
+			<li class="l col-sm-4">{$group}</li>
+			</if>
+			</volist>
+			<li class="l col-sm-4">评价 ({$info.pj_num})</li>
+        </ul>
+        <!--介绍-->
+        <div class="menu_content pro_intro">
+        	{$info.content}
+        </div>
+        <!--规格-->
+		<volist name=":parse_config_attr($model['field_group'])" id="group">
+		<if condition="$group neq '基础'">
+        <div class="menu_content">
+        	<table class="pro_standard_table">
+                <tr>
+                	<td class="td01">品牌</td><td class="td02">{$brandarr[$info['brand_id']]}</td>
+                </tr>
+				<volist name="fields[$key]" id="field">
+            	<tr>
+                	<td class="td01">{$field['title']}</td><td class="td02">{$info[$field['name']]}</td>
+                </tr>
+				</volist>
+            </table>
+        </div>
+		</if>
+		</volist>
+        <!--评价-->
+        <div class="menu_content">
+        	<div class="pro_evaluate clear">
+            	<div class="l">
+                	<h2>{$total_score}.0</h2>
+                    <p>整体评价</p>
+                </div>
+                <div class="r">
+                	<div class="evaluate_star"><span></span><span></span><span></span><span></span><span></span><input type="hidden" value="{$total_score}" /></div>
+                </div>
+            </div>
+            <ul class="clear first_menua evalu_menu" style="border-bottom:1px solid #dcdcdc;">
+                <li class="l col-sm-4 cur" data-id="">全部({$evaluate_num})</li><li class="l col-sm-4" data-id="">好评({:count($hao_evaluate_list)})</li><li class="l col-sm-4" data-id="">差评({:count($cha_evaluate_list)})</li>
+            </ul>
+            <div class="evalu_content">
+            	<!--全部-->
+                <ul class="evaluate_ul evaluate_con">
+					<volist name="all_evaluate_list" id="item">
+                    <li class="clear">
+                        <div class="head_img l"><img src="{$userarr[$item['user_id']]['image']}" /></div>
+                        <div class="font_div r">
+                            <h2>{$userarr[$item['user_id']]['login_user']}<i class="r">{:date('Y-m-d',$item['addtime'])}</i></h2>
+							<?php
+							$score=round(($item['desc_status']+$item['service_status']+$item['speed_status'])/3);
+							?>
+                            <div class="evaluate_star"><span></span><span></span><span></span><span></span><span></span><input type="hidden" value="{$score}" /><i>{$score}.0</i></div>
+                            <div class="discribe">{$item.desc}</div>
+                            <div class="dis_img clear">
+                            <?php
+							if(!empty($item['image']))
+							{
+							?><img src='{$item.image}' class="disimg" />
+							<?php
+							}
+							?>
+                            </div>
+                        </div>
+                    </li>
+					</volist>
+                </ul>
+             </div>
+          	<div class="evalu_content">
+            	<!--好评-->
+                <ul class="evaluate_ul evaluate_con">
+					<volist name="hao_evaluate_list" id="item">
+                    <li class="clear">
+                        <div class="head_img l"><img src="{$userarr[$item['user_id']]['image']}" /></div>
+                        <div class="font_div r">
+                            <h2>{$userarr[$item['user_id']]['login_user']}<i class="r">{:date('Y-m-d',$item['addtime'])}</i></h2>
+							<?php
+							$score=ceil(($item['desc_status']+$item['service_status']+$item['speed_status'])/5);
+							?>
+                            <div class="evaluate_star"><span></span><span></span><span></span><span></span><span></span><input type="hidden" value="{$score}" /><i>{$score}.0</i></div>
+                            <div class="discribe">{$item.desc}</div>
+                        </div>
+                    </li>
+					</volist>
+                 </ul>
+            </div>
+          	<div class="evalu_content">
+            	<!--差评-->
+                <ul class="evaluate_ul evaluate_con">
+                    <volist name="cha_evaluate_list" id="item">
+                    <li class="clear">
+                        <div class="head_img l"><img src="{$userarr[$item['user_id']]['image']}" /></div>
+                        <div class="font_div r">
+                            <h2>{$userarr[$item['user_id']]['login_user']}<i class="r">{:date('Y-m-d',$item['addtime'])}</i></h2>
+							<?php
+							$score=ceil(($item['desc_status']+$item['service_status']+$item['speed_status'])/5);
+							?>
+                            <div class="evaluate_star"><span></span><span></span><span></span><span></span><span></span><input type="hidden" value="{$score}" /><i>{$score}.0</i></div>
+                            <div class="discribe">{$item.desc}</div>
+                        </div>
+                    </li>
+					</volist>
+                 </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<input type="hidden" id="sel_attr" name="sel_attr" class="kind_selected" value="" />
+
+<!--商品属性选择-->
+<div class="pro_box g_wrap"></div>
+<div class="pro_num g_wrap">
+	<div class="pro_detail">
+    	<div class="img_div l"><img src="{$info.image}" /></div>
+        <div class="font_div l">
+        	<h2 id="gprice_txt">￥{$info.gprice}</h2>
+            <h4>库存<i>{$info.depot_num}</i>件</h4>
+            <h3 class="xz_font">请选择{$info.attrs_titles}</h3>
+        </div>
+        <div class="close"><i class="weui_icon_clear"></i></div>
+    </div>
+    <div class="pro_xz_content">
+		<volist name="attrs_titles_arr" id="item">
+        <div class="num_kind">
+            <h2>{$item.title}</h2>
+            <ul class="clear pro_ys">
+				<volist name="item.list" id="val">
+                <li class="l">{$val}</li>
+				</volist>
+            </ul>
+        </div>
+		</volist>
+        <div class="pro_add">
+            <span>购买数量</span>
+            <span class="r">
+                <a href="javascript:;" class="sub"></a><input type="text" name="amount" id="amount" class="amount" value="1" /><a href="javascript:;" class="add"></a>
+            </span>
+        </div>
+    </div>
+    <div class="com_btndiv gmbtn" data-zt='购物车' >
+    	<a href="javascript:;" class="weui_btn weui_btn_warn com_btn bg2" data-state="che" onclick="addcart()">确认</a>
+    </div>
+    <div class="com_btndiv gmbtn1">
+    	<a href="javascript:;" class="weui_btn weui_btn_warn com_btn bg1 l col-sm-6 add_car">加入购物车</a>
+        <a href="直接购买订单.html" class="weui_btn weui_btn_warn com_btn bg2 r col-sm-6">立即购买</a>
+    </div>
+</div>
+<!--footer-->
+<div class="footer g_wrap">
+    <div class="com_btndiv">
+    	<a href="javascript:;" class="weui_btn weui_btn_warn com_btn bg1 l col-sm-6 shop_num add_car xz_adcar"><img src="__PUBLIC__/Home/images/car_06.png" width="20" />加入购物车</a>
+        <a href="javascript:;" class="weui_btn weui_btn_warn com_btn bg2 r col-sm-6 shop_num liji_buy">立即购买</a>
+    </div>
+</div>
+<script src="__PUBLIC__/Home/js/jquery-2.1.4.js"></script>
+<script src="__PUBLIC__/Home/js/jquery-weui.js"></script>
+<!--BEGIN actionSheet-->
+<div class="boxshadow">
+	<img src="" />
+</div>
+<!--END actionSheet-->
+</body>
+</html>

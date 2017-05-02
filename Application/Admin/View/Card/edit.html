@@ -1,0 +1,84 @@
+<extend name="Public/base"/>
+
+<block name="body">
+
+<link href="__STATIC__/datetimepicker/css/datetimepicker.css" rel="stylesheet" type="text/css">
+<php>if(C('COLOR_STYLE')=='blue_color') echo '<link href="__STATIC__/datetimepicker/css/datetimepicker_blue.css" rel="stylesheet" type="text/css">';</php>
+<link href="__STATIC__/datetimepicker/css/dropdown.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="__STATIC__/datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript" src="__STATIC__/datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+
+<script type="text/javascript">
+
+$(function(){
+    $('.date').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language:"zh-CN",
+        minView:2,
+        autoclose:true
+    });
+    $('.time').datetimepicker({
+        format: 'yyyy-mm-dd hh:ii',
+        language:"zh-CN",
+        minView:2,
+        autoclose:true
+    });
+    showTab();
+
+});
+</script>
+	<script type="text/javascript" src="__STATIC__/uploadify/jquery.uploadify.min.js"></script>
+	<div class="main-title">
+		<h2>编辑卡券</h2>
+	</div>
+	<div class="tab-wrap">
+		<div class="tab-content">
+			<form action="__URL__/update" method="post" class="form-horizontal" enctype="multipart/form-data">
+				<!-- 基础 -->
+				<input type="hidden" name="id" value="{$vo.id}" />
+				<div id="tab1" class="tab-pane in tab1">
+					<div class="form-item">
+						<label class="item-label">
+							名称<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+							<input type="text" name="title" class="text input-large" value="{$vo.title}"><span class="check-tips"></span>
+						</div>
+						<label class="item-label">
+							截止日期<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+							<input type="text" name="end_date" class="text date" value="{$vo.end_date}">
+							<span class="check-tips"></span>
+						</div>
+						<label class="item-label">
+							积分<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+							<input type="text" name="integral" class="text input-large" value="{$vo.integral}"><span class="check-tips"></span>
+						</div>
+						<label class="item-label">
+							说明<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+							<input type="text" name="desc" class="text input-large" value="{$vo.desc}"><span class="check-tips"></span>
+						</div>
+						<label class="item-label">
+							生成数量<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+							<input type="text" name="num" class="text" value="{$vo.num}"><span class="check-tips"></span>
+						</div>
+					</div>
+				</div>
+
+				<div class="form-item">
+					<input type="hidden" name="__forward__" class="text input-large" value="{$__forward__}">
+					<input type="hidden" name="position_id" class="text input-large" value="{$Think.get.hid}"><span class="check-tips"></span>
+					<button type="submit" id="submit" class="btn submit-btn ajax-post" target-form="form-horizontal">确 定</button>
+					<button class="btn btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</block>

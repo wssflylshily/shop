@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>我的银行卡</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/zepto.js"></script>
+		<script src="__PUBLIC__/Home/js/delIOS_huitan.js"></script>
+	</head>
+	<body class="box">
+		<!-- 遮罩层 -->
+		<div id="zhezhao" style="display:none"></div>
+		<!--confirm-->
+		<div class="confirm" style="display: none">
+			<div class="top"></div>
+			<div class="bot clear">
+				<div class="l"><p>取消</p></div>
+				<div class="r"><p>确定</p></div>
+			</div>
+		</div>
+		<!--提示文字-->
+		<div class="tip" style="opacity: 0;z-index: -1"></div>
+		<!--正文区域-->
+		<div id="myCardTop" class="topBackTitle">
+			<div class="contain maxWidth">
+				<a class="hz back" href="{:U('Index/index')}">&#xe600;</a>我的银行卡<a href="javascript:;" class="edit">编辑</a>
+			</div>
+		</div>
+		<div id="myCardMain" class="fastscroll top50bot0">
+			<div class="contain maxWidth">
+				<ul class="ullist1line">
+					<volist name="list" id="item">
+					<li data-id="{$item.id}">
+						<div class="left">
+							<span class="circleGreen">
+								<span class="hz">&#xe613;</span>
+							</span>
+						</div>
+						<a href='__URL__/edit/id/{$item.id}'>
+						<div class="right">
+							<div class="l">
+								<img src="__PUBLIC__/Home/{$typearr[$item['type_id']]['img']}">
+							</div>
+							<div class="r">
+								<p class="title">{$typearr[$item['type_id']]['title']}</p>
+								<p class="info">尾号<span>{:substr($item['card_num'],-4)}</span></p>
+							</div>
+						</div>
+						</a>
+					</li>
+					</volist>
+				</ul>
+				<ul class="addKa">
+					<li>
+						<a href="__URL__/add">
+							<div class="left">
+								添加银行卡
+							</div>
+							<div class="right">
+								<span class="hz">&#xe60c;</span>
+							</div>
+						</a>
+					</li>
+				</ul>
+				<div class="delArea">
+					<a href="javascript:;" class="orangeBtn">删除</a>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			//返回按钮
+			/*$('#myCardTop .back').on('tap',function(){
+				window.history.go(-1);
+			});*/
+
+			//点击编辑
+			$('#myCardTop .edit').on('tap',function(){
+				if($(this).text()=='编辑'){
+					$(this).text('完成');
+					$('#myCardMain .ullist1line .left').css('display','block');
+					$('#myCardMain .delArea').css('display','block');
+					$('#myCardMain .addKa').css('display','none');
+				}else if($(this).text()=='完成'){
+					$(this).text('编辑');
+					$('#myCardMain .ullist1line .left').css('display','none');
+					$('#myCardMain .delArea').css('display','none');
+					$('#myCardMain .addKa').css('display','block');
+				}
+			});
+
+			//点击删除
+			$('#myCardMain .delArea .orangeBtn').on('tap',function(){
+				$('.confirm .top').text('确认删除吗？');
+				$('.confirm').css('display','block');
+				$('#zhezhao').css('display','block');
+
+				//点击取消
+				$('.confirm .bot div.l').on('click',function(){
+					$('#zhezhao').css('display','none');
+					$('.confirm').css('display','none');
+				});
+				//点击确定
+				$('.confirm .bot div.r').on('click',function(){
+					$('#zhezhao').css('display','none');
+					$('.confirm').css('display','none');
+
+					// 删除操作的ajax
+					var delidStr='';		//选中的银行卡id
+					var selecteds=$('#myCardMain .circleGreen .active');
+					for(var i=0;i<selecteds.length;i++){
+						delidStr+=$(selecteds[i]).parent().parent().parent().attr('data-id')+',';
+					}
+					$.ajax({
+						url: '{:U("delCard")}',
+						type: 'POST',
+						dataType: 'json',
+						data: {ids: delidStr},
+						success:function(data){
+							tipFun(data.msg);
+							if(data.status==1){
+								//移除dom
+								for(var i=0;i<selecteds.length;i++){
+									$(selecteds[i]).parent().parent().parent().remove();
+								}
+							}
+						}
+					});
+					
+				});
+			});
+
+			//点击小圆点
+			$('#myCardMain .ullist1line .left .circleGreen').on('tap',function(){
+				if($(this).find('.hz').hasClass('active')){
+					$(this).find('.hz').removeClass('active');
+				}else{
+					$(this).find('.hz').addClass('active');
+				}
+			});
+
+			function tipFun(str){
+				$('.tip').text(str).css({
+					'opacity':'1',
+					'z-index':'9999'
+				});
+				setTimeout(function(){
+					$('.tip').css('opacity','0');
+					setTimeout(function(){
+						$('.tip').css('z-index','-1');
+					},300);
+				},1300);
+			}
+		</script>
+	</body>
+</html>

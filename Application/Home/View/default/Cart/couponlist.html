@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>{:C('WEB_SITE_TITLE')}</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/zepto.js"></script>
+		<script src="__PUBLIC__/Home/js/iscroll-probe.js"></script>
+		<include file="Public/weixin"/>
+		<script src="__PUBLIC__/Home/js/delIOS_huitan.js"></script>
+		<style>
+			/*下拉加载样式*/
+			#wrapper {
+				position: absolute;
+				z-index: 1;
+				top: 0;
+				bottom: 0;
+				left: 0;
+				width: 100%;
+				overflow: hidden;
+			}
+			#loadBin{color: #5d5d5d;text-align: center;line-height: 30px;}
+		</style>
+	</head>
+	<body onLoad="onload()" class="box">
+		<!--正文区域-->
+		<div id="dingdanUseQuanTop" class="top1top2">
+			<div class="contain maxWidth">
+				<div class="top1">
+					<a class="hz back" href="javascript:;">&#xe600;</a>使用优惠券
+				</div>
+			</div>
+		</div>
+		<div id="dingdanUseQuanMain" class="fastscroll top50bot0">
+			<div class="contain maxWidth">
+				<div id="wrapper">
+					<div class="maxWidth">
+						<!--未过期 已过期 公用一个ul-->
+						<ul class="list quancom">
+						<volist name="list" id="item">
+							<li>
+								<a href="javascript:tourl({$item.did});">
+									<div class="left">
+										<p class="title">{$item.title}</p>
+										<p class="info">使用期限 <span class="starttime">{$item.start_date}</span>-<span class="endtime">{$item.end_date}</span></p>
+									</div>
+									<div class="right">
+										<div class="area area10">
+											<span class="leftcircle circle"></span>
+											<span class="rightcircle circle"></span>
+											<p class="title">&yen;<span>{$item.money}</span></p>
+											<p class="info">{$item.desc}</p>
+										</div>
+									</div>
+								</a>
+							</li>
+						</volist>
+						</ul>
+						<div id="loadBin"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			//返回按钮
+			$('#dingdanUseQuanTop .back').on('tap',function(){
+				window.history.go(-1);
+			});
+			
+			function tourl(id){
+				var url = "{$url}";
+				url+="&coupon_id="+id;
+				console.log(url);
+				location.href = url;
+			}
+
+			//使用 未过期的优惠券
+			/*$('#wrapper .list').on('tap','li',function(){
+				if(currIndex==0){
+					var money=$(this).find('.right .area .title span').text();
+					console.log('使用'+money+'元的优惠券');
+				}
+			});*/
+
+			//iscroll 下拉加载+zeptoajax
+			function onload(){
+				loadBin = document.getElementById("loadBin");
+				myScroll = new IScroll('#wrapper',{
+					probeType: 3,
+					click:true
+				});
+				myScroll.on("scroll",scrollFun);
+				myScroll.on("scrollEnd",scrollEndFun);
+			}
+
+			var page=1;
+			var myScroll,
+					loadBin,
+					isload = false,
+					scrollFun = function(){
+						if((this.y - this.maxScrollY)>>0 < -50){
+							isload = true;
+							//loadBin.innerHTML = "松开手指加载更多";
+							myScroll.refresh();
+							myScroll.off("scroll",scrollFun);
+						}
+					},
+					scrollEndFun = function(){
+						/*if(isload){
+							isload = false;
+							if(currIndex==0){
+								//我的优惠券未过期
+								$.ajax({
+									type: 'GET',
+									url: 'data/我的优惠券未过期.html',
+									dataType: 'json',
+									success: function(data){
+										page++;
+										for(var i=0;i<data.lists.length;i++){
+											$('#wrapper .list').append('<li><a href="javascript:;"><div class="left"><p class="title">'+data.lists[i].title+'</p><p class="info">使用期限<span class="starttime">'+data.lists[i].starttime+'</span>-<span class="endtime">'+data.lists[i].endtime+'</span></p></div><div class="right"><div class="area '+data.lists[i].class+'"><span class="leftcircle circle"></span><span class="rightcircle circle"></span><p class="title">&yen;<span>'+data.lists[i].quanMoney+'</span></p><p class="info">满&yen;<span>'+data.lists[i].manMoney+'</span>使用</p></div></div></a></li>');
+										}
+										loadBin.innerHTML = "";
+										myScroll.on("scroll",scrollFun);
+										myScroll.refresh();
+									},
+									error: function(xhr, type){
+										console.log('Ajax error!');
+									}
+								});
+							}else if(currIndex==1){
+								//我的优惠券已过期
+								$.ajax({
+									type: 'GET',
+									url: 'data/我的优惠券已过期.html',
+									dataType: 'json',
+									success: function(data){
+										page++;
+										for(var i=0;i<data.lists.length;i++){
+											$('#wrapper .list').append('<li><a href="javascript:;"><div class="left"><p class="title">'+data.lists[i].title+'</p><p class="info">使用期限<span class="starttime">'+data.lists[i].starttime+'</span>-<span class="endtime">'+data.lists[i].endtime+'</span></p></div><div class="right"><div class="area '+data.lists[i].class+'"><span class="leftcircle circle"></span><span class="rightcircle circle"></span><p class="title">&yen;<span>'+data.lists[i].quanMoney+'</span></p><p class="info">满&yen;<span>'+data.lists[i].manMoney+'</span>使用</p></div></div></a></li>');
+										}
+										loadBin.innerHTML = "";
+										myScroll.on("scroll",scrollFun);
+										myScroll.refresh();
+									},
+									error: function(xhr, type){
+										console.log('Ajax error!');
+									}
+								});
+							}
+						}*/
+					};
+
+
+		</script>
+	</body>
+</html>

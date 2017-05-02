@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>蜜团儿</title>
+<meta name="description" content="蜜团儿" />
+<meta name="keywords" content="蜜团儿" />
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, width=device-width">
+<link href="__PUBLIC__/Home/css/weui.min.css" rel="stylesheet" />
+<link href="__PUBLIC__/Home/css/jquery-weui.css" rel="stylesheet" />
+<link href="__PUBLIC__/Home/css/common.css" rel="stylesheet" />
+<link href="__PUBLIC__/Home/css/style.css" rel="stylesheet" />
+<script src="__PUBLIC__/Home/js/jquery-1.8.3.min.js"></script>
+</head>
+<body>
+<!--top-->
+<div class="g_wrap top">
+	<table>
+    	<tr>
+        	<td class="td01"><a href="javascript:history.go(-1);"><img src="__PUBLIC__/Home/images/icon1_03.png" class="img2" /></a></td>
+            <td class="td02">支付订单</td>
+            <td class="td03">&nbsp;</td>
+        </tr>
+    </table>
+</div>
+<!--content-->
+<div class="container g_wrap">    
+    <div class="com_div">
+    	<table class="pay_table">
+        	<tr>
+            	<td>下单时间：</td><td align="right">{:date('Y-m-d H:i')}</td>
+            </tr>
+            <tr>
+            	<td>订单编号：</td><td align="right">{$row.sn}</td>
+            </tr>
+            <tr>
+            	<td>订单总价：</td><td align="right" class="font1">{$row.money}</td>
+            </tr>
+			<if condition="$row.type eq 0">
+            <tr>
+            	<td>运费：</td><td align="right" class="font1">{$row.express_money}</td>
+            </tr>
+			</if>
+			<!--
+            <tr>
+            	<td class="td01">商城币支付：</td><td align="right" class="font1 td01">6.00</td>
+            </tr>
+			-->
+            <tr>
+            	<td class="td01">还需支付：</td><td align="right" class="td01 font2">￥<i>{$total_price}</i></td>
+            </tr>
+        </table>
+    </div>
+    <div class="com_btndiv">
+    	<a href="支付成功.html" id="show-toast-text" class="weui_btn weui_btn_primary com_btn1 bg1">微信支付</a>
+    </div>
+</div>
+<script src="js/jquery-2.1.4.js"></script>
+<script src="js/jquery-weui.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<meta name="format-detection" content="telephone=no">
+		<title>{:C('WEB_SITE_TITLE')}</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/swiper-3.3.1.min.css"/>
+		<script src="__PUBLIC__/Home/js/swiper-3.3.1.min.js"></script>
+		<script src="__PUBLIC__/Home/js/zepto.js"></script>
+		<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+		<script src="__PUBLIC__/Home/js/delIOS_huitan.js"></script>
+	</head>
+	<body class="box">
+		<!--正文区域-->
+		<div id="jiudianDetailTop" class="topBackTitle">
+			<div class="contain maxWidth">
+				<a class="hz back" href="javascript:;">&#xe600;</a>酒店详情
+			</div>
+		</div>
+		<div id="jiudianDetailMain" class="fastscroll top50bot0">
+			<div class="maxWidth contain">
+				<!-- 轮播-->
+				<div class="swiper-container lunbo">
+					<div class="swiper-wrapper">
+						<volist name="piclist" id="l">
+						<div class="swiper-slide" style="background-image:url({$l.path})"></div>
+						</volist>
+					</div>
+					<div class="swiper-pagination"></div>
+				</div>
+				<!-- 酒店名称-->
+				<div class="name">
+					<div class="circle">
+						<img src="{$info.logo}">
+					</div>
+					<p>{$info.title}</p>
+				</div>
+				<!-- 菜系-->
+				<div class="caixi clear">
+					<div class="l">菜系：</div>
+					<div class="r">{$info.cookstyle}</div>
+				</div>
+				<!-- 联系-->
+				<div class="contact">
+					<ul class="clear">
+						<li class="l">位置:{$info.address}</li>
+						<li class="r"><a href="javascript:;" class="location"><img src="__PUBLIC__/Home/img/jiudianDetail/jiudianDetail_05.png" alt=""/></a></li>
+					</ul>
+					<ul class="clear">
+						<li class="l">预定电话:{$info.phone}</li>
+						<li class="r"><a href="tel:{$info.phone}"><img src="__PUBLIC__/Home/img/jiudianDetail/jiudianDetail_08.png" alt=""/></a></li>
+					</ul>
+				</div>
+				<div class="info">
+					<h3>酒店介绍</h3>
+					{$info.content}
+					<!-- <img src="img/jiudianDetail/jiudianDetail_11.png"/>
+					<p>软装饰是指利用室内装潢可以移动的、易于更换的饰物如窗帘、沙发、床上用品、家具等对居室进行二度成设和布置。软装风格也能体现业主的生活品味。</p>
+					<img src="img/jiudianDetail/jiudianDetail_11.png"/>
+					<p>软装饰是指利用室内装潢可以移动的、易于更换的饰物如窗帘、沙发、床上用品、家具等对居室进行二度成设和布置。软装风格也能体现业主的生活品味。</p> -->
+				</div>
+				<div class="cai">
+					<h3>招牌菜</h3>
+					{$info.brief}
+					<!-- <ul class="list clear">
+						<li>
+							<a href="javascript:;">
+								<img src="img/jiudianDetail/jiudianDetail_18.png" />
+								<p>蛋白霜蛋糕蛋白霜蛋糕蛋白霜蛋糕</p>
+							</a>
+						</li>
+						<li>
+							<a href="javascript:;">
+								<img src="img/jiudianDetail/jiudianDetail_18.png" />
+								<p>蛋白霜蛋糕</p>
+							</a>
+						</li>
+						<li>
+							<a href="javascript:;">
+								<img src="img/jiudianDetail/jiudianDetail_18.png" />
+								<p>蛋白霜蛋糕</p>
+							</a>
+						</li>
+						<li>
+							<a href="javascript:;">
+								<img src="img/jiudianDetail/jiudianDetail_18.png" />
+								<p>蛋白霜蛋糕</p>
+							</a>
+						</li>
+					</ul> -->
+				</div>
+			</div>
+		</div>
+		<script>
+			//返回按钮
+			$('#jiudianDetailTop .back').on('click',function(){
+				location.href='/';
+			});
+
+			//轮播
+			var lunbosw = new Swiper('#jiudianDetailMain .lunbo', {
+				autoplay: 3000,
+				loop:true,
+				autoplayDisableOnInteraction:false,
+				pagination : '.swiper-pagination',
+				paginationType : 'fraction'
+			});
+
+			//招牌菜图片高度  322/200
+			/*var allcaiimg=$('#jiudianDetailMain .cai .list li img');
+			var w=allcaiimg[0].offsetWidth;
+			for(var i=0;i<allcaiimg.length;i++){
+				allcaiimg[i].style.height=200*w/322+'px';
+			}*/
+		</script>
+		<script>
+			wx.config({
+			      debug: false,
+			      appId: '<?php echo $signPackage["appId"];?>',
+			      timestamp: <?php echo $signPackage["timestamp"];?>,
+			      nonceStr: '<?php echo $signPackage["nonceStr"];?>',
+			      signature: '<?php echo $signPackage["signature"];?>',
+			      jsApiList: [
+			        'openLocation',
+			        'getLocation'
+			      ]
+			  });
+
+			wx.ready(function () {
+				var jingdu = "{$info.lng}";
+				var weidu = "{$info.lat}";
+				var title = "{$info.title}";
+				var addr = "{$info.address}";
+				
+				document.querySelector('.location').onclick = function () {
+					wx.openLocation({
+			      		latitude: weidu,
+			      		longitude: jingdu,
+			      		name: title,
+			      		address: addr,
+			      		scale: 20
+			      		//infoUrl: 'http://weixin.qq.com'
+			    	});
+				}
+				
+			 });
+		</script>
+	</body>
+</html>

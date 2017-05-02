@@ -1,0 +1,47 @@
+<extend name="Public/base"/>
+
+<block name="body">
+	<div class="main-title">
+		<h2>佣金比例设置</h2>
+	</div>
+		<div class="tab-wrap">
+		<div class="tab-content">
+	<form action="{:U('index')}" method="post" class="form-horizontal">
+	
+		<div class="form-item">
+			<label class="item-label">一级分销佣金比例<span class="check-tips"></span> </label>
+			<div class="controls">
+			<input type="text" class="text input-small" name="ratio1" value="{$info.ratio_level1}"/> %
+			
+			</div>
+		</div>
+		<div class="form-item">
+			<label class="item-label">二级分销佣金比例<span class="check-tips"></span> </label>
+			<div class="controls">
+			<input type="text" class="text input-small" name="ratio2" value="{$info.ratio_level2}"/> %
+			
+			</div>
+		</div>
+		<div class="form-item">
+			<label class="item-label">三级分销佣金比例<span class="check-tips"></span> </label>
+			<div class="controls">
+			<input type="text" class="text input-small" name="ratio3" value="{$info.ratio_level3}"/> %
+			
+			</div>
+		</div>
+		<div class="form-item">
+			<label class="item-label"></label>
+			<div class="controls">
+				<button type="submit" class="btn submit-btn ajax-post" target-form="form-horizontal">确 定</button>
+				
+				<!-- <button class="btn btn-return" onclick="javascript:history.back(-1);return false;">返 回</button> -->
+			</div>
+		</div>
+	</form>
+			</div>
+	</div>
+</block>
+
+<block name="script">
+
+</block>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html class="wh100">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>搜索</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css" />
+		<script src="__PUBLIC__/Home/js/zepto.js"></script>
+	</head>
+<script>
+function search()
+{
+	var url='/Search/index?keywords='+$('#keywords').val();
+	window.location.href=url;
+}
+function emptyall()
+{
+	$.ajax({
+		//提交数据的类型 POST GET
+		type:"POST",
+		//提交的网址
+		url:"__URL__/emptyall",
+		//提交的数据
+		data:{},
+		//返回数据的格式
+		datatype: "json",
+		success:function(data){        
+		}
+   });
+}
+</script>
+	<body class="wh100 fastscroll">
+		<!--正文区域-->
+		<div id="sousuoTop">
+			<div class="contain maxWidth clear">
+				<div class="ssInputArea">
+					<input type="text" id="keywords" placeholder="请输入要查询的产品名称">
+					<span class="hz search">&#xe607;</span>
+				</div>
+				<a href="javascript:search();">搜索</a>
+			</div>
+		</div>
+		<div id="sousuoMain" class="fastscroll">
+			<div class="contain maxWidth">
+				<div class="title clear">
+					<span>最近搜索</span>
+					<em onclick="emptyall()">清空</em>
+				</div>
+				<ul class="list">
+				<?php
+				if(isset($_SESSION['keywordlist']))
+				{
+					$keywordslist=unserialize($_SESSION['keywordlist']);
+				}
+				?>
+				<volist name="keywordslist" id="item">
+					<li><a href="/Search/index?keywords={$item}">{$item}</a></li>
+				</volist>
+				<!--
+					<li><a href="javascript:;">充电宝</a></li>
+					<li><a href="javascript:;">自行车</a></li>
+					<li><a href="javascript:;">时尚女包</a></li>
+					<li><a href="javascript:;">流行男鞋</a></li>
+					<li><a href="javascript:;">水果</a></li>
+					<li><a href="javascript:;">男士项链</a></li>
+					<li><a href="javascript:;">充电宝</a></li>
+					<li><a href="javascript:;">自行车</a></li>
+					<li><a href="javascript:;">时尚女包</a></li>
+					<li><a href="javascript:;">流行男鞋</a></li>
+					<li><a href="javascript:;">水果</a></li>
+					<li><a href="javascript:;">男士项链</a></li>
+					<li><a href="javascript:;">充电宝</a></li>
+					<li><a href="javascript:;">自行车</a></li>
+					<li><a href="javascript:;">时尚女包</a></li>
+					<li><a href="javascript:;">流行男鞋</a></li>
+					<li><a href="javascript:;">水果</a></li>-->
+				</ul>
+			</div>
+		</div>
+
+		<script>
+			//点击清空
+			$('#sousuoMain .title em').on('tap',function(){
+				$('#sousuoMain .list').html('');
+			});
+
+			//点击搜索
+			$('#sousuoTop .contain a').on('tap',function(){
+				//获取关键字
+				var keyword=$('#sousuoTop .ssInputArea input').val();
+				console.log(keyword);
+				if(keyword!=''){
+					//location.href='搜索列表.html';
+				}
+			});
+
+			//点击老搜索项，直接用这个关键字搜索 跳到搜索结果页
+			$('#sousuoMain .list li').on('tap',function(){
+				//location.href='搜索列表.html';
+			})
+		</script>
+	</body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>修改密码</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/zepto.js"></script>
+		<script src="__PUBLIC__/Home/js/jquery-1.8.3.min.js"></script>
+		<script src="__PUBLIC__/Home/js/delIOS_huitan.js"></script>
+	</head>
+	<body class="box">
+		<!--提示文字-->
+		<div class="tip" style="opacity: 0;z-index: -1"></div>
+		<!--正文区域-->
+		<div id="gaiPwdTop" class="topBackTitle">
+			<div class="contain maxWidth">
+				<a class="hz back" href="javascript:;">&#xe600;</a><if condition="$user['login_pass'] neq ''">修改密码<else/>设置密码</if>
+			</div>
+		</div>
+		<div id="gaiPwdMain" class="fastscroll ownZiliao">
+			<div class="contain maxWidth">
+			<if condition="$user['login_pass'] neq ''">
+				<div class="inputs">
+					<div class="inputArea">
+						<span>原密码</span><input type="password" placeholder="请输入原密码" id="old_pass">
+					</div>
+					<div class="inputArea">
+						<span>新密码</span><input type="password" placeholder="请输入新密码" id="new_pass">
+					</div>
+					<div class="inputArea">
+						<span>确认密码</span><input type="password" placeholder="请确认新密码" id="new_pass_1">
+					</div>
+				</div>
+			<else/>
+				<div class="inputs">
+					<div class="inputArea">
+						<span>密码</span><input type="password" placeholder="请输入密码" id="new_pass">
+					</div>
+					<div class="inputArea">
+						<span>确认密码</span><input type="password" placeholder="请确认新密码" id="new_pass_1">
+					</div>
+				</div>
+			</if>
+				<button class="submitbtn">确认</button>
+			</div>
+		</div>
+
+		<script>
+			//返回按钮
+			$('#gaiPwdTop .back').on('tap',function(){
+				//window.history.go(-1);
+				window.location.href='{:U('Index/baseinfo')}';
+			});
+
+			//tip
+			function tipFun(str){
+				$('.tip').text(str).css({
+					'opacity':'1',
+					'z-index':'9999'
+				});
+				setTimeout(function(){
+					$('.tip').css('opacity','0');
+					setTimeout(function(){
+						$('.tip').css('z-index','-1');
+					},300);
+				},1300);
+			}
+
+			//点击确定
+			$('#gaiPwdMain button').on('tap',function(){
+				//onsole.log('确认');
+				var pass = "{$user.login_pass}";
+				var info = {};
+				if(pass!=""){
+					if($("#old_pass").val()=='')
+					{
+						tipFun('请填写原密码!');return;
+					}
+					else if($('#new_pass').val()=='')
+					{
+						tipFun('请填写新密码!');return;
+					}else if($('#new_pass').val()!=$('#new_pass_1').val())
+					{
+						tipFun('两次密码不一致!');return;
+					}
+					info = {'old_pass':$("#old_pass").val(),'new_pass':$('#new_pass').val(),'newpass1':$('#new_pass_1').val()};
+				}else{
+					if($('#new_pass').val()=='')
+					{
+						tipFun('请填写密码!');return;
+					}else if($('#new_pass_1').val()==""){
+						tipFun('请确认密码!');return;
+					}else if($('#new_pass').val()!=$('#new_pass_1').val())
+					{
+						tipFun('两次密码不一致!');return;
+					}
+					info = {'new_pass':$('#new_pass').val(),'newpass1':$('#new_pass_1').val()};
+				}
+				$.ajax({  
+					type:'post',  
+					url:"{:U('Index/updatepass')}",  
+					data:info,  
+					success:function(data){
+						tipFun(data.info);
+						setTimeout(function(){
+							location.href = data.url;
+						},1200);
+					}  
+				});
+				
+			});
+		</script>
+	</body>
+</html>

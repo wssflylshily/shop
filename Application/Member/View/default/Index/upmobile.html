@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>{:C('WEB_SITE_TITLE')}</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/zepto.js"></script> 
+		<script src="__PUBLIC__/Home/js/common.js"></script>
+		<script src="__PUBLIC__/Home/js/delIOS_huitan.js"></script>
+<script>
+function verifycode()
+{
+	var verifysrc='__URL__/verify&rand='+Math.random();
+	$('#verify_code').attr('src',verifysrc);
+}
+function sendsms() 
+{
+	$.ajax({
+		type: "post",
+		dataType: "json",
+		url: "__URL__/sendsms",
+		data: {mobile:$('#mobile').val()},
+		success: function(json){
+			if(json.status<1)
+			{
+				tipFun(json.info);
+				//$.toast(json.info,'cancel', function() {
+				//});
+			}
+			else
+			{
+				//$('#successsms').val(json.info);
+			}
+		}
+	})
+}
+</script>
+	</head>
+	<body class="box">
+		<!--提示文字-->
+		<div class="tip" style="opacity: 0;z-index: -1"></div>
+		<!--输入验证码的弹框-->
+		<div id="maKuang" style="display:none">
+			<div class="top">
+				<span class="title">输入验证码</span>
+				<div class="inputArea">
+					<input type="number" id="code" style="text-align:center;height:32px;width:120px;margin-left:20%;"/>
+					<p class="ma" style="width:72px;height:32px;">
+						<img src="__URL__/verify" onclick="verifycode()" id="verify_code"/>
+					</p>
+				</div>
+			</div>
+			<div class="bot">
+				<a href="javascript:;" class="cancel">取消</a><a href="javascript:;" class="sure">确认</a>
+			</div>
+		</div>
+		<!--遮罩层-->
+		<div id="zhezhao" style="display:none"></div>
+		<!--正文区域-->
+		<div id="gaiTelTop" class="topBackTitle">
+			<div class="contain maxWidth">
+				<a class="hz back" href="__URL__/baseinfo">&#xe600;</a>{$title}
+			</div>
+		</div>
+		<div id="gaiTelMain" class="fastscroll ownZiliao">
+			<div class="contain maxWidth">
+				<div class="inputs">
+					<div class="inputArea">
+						<span>手机号</span><if condition="$state eq 1"><span>{$user.mobile}<input type="hidden" id="mobile" value="{$user.mobile}" /></span><else/><input type="tel" placeholder="请输入手机号" id="mobile" value=""></if>
+					</div>
+					<div class="inputArea ma">
+						<span>短信验证码</span><input type="number" id="sms" placeholder="请输入短信验证码"><em class="sendma">获取验证码</em>
+					</div>
+					<if condition="$state eq 1">
+					<div class="inputArea">
+						<span>新手机号</span><input type="number" placeholder="请输入新手机号" id="newmobile">
+					</div>
+					</if>
+				</div>
+				<button class="submitbtn">确认</button>
+			</div>
+		</div>
+
+		<script>
+			//返回按钮
+			$('#gaiTelTop .back').on('tap',function(){
+				window.history.go(-1);
+			});
+
+			//tip
+			function tipFun(str){
+				$('.tip').text(str).css({
+					'opacity':'1',
+					'z-index':'99999999'
+				});
+				setTimeout(function(){
+					$('.tip').css('opacity','0');
+					setTimeout(function(){
+						$('.tip').css('z-index','-1');
+					},300);
+				},1300);
+			}
+			var state = {$state};
+			//点击获取验证码
+			$('#gaiTelMain .inputs .inputArea .sendma').on('tap',function(){
+				if(state==0){
+					var tel = $("#mobile").val();
+					if(tel==""){
+						tipFun("手机号不能为空");return;
+					}else if(!checkTelNum(tel)){
+						tipFun("手机号格式不正确");return;
+					}
+				}
+				$('#maKuang').css('display','block');
+				$('#zhezhao').css('display','block');
+			});
+
+			//点击取消
+			$('#maKuang .bot .cancel').on('tap',function(){
+				$('#maKuang .top .inputArea input').val('');//清空弹框input值
+				$('#maKuang').css('display','none');
+				$('#zhezhao').css('display','none');
+			});
+
+			//点击确定
+			$('#maKuang .bot .sure').on('tap',function(){
+				var code=$('#code').val();
+
+				if(!notEmpty(code)){
+					tipFun('请输入验证码');
+					return;
+				}
+				
+				$.ajax({
+					type: "post",
+					dataType: "json",
+					url: "__URL__/checkcode",
+					data: {code:$('#code').val()},
+					success: function(json){
+						if(json.status<1)
+						{
+							tipFun('验证码错误');
+						}
+						else
+						{
+							tipFun('已经发送验证码');
+							sendsms();
+							$('#maKuang .top .inputArea input').val('');//清空弹框input值
+							$('#maKuang').css('display','none');
+							$('#zhezhao').css('display','none');
+						}
+					}
+				})
+				
+				/*console.log(getValue);
+				$('#maKuang .top .inputArea input').val('');//清空弹框input值
+				$('#maKuang').css('display','none');
+				$('#zhezhao').css('display','none');*/
+			});
+
+			//点击确认
+			$('#gaiTelMain .submitbtn').on('tap',function(){
+				var sms=$('#sms').val();
+				
+				
+				if(!notEmpty(sms)){
+					tipFun('请输入验证码');
+					return;
+				}
+				var tel="";
+				if(state==0){
+					tel = $("#mobile").val();
+					if(tel==""){
+						tipFun("请输入手机号");return;
+					}
+					if(!checkTelNum(tel)){
+						tipFun("请输入有效的手机号码");return;
+					}
+				}else{
+					tel = $('#newmobile').val();
+					if(!notEmpty(tel)){
+						tipFun('请输入新手机号');
+						return;
+					}
+					if(!checkTelNum(tel)){
+						tipFun('请输入有效的手机号码');
+						return;
+					}
+				}
+				
+
+				$.ajax({
+						type: "post",
+						dataType: "json",
+						url: "__URL__/updatemobile",
+						data: {mobile:tel,'sms':$('#sms').val()},
+						success: function(json){
+							tipFun(json.info);
+							if(json.status>0){
+								window.location.href = "{:U('/Member/Index/baseinfo')}";
+							}
+						}
+					})
+			});
+
+			function checkTelNum(telv){
+				//判断是不是手机号
+				var telreg=/^1(3[0-9]|4[57]|5[0-35-9]|7[01678]|8[0-9])\d{8}$/;
+				if(!telreg.test(telv)){
+					return false;
+				}else{
+					return true;
+				}
+			}
+		</script>
+	</body>
+</html>

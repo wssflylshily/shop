@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>收货地址</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/zepto.js"></script>
+<script>
+function deladdress(id)
+{
+	$.ajax({
+			//提交数据的类型 POST GET
+			type:"POST",
+			//提交的网址
+			url:"__URL__/del",
+			//提交的数据
+			data:{'id':id},
+			//返回数据的格式
+			datatype: "json",//"xml", "html", "script", "json", "jsonp", "text".
+			//在请求之前调用的函数
+			//成功返回之后调用的函数             
+			success:function(json){ 
+				// alert(json.info);
+				$('.textTip').text(json.info).css({
+					'opacity':1,
+					'display':'block'
+				});
+				setTimeout(function(){
+					$('.textTip').css('opacity',0);
+					setTimeout(function(){
+						$('.textTip').css('display','none');
+					},500);
+					window.location.reload();
+				},1500);
+			}
+		});
+}
+$(function(){	
+		$(".checkbox_btn").click(function(){
+		//alert($(this).val());
+          //console.log('close');
+		  $.ajax({
+			//提交数据的类型 POST GET
+			type:"POST",
+			//提交的网址
+			url:"__URL__/setdefault",
+			//提交的数据
+			data:{'id':$(this).attr('attrid')},
+			//返回数据的格式
+			datatype: "json",//"xml", "html", "script", "json", "jsonp", "text".
+			//在请求之前调用的函数
+			//成功返回之后调用的函数             
+			success:function(json){ 
+				// alert(json.info);
+				$('.textTip').text(json.info).css({
+					'opacity':1,
+					'display':'block'
+				});
+				setTimeout(function(){
+					$('.textTip').css('opacity',0);
+					setTimeout(function(){
+						$('.textTip').css('display','none');
+					},500);
+				},1500);
+				<if condition="$cart_id neq null">
+					window.location.href='/index.php?s=/Cart/step2.html&cart_id={$cart_id}&uaddress_id='+$(this).attr('attrid');
+				</if>
+			}
+		});
+        });
+})
+</script>
+	</head>
+	<body>
+		<!-- 提示框 -->
+		<div class="textTip" style="opacity:0;display: none;"></div>
+		<!--正文区域-->
+		<div id="dingdanShouhuoTop" class="topBackTitle">
+			<div class="contain maxWidth">
+				<a class="hz back" href="javascript:;">&#xe600;</a>收货地址
+			</div>
+		</div>
+		<div id="dingdanShouhuoMain" class="fastscroll">
+			<div class="contain maxWidth">
+				<ul>
+					<volist name="list" id="item">
+					<li>
+						<div class="content">
+							<p class="maininfo">
+								<span class="name">{$item.name}</span><span class="tel">{$item.mobile}</span>
+							</p>
+							<p class="addr">
+								{$item.address}
+							</p>
+						</div>
+						<div class="bot">
+							<div class="left setdefault">
+								<span class="circle checkbox_btn"  attrid="{$item.id}">
+									<span class="hz  <if condition="$item.is_default eq 1">active</if>">&#xe613;</span>
+								</span>
+								<a href="javascript:;" class="checkbox_btn" attrid="{$item.id}">设为默认</a>
+							</div>
+							<div class="right del">
+								<!--
+								{:U('UserAddress/del',array('id'=>$item['id'],'cart_id'=>$cart_id))}">
+								-->
+								<a href="javascript:deladdress({$item.id})">
+									<span class="hz">&#xe618;</span>删除
+								</a>
+							</div>
+							<div class="right edit">
+					<if condition="$cart_id neq null">
+                    <!--
+					<a href="/index.php?s=/Cart/step2.html&cart_id={$cart_id}&uaddress_id={$item.id}" class="r">选择</a>
+					-->
+					</if>
+								<a href="{:U('UserAddress/edit',array('id'=>$item['id'],'cart_id'=>$cart_id))}">
+									<span class="hz">&#xe619;</span>编辑
+								</a>
+							</div>
+						</div>
+					</li>
+					</volist>
+					<!--
+					<li>
+						<div class="content">
+							<p class="maininfo">
+								<span class="name">心如</span><span class="tel">15320095801</span>
+							</p>
+							<p class="addr">
+								天津市南开区红旗路赛德广场5号楼1106
+							</p>
+						</div>
+						<div class="bot">
+							<div class="left setdefault">
+								<span class="circle">
+									<span class="hz">&#xe613;</span>
+								</span>
+								<a href="javascript:;">设为默认</a>
+							</div>
+							<div class="right del">
+								<a href="javascript:;">
+									<span class="hz">&#xe618;</span>删除
+								</a>
+							</div>
+							<div class="right edit">
+								<a href="订单确认编辑收货地址.html">
+									<span class="hz">&#xe619;</span>编辑
+								</a>
+							</div>
+						</div>
+					</li>
+					<li>
+						<div class="content">
+							<p class="maininfo">
+								<span class="name">心如</span><span class="tel">15320095801</span>
+							</p>
+							<p class="addr">
+								天津市南开区红旗路赛德广场5号楼1106
+							</p>
+						</div>
+						<div class="bot">
+							<div class="left setdefault">
+								<span class="circle">
+									<span class="hz">&#xe613;</span>
+								</span>
+								<a href="javascript:;">设为默认</a>
+							</div>
+							<div class="right del">
+								<a href="javascript:;">
+									<span class="hz">&#xe618;</span>删除
+								</a>
+							</div>
+							<div class="right edit">
+								<a href="订单确认编辑收货地址.html">
+									<span class="hz">&#xe619;</span>编辑
+								</a>
+							</div>
+						</div>
+					</li>
+					<li>
+						<div class="content">
+							<p class="maininfo">
+								<span class="name">心如</span><span class="tel">15320095801</span>
+							</p>
+							<p class="addr">
+								天津市南开区红旗路赛德广场5号楼1106
+							</p>
+						</div>
+						<div class="bot">
+							<div class="left setdefault">
+								<span class="circle">
+									<span class="hz">&#xe613;</span>
+								</span>
+								<a href="javascript:;">设为默认</a>
+							</div>
+							<div class="right del">
+								<a href="javascript:;">
+									<span class="hz">&#xe618;</span>删除
+								</a>
+							</div>
+							<div class="right edit">
+								<a href="订单确认编辑收货地址.html">
+									<span class="hz">&#xe619;</span>编辑
+								</a>
+							</div>
+						</div>
+					</li>
+					-->
+				</ul>
+			</div>
+		</div>
+		<div id="dingdanShouhuoBot">
+			<div class="contain maxWidth">
+				<a href="{:U('add',array('cart_id'=>$cart_id))}" class="addbtn">新建地址</a>
+			</div>
+		</div>
+
+		<script>
+			//返回按钮
+			$('#dingdanShouhuoTop .back').on('tap',function(){
+				window.location.href='{:U('Index/baseinfo')}';
+				//window.history.go(-1);
+			});
+
+			//点击 设为默认
+			$('#dingdanShouhuoMain li .bot .left a').on('tap',function(){
+				$('#dingdanShouhuoMain li .bot .left .circle .active').removeClass('active');
+				$(this).siblings('.circle').find('.hz').addClass('active');
+			});
+
+			//点击 设为默认前面的圈
+			$('#dingdanShouhuoMain li .bot .left .circle').on('click',function(){
+				$('#dingdanShouhuoMain li .bot .left .circle .active').removeClass('active');
+				$(this).find('.hz').addClass('active');
+			});
+		</script>
+	</body>
+</html>

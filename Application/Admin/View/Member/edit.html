@@ -1,0 +1,266 @@
+<extend name="Public/base"/>
+
+<!-- 子导航 -->
+<block name="sidebar">
+    <include file="sidemenu" />
+</block>
+
+<block name="body">
+	<script type="text/javascript" src="__STATIC__/uploadify/jquery.uploadify.min.js"></script>
+    <div class="main-title">
+        <h2>编辑会员</h2>
+    </div>
+    <form action="__URL__/update" method="post" class="form-horizontal">
+		<input type="hidden" name="id" value="{$vo.id}" />
+        <!--
+		<div class="form-item">
+            <label class="item-label">类别<span class="check-tips"></span></label>
+            <div class="controls">
+                <select name="type">
+				<option value="0" <if condition="$vo.type eq 0">selected</if>>普通</option>
+				<option value="1" <if condition="$vo.type eq 1">selected</if>>VIP</option>
+				</select>
+            </div>
+        </div>
+		-->
+        <div class="form-item">
+			<label class="item-label">
+				会员等级<span class="check-tips"></span>
+			</label>
+			<div class="controls">
+				<?php $grade = getGradelist();?>
+				<select name="lv">
+					<option value="">请选择</option>
+					<volist name="grade" id="v">
+					<option value="{$v.id}" <if condition="$vo['lv'] eq $v['id']">selected</if>>{$v.gname}</option>
+					</volist>
+				</select>
+			</div>
+		</div>
+        <div class="form-item">
+            <label class="item-label">用户名<span class="check-tips"></span></label>
+            <div class="controls">
+                <input type="text" class="text input-large" name="login_user" value="{$vo.login_user}">
+            </div>
+        </div>
+        <div class="form-item">
+            <label class="item-label">密码<span class="check-tips">（用户密码不能少于6位）</span></label>
+            <div class="controls">
+                <input type="password" class="text input-large" name="login_pass" value="">
+            </div>
+        </div>
+        <!-- <div class="form-item">
+            <label class="item-label">确认密码</label>
+            <div class="controls">
+                <input type="password" class="text input-large" name="repassword" value="">
+            </div>
+        </div> -->
+        <div class="form-item">
+            <label class="item-label">支付密码</label>
+            <div class="controls">
+                <input type="password" class="text input-large" name="paypwd" value="{$vo.paypwd}">
+            </div>
+        </div>
+        <div class="form-item">
+            <label class="item-label2">
+				头像<span class="check-tips"></span>
+			</label>
+			<div class="controls">
+				<div class="controls">
+					<input type="file" id="z_img">
+					<input type="hidden" name="image" id="z_img_id" value="{$vo.image}"/>
+					<div class="upload-img-box">
+						<div class="upload-pre-item"><img src="{$vo.image}"/></div>
+					</div>
+				</div>
+				<script type="text/javascript">
+					//上传图片
+					/* 初始化上传插件 */
+					$("#z_img").uploadify({
+						"height"          : 30,
+						"swf"             : "/Public/static/uploadify/uploadify.swf",
+						"fileObjName"     : "download",
+						"buttonText"      : "上传图片",
+						"uploader"        : "{:U('File/uploadPicture',array('session_id'=>session_id()))}",
+						"width"           : 120,
+						'removeTimeout'	  : 1,
+						'fileTypeExts'	  : '*.jpg; *.png; *.gif;',
+						"onUploadSuccess" : z_img_id,
+						'onFallback' : function() {
+							alert('未检测到兼容版本的Flash.');
+						}
+					});
+					function z_img_id(file, data){
+						var data = $.parseJSON(data);
+						var src = '';
+						if(data.status){
+							$("#z_img_id").val(data.path);
+							src = data.url || '' + data.path
+							$("#z_img_id").parent().find('.upload-img-box').html(
+								'<div class="upload-pre-item"><img src="' + src + '"/></div>'
+							);
+						} else {
+							updateAlert(data.info);
+							setTimeout(function(){
+								$('#top-alert').find('button').click();
+								$(that).removeClass('disabled').prop('disabled',false);
+							},1500);
+						}
+					}
+					</script>
+			</div>
+        </div>
+        <div class="form-item">
+            <label class="item-label">姓名<span class="check-tips"></span></label>
+            <div class="controls">
+                <input type="text" class="text input-large" name="name" value="{$vo.name}">
+            </div>
+        </div>
+        <div class="form-item">
+            <label class="item-label">性别<span class="check-tips"></span></label>
+            <div class="controls">
+                <select name="sex">
+				<option value="0" <if condition="$vo.sex eq 0">selected</if>>保密</option>
+				<option value="1" <if condition="$vo.sex eq 1">selected</if>>男</option>
+				<option value="2" <if condition="$vo.sex eq 2">selected</if>>女</option>
+				</select>
+            </div>
+        </div>
+        <!-- <div class="form-item">
+            <label class="item-label">地区<span class="check-tips"></span></label>
+            <div class="controls">
+                <select name="area_id">
+				<volist name="arealist" id="item">
+				<option value="{$item.id}" <if condition="$vo.area_id eq $item['id']">selected</if>>{$item.title}</option>
+				</volist>
+				</select>
+            </div>
+        </div> -->
+        <div class="form-item">
+            <label class="item-label">手机<span class="check-tips"></span></label>
+            <div class="controls">
+                <input type="text" class="text input-large" name="mobile" value="{$vo.mobile}">
+            </div>
+        </div>
+        <!-- <div class="form-item">
+            <label class="item-label">邮箱<span class="check-tips"></span></label>
+            <div class="controls">
+                <input type="text" class="text input-large" name="email" value="{$vo.email}">
+            </div>
+        </div> -->
+        <div class="form-item">
+            <label class="item-label">积分<span class="check-tips"></span></label>
+            <div class="controls">
+                <input type="text" class="text input-large" name="integral" value="{$vo.integral}">
+            </div>
+        </div>
+        <div class="form-item">
+            <label class="item-label">余额<span class="check-tips"></span></label>
+            <div class="controls">
+                <input type="text" class="text input-large" name="money" value="{$vo.money}">
+            </div>
+        </div>
+        <div class="form-item">
+            <label class="item-label">佣金<span class="check-tips"></span></label>
+            <div class="controls">
+                <input type="text" class="text input-large" name="jie_money" value="{$vo.jie_money}">
+            </div>
+        </div>
+        <div class="form-item">
+            <label class="item-label">用户状态<span class="check-tips"></span></label>
+            <div class="controls">
+                <input type="radio" name="status" value="1" <if condition="$vo.status eq 1">checked</if>> 启用&nbsp;&nbsp;
+                <input type="radio" name="status" value="0" <if condition="$vo.status eq 0">checked</if>/> 禁用
+            </div>
+        </div>
+        <div class="form-item">
+            <button class="btn submit-btn ajax-post" id="submit" type="submit" target-form="form-horizontal">确 定</button>
+            <button class="btn btn-return" onclick="javascript:window.location.href='__URL__';return false;">返 回</button>
+        </div>
+    </form>
+    
+    <div class="data-table table-striped">
+        <div style="text-align:center;margin-top:15px;font-size:18px;"><b>推广列表</b></div>
+        <table>
+            <thead>
+                <tr>
+                    <!-- <th class="row-selected">
+                        <input class="checkbox check-all" type="checkbox">
+                    </th> -->
+                    <th>ID</th>
+                    <th>推广用户</th>
+                    <th>姓名</th>
+                    <th>联系电话</th>
+                    <!-- <th>余额</th> -->
+                    <th>我的佣金</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <notempty name="list">
+                <volist name="list" id="item">
+                    <tr>
+                        <!-- <td><input class="ids row-selected" type="checkbox" name="ids[]" id="" value="{$item['id']}"> </td> -->
+                        <td>{$item.id}</td>
+                        <td>{$item.login_user}</td>
+                        <td>{$item.name}</td>
+                        <td>{$item.mobile}</td>
+                        <!-- <td>{$item['money']}</td> -->
+                        <td>{$item['total']}</td>
+                        <td>
+                            <a title="编辑" href="__URL__/edit/id/{$item.id}">编辑</a>
+                            <a class="confirm ajax-get" title="删除" href="__URL__/del/id/{$item.id}">删除</a>
+                        </td>
+                    </tr>
+                </volist>
+                <else/>
+                <td colspan="8" class="text-center"> aOh! 暂时还没有内容! </td>
+                </notempty>
+            </tbody>
+        </table>
+        
+        <div style="text-align:center;margin-top:15px;font-size:18px;"><b>地址列表</b></div>
+        <table>
+            <thead>
+                <tr>
+                    <!-- <th class="row-selected">
+                        <input class="checkbox check-all" type="checkbox">
+                    </th> -->
+                    <th>地址ID</th>
+                    <th>收货人</th>
+                    <th>联系电话</th>
+                    <th>收货地址</th>
+                    <th>是否默认</th>
+                    <!-- <th>操作</th> -->
+                </tr>
+            </thead>
+            <tbody>
+                <notempty name="addrlist">
+                <volist name="addrlist" id="v">
+                    <tr>
+                        <!-- <td><input class="ids row-selected" type="checkbox" name="ids[]" id="" value="{$item['id']}"> </td> -->
+                        <td>{$v.id}</td>
+                        <td>{$v.name}</td>
+                        <td>{$v.mobile}</td>
+                        <td>{$v.area} {$v.address}</td>
+                        <td><if condition="$v['is_default'] eq 1">默认</if></td>
+                        <!-- <td>
+                            <a title="编辑" href="__URL__/edit/id/{$item.id}">编辑</a>
+                            <a class="confirm ajax-get" title="删除" href="__URL__/del/id/{$item.id}">删除</a>
+                        </td> -->
+                    </tr>
+                </volist>
+                <else/>
+                <td colspan="6" class="text-center"> aOh! 暂时还没有内容! </td>
+                </notempty>
+            </tbody>
+        </table>
+    </div>
+</block>
+
+<block name="script">
+    <script type="text/javascript">
+        //导航高亮
+        highlight_subnav('{:U('Member/index')}');
+    </script>
+</block>

@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>{:C('WEB_SITE_TITLE')}</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/swiper-3.3.1.min.css">
+		<script src="__PUBLIC__/Home/js/swiper-3.3.1.min.js"></script>
+
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/zepto.js"></script>
+		<script src="__PUBLIC__/Home/js/iscroll-probe.js"></script>
+		<style>
+			/*下拉加载样式*/
+			#wrapper{
+				position: absolute;
+				z-index: 1;
+				top: 0;
+				bottom: 0;
+				left: 0;
+				width: 100%;
+				overflow: hidden;
+			}
+			#wrapper .list > li:first-child{margin-top: 0;}
+			#wrapper .list .goodPingjia >ul>li:first-child,#wrapper .list .chaPingjia >ul>li:first-child{margin-top: 0;}
+			#loadBin{color: #5d5d5d;text-align: center;line-height: 30px;}
+		</style>
+	</head>
+	<body onLoad="onload()">
+		<!--收藏成功提示-->
+		<div id="shoucangokTip" class="scTip" style="opacity: 0">
+			<p><span class="hz">&#xe613;</span></p>
+			收藏成功
+		</div>
+		<!--取消收藏成功提示-->
+		<div id="shoucangxTip" class="scTip" style="opacity: 0">
+			<p><span class="hz">&#xe613;</span></p>
+			取消收藏成功
+		</div>
+		<!--分享好友-->
+		<div id="proDetailShare" style="display: none">
+			<p class="title">
+				快分享给好友一起拿返利吧~
+			</p>
+			<div class="content">
+				<p><a href="javascript:;"><img src="__PUBLIC__/Home/img/proDetail/weixin.png"></a></p>
+				<p><a href="javascript:;"><img src="__PUBLIC__/Home/img/proDetail/qq.png"></a></p>
+				<p><a href="javascript:;"><img src="__PUBLIC__/Home/img/proDetail/weibo.png"></a></p>
+				<p><a href="javascript:;"><img src="__PUBLIC__/Home/img/proDetail/friend.png"></a></p>
+				<p><a href="javascript:;"><img src="__PUBLIC__/Home/img/proDetail/qqk.png"></a></p>
+			</div>
+			<button>取消</button>
+		</div>
+		<!-- 颜色规格 -->
+		<div id="proDetailGuige" style="display:none;">
+			<div class="top">
+				<div class="imgContain">
+					<p class="img" style="background-image:url({$info.image})"></p>
+				</div>
+				<div class="centerArea">
+					<div class="title">{$info.title}</div>
+					<div class="price">
+						<span id='gprice_txt'>&yen;{$info.gprice}</span><del>&yen;{$info.market_price}</del>
+					</div>
+				</div>
+				<span class="hz close">&#xe617;</span>
+			</div>
+			<volist name="attrs_titles_arr" id="item">
+			<div class="fenlei">
+				<p class="title">{$item.title}</p>
+				<div class="content">
+					<volist name="item.list" id="val">
+					<p <if condition="$key eq 0">class="select"</if>>{$val}</p>
+					</volist>
+					<!--
+					<p class="select">象牙白</p>
+					<p>烈焰红</p>
+					<p>星空灰</p>
+					-->
+				</div>
+			</div>
+			</volist>
+			<div class="num">
+				<p class="title">数量</p>
+				<div class="addJianCom">
+					<a href="javascript:;" class="hz jian nooperate">&#xe616;</a>
+					<input type="text" value="1" id='amount'>
+					<a href="javascript:;" class="hz add canoperate">&#xe615;</a>
+				</div>
+			</div>
+		</div>
+		<!--正文区域-->
+		<div id="proDetailTop">
+			<div class="contain maxWidth">
+				<div class="top1">
+					<a href="javascript:;" class="hz back">&#xe600;</a>
+					<a href="{:U('Cart/index')}" class="right carta">
+						<span class="hz cart">&#xe601;</span>
+						<em>{$cart_num}</em>
+					</a>
+					<a href="javascript:;" class="right shoucanga">
+					<span class="hz shoucang">&#xe60f;</span>
+					<span class="hz shoucangok" style="display: <if condition="$is_coll eq 1">block<else />none</if>">&#xe612;</span></a>
+
+					<a href="javascript:;" class="right sharea"><span class="hz share">&#xe60e;</span></a>
+				</div>
+				<div class="top2">
+					<ul class="clear">
+						<li class="active"><a href="javascript:;">基本信息</a></li>
+						<li><a href="javascript:;">图文详情</a></li>
+						<li><a href="javascript:;">产品参数</a></li>
+						<li><a href="javascript:;">评价</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div id="proDetailMain" class="fastscroll">
+			<div class="contain maxWidth">
+				<div id="wrapper">
+					<div class="maxWidth">
+						<ul class="list">
+							<li>
+								<div class="basicInfo">
+									<div class="swiper-container lunbo">
+										<div class="swiper-wrapper">
+										<volist name="piclist" id="item">
+											<div class="swiper-slide" style="background-image:url({$item.path})"></div>
+										</volist>
+										</div>
+										<div class="swiper-pagination"></div>
+									</div>
+									<div class="infoContent">
+										<div class="basic">
+											<p class="title">
+												{$info.title}
+											</p>
+											<p class="price">
+												<span>&yen;{$info.gprice}</span><del>&yen;{$info.market_price}</del>
+											</p>
+											<p class="other">
+												快递费:&yen;<span class="kuaidi">{$info.express_money}</span>已售:<span class="num">{$info.sell_num}3</span>件
+											</p>
+										</div>
+										<div class="guize">
+											<a href="{:U('Product/newsdetail',array('id'=>7))}">
+												<span class="fan">返</span>返利规则
+												<span class="hz">&#xe60c;</span>
+											</a>
+											<a href="{:U('Product/newsdetail',array('id'=>8))}">
+												<span class="tui">推</span>推广规则
+												<span class="hz">&#xe60c;</span>
+											</a>
+										</div>
+										<div class="select">
+											<a href="javascript:;">
+												已选 颜色规格：<span class="color">象牙白</span><span class="num">2</span>件
+												<span class="hz">&#xe60c;</span>
+											</a>
+										</div>
+									</div>
+									<!--<div class="dragTotuwenDetail">-->
+									<!--<span class="line l"></span>-->
+									<!--<span>继续拖动，查看图文详情</span>-->
+									<!--<span class="line r"></span>-->
+									<!--</div>-->
+								</div>
+							</li>
+						</ul>
+						<div id="loadBin"></div>
+					</div>
+				</div>
+				<!--下面4大块 内容不能删，上拉拖动的时候，会获取里面的内容-->
+				<!--基本信息-->
+				<div style="display: none" class="item basicInfo">
+					<div class="swiper-container lunbo">
+						<div class="swiper-wrapper">
+							<div class="swiper-slide" style="background-image:url(__PUBLIC__/Home/img/proDetail/imgbig1.jpg)"></div>
+							<div class="swiper-slide" style="background-image:url(__PUBLIC__/Home/img/proDetail/imgbig1.jpg)"></div>
+							<div class="swiper-slide" style="background-image:url(__PUBLIC__/Home/img/proDetail/imgbig1.jpg)"></div>
+						</div>
+						<div class="swiper-pagination"></div>
+					</div>
+					<div class="infoContent">
+						<div class="basic">
+							<p class="title">
+								{$info.title}
+							</p>
+							<p class="price">
+								<span>&yen;{$info.gprice}</span><del>&yen;{$info.market_price}</del>
+							</p>
+							<p class="other">
+								快递费:&yen;<span class="kuaidi">{$info.express_money}</span>已售:<span class="num">{$info.sell_num}</span>件
+							</p>
+						</div>
+						<div class="guize">
+							<a href="{:U('Product/newsdetail',array('id'=>7))}">
+								<span class="fan">返</span>返利规则
+								<span class="hz">&#xe60c;</span>
+							</a>
+							<a href="{:U('Product/newsdetail',array('id'=>8))}">
+								<span class="tui">推</span>推广规则
+								<span class="hz">&#xe60c;</span>
+							</a>
+						</div>
+						<div class="select">
+							<a href="javascript:;">
+								已选 颜色规格：<span class="color">象牙白</span><span class="num">2</span>件
+								<span class="hz">&#xe60c;</span>
+							</a>
+						</div>
+					</div>
+				</div>
+				<!--图文详情 这个区域的p h1 h2 h3 h4 h5 h6 em i strong b ins del a的样式已经定义过了-->
+				<div class="item tuwenDetail" style="display: none">
+					{$info.content}
+				</div>
+				<!--产品参数-->
+				<div class="item proCanshu" style="display:none;">
+					<volist name=":parse_config_attr($model['field_group'])" id="group">
+					<volist name="fields[$key]" id="field">
+					{$field['title']} : {$info[$field['name']]}<br>
+					</volist>
+					</volist>
+				</div>
+				<!--评价-->
+				<div class="item pingjia" style="display:none;">
+					<div class="top">
+						<ul class="clear">
+							<li class="active"><p><a href="javascript:;">全部(<span class="all">9999</span>)</a></p></li>
+							<li><p><a href="javascript:;">好评(<span class="good">9999</span>)</a></p></li>
+							<li><p><a href="javascript:;">差评(<span class="bad">9999</span>)</a></p></li>
+						</ul>
+					</div>
+					<div class="main">
+						<div class="contain maxWidth">
+							<div style="display:none" class="allPingjia pingjiaCom">
+								<div class="summary clear">
+									<div class="left">
+										<p class="sumzhi">4.9</p>
+										<span>整体评价</span>
+									</div>
+									<div class="right">
+										<span class="hz huaorange">&#xe614;</span>
+										<span class="hz huaorange">&#xe614;</span>
+										<span class="hz huaorange">&#xe614;</span>
+										<span class="hz huaorange">&#xe614;</span>
+										<span class="hz huagray">&#xe614;</span>
+									</div>
+								</div>
+								<ul>
+									<li>
+										<div class="title clear">
+											<p class="touxiang" style="background-image: url(__PUBLIC__/Home/img/proDetail/touxiang.png)"></p>
+											<span class="phone">13852699554</span>
+											<span class="time">2016-08-04</span>
+										</div>
+										<div class="content">
+											<p class="hua">
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huagray">&#xe614;</span>
+												<span class="zhi">4.9</span>
+											</p>
+											<p class="word">宝贝包装很给力，质量也很好。</p>
+										</div>
+									</li>
+									<li>
+										<div class="title clear">
+											<p class="touxiang" style="background-image: url(__PUBLIC__/Home/img/proDetail/touxiang.png)"></p>
+											<span class="phone">13852699554</span>
+											<span class="time">2016-08-04</span>
+										</div>
+										<div class="content">
+											<p class="hua">
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huagray">&#xe614;</span>
+												<span class="zhi">4.9</span>
+											</p>
+											<p class="word">宝贝包装很给力，质量也很好。模拟字很多情况模拟字很多情况模拟字很多情况模拟字很多情况模拟字很多情况</p>
+										</div>
+									</li>
+									<li>
+										<div class="title clear">
+											<p class="touxiang" style="background-image: url(__PUBLIC__/Home/img/proDetail/touxiang.png)"></p>
+											<span class="phone">13852699554</span>
+											<span class="time">2016-08-04</span>
+										</div>
+										<div class="content">
+											<p class="hua">
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huagray">&#xe614;</span>
+												<span class="zhi">4.9</span>
+											</p>
+											<p class="word">宝贝包装很给力，质量也很好。</p>
+										</div>
+									</li>
+									<li>
+										<div class="title clear">
+											<p class="touxiang" style="background-image: url(__PUBLIC__/Home/img/proDetail/touxiang.png)"></p>
+											<span class="phone">13852699554</span>
+											<span class="time">2016-08-04</span>
+										</div>
+										<div class="content">
+											<p class="hua">
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huagray">&#xe614;</span>
+												<span class="zhi">4.9</span>
+											</p>
+											<p class="word">宝贝包装很给力，质量也很好。</p>
+										</div>
+									</li>
+									<li>
+										<div class="title clear">
+											<p class="touxiang" style="background-image: url(__PUBLIC__/Home/img/proDetail/touxiang.png)"></p>
+											<span class="phone">13852699554</span>
+											<span class="time">2016-08-04</span>
+										</div>
+										<div class="content">
+											<p class="hua">
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huagray">&#xe614;</span>
+												<span class="zhi">4.9</span>
+											</p>
+											<p class="word">宝贝包装很给力，质量也很好。</p>
+										</div>
+									</li>
+								</ul>
+							</div>
+							<div style="display: none" class="goodPingjia pingjiaCom">
+								<ul>
+									<li>
+										<div class="title clear">
+											<p class="touxiang" style="background-image: url(__PUBLIC__/Home/img/proDetail/touxiang.png)"></p>
+											<span class="phone">13852699554</span>
+											<span class="time">2016-08-04</span>
+										</div>
+										<div class="content">
+											<p class="hua">
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huagray">&#xe614;</span>
+												<span class="zhi">4.9</span>
+											</p>
+											<p class="word">好评宝贝包装很给力，质量也很好。</p>
+										</div>
+									</li>
+									<li>
+										<div class="title clear">
+											<p class="touxiang" style="background-image: url(__PUBLIC__/Home/img/proDetail/touxiang.png)"></p>
+											<span class="phone">13852699554</span>
+											<span class="time">2016-08-04</span>
+										</div>
+										<div class="content">
+											<p class="hua">
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huagray">&#xe614;</span>
+												<span class="zhi">4.9</span>
+											</p>
+											<p class="word">宝贝包装很给力，质量也很好。模拟字很多情况模拟字很多情况模拟字很多情况模拟字很多情况模拟字很多情况</p>
+										</div>
+									</li>
+									<li>
+										<div class="title clear">
+											<p class="touxiang" style="background-image: url(__PUBLIC__/Home/img/proDetail/touxiang.png)"></p>
+											<span class="phone">13852699554</span>
+											<span class="time">2016-08-04</span>
+										</div>
+										<div class="content">
+											<p class="hua">
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huagray">&#xe614;</span>
+												<span class="zhi">4.9</span>
+											</p>
+											<p class="word">宝贝包装很给力，质量也很好。</p>
+										</div>
+									</li>
+									<li>
+										<div class="title clear">
+											<p class="touxiang" style="background-image: url(__PUBLIC__/Home/img/proDetail/touxiang.png)"></p>
+											<span class="phone">13852699554</span>
+											<span class="time">2016-08-04</span>
+										</div>
+										<div class="content">
+											<p class="hua">
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huagray">&#xe614;</span>
+												<span class="zhi">4.9</span>
+											</p>
+											<p class="word">宝贝包装很给力，质量也很好。</p>
+										</div>
+									</li>
+									<li>
+										<div class="title clear">
+											<p class="touxiang" style="background-image: url(__PUBLIC__/Home/img/proDetail/touxiang.png)"></p>
+											<span class="phone">13852699554</span>
+											<span class="time">2016-08-04</span>
+										</div>
+										<div class="content">
+											<p class="hua">
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huagray">&#xe614;</span>
+												<span class="zhi">4.9</span>
+											</p>
+											<p class="word">宝贝包装很给力，质量也很好。</p>
+										</div>
+									</li>
+								</ul>
+							</div>
+							<div style="display: none" class="chaPingjia pingjiaCom">
+								<ul>
+									<li>
+										<div class="title clear">
+											<p class="touxiang" style="background-image: url(__PUBLIC__/Home/img/proDetail/touxiang.png)"></p>
+											<span class="phone">13852699554</span>
+											<span class="time">2016-08-04</span>
+										</div>
+										<div class="content">
+											<p class="hua">
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huagray">&#xe614;</span>
+												<span class="zhi">4.9</span>
+											</p>
+											<p class="word">差评宝贝包装很给力，质量也很好。</p>
+										</div>
+									</li>
+									<li>
+										<div class="title clear">
+											<p class="touxiang" style="background-image: url(__PUBLIC__/Home/img/proDetail/touxiang.png)"></p>
+											<span class="phone">13852699554</span>
+											<span class="time">2016-08-04</span>
+										</div>
+										<div class="content">
+											<p class="hua">
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huagray">&#xe614;</span>
+												<span class="zhi">4.9</span>
+											</p>
+											<p class="word">宝贝包装很给力，质量也很好。模拟字很多情况模拟字很多情况模拟字很多情况模拟字很多情况模拟字很多情况</p>
+										</div>
+									</li>
+									<li>
+										<div class="title clear">
+											<p class="touxiang" style="background-image: url(__PUBLIC__/Home/img/proDetail/touxiang.png)"></p>
+											<span class="phone">13852699554</span>
+											<span class="time">2016-08-04</span>
+										</div>
+										<div class="content">
+											<p class="hua">
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huagray">&#xe614;</span>
+												<span class="zhi">4.9</span>
+											</p>
+											<p class="word">宝贝包装很给力，质量也很好。</p>
+										</div>
+									</li>
+									<li>
+										<div class="title clear">
+											<p class="touxiang" style="background-image: url(__PUBLIC__/Home/img/proDetail/touxiang.png)"></p>
+											<span class="phone">13852699554</span>
+											<span class="time">2016-08-04</span>
+										</div>
+										<div class="content">
+											<p class="hua">
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huagray">&#xe614;</span>
+												<span class="zhi">4.9</span>
+											</p>
+											<p class="word">宝贝包装很给力，质量也很好。</p>
+										</div>
+									</li>
+									<li>
+										<div class="title clear">
+											<p class="touxiang" style="background-image: url(__PUBLIC__/Home/img/proDetail/touxiang.png)"></p>
+											<span class="phone">13852699554</span>
+											<span class="time">2016-08-04</span>
+										</div>
+										<div class="content">
+											<p class="hua">
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huaorange">&#xe614;</span>
+												<span class="hz huagray">&#xe614;</span>
+												<span class="zhi">4.9</span>
+											</p>
+											<p class="word">宝贝包装很给力，质量也很好。</p>
+										</div>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="proDetailBot">
+			<div class="contain maxWidth">
+				<button class="cart">加入购物车</button><button class="mai">立即购买</button>
+			</div>
+		</div>
+<input type="hidden" id="sel_attr" name="sel_attr" class="kind_selected" value="" />
+		<script>
+			var share_user_id={$share_user_id};
+			var is_login={$is_login};
+			var stra="";
+			var product_id={$info.id};
+			function ergodic()
+			{
+				stra='';
+				$(".fenlei .content .select").each(function(index, element) {
+					var ssele=$(this).html();
+					stra+=ssele
+				});
+				$('#sel_attr').val(stra);
+				//alert(stra);
+			}
+			$('.fenlei .content p').click(function(){
+				ergodic();
+				getpriceattr();
+			})
+			function getpriceattr()
+			{
+				$.ajax({
+					//提交数据的类型 POST GET
+					type:"POST",
+					//提交的网址
+					url:"/Product/getpriceattr",
+					//提交的数据
+					data:{'attr':$('#sel_attr').val(),'product_id':product_id},
+					//返回数据的格式
+					datatype: "json",//"xml", "html", "script", "json", "jsonp", "text".
+					//在请求之前调用的函数
+					//成功返回之后调用的函数             
+					success:function(json){
+						$('#gprice_txt').html('￥'+json.price);
+					},
+					//调用执行后调用的函数
+					complete: function(XMLHttpRequest, textStatus){
+					   
+					},
+					error: function(){
+					}         
+				 });
+			}
+			//返回按钮
+			$('#proDetailTop .top1 .back').on('tap',function(){
+				window.history.go(-1);
+			});
+			//当前界面
+			//当购物车的数量超过99，则显示99+
+			var cartProNum=$('#proDetailTop .top1 a.right em').text();
+			if(cartProNum>99){
+				$('#proDetailTop .top1 a.right em').text('99+');
+			}
+
+			//点击分享 弹出分享框
+			$('#proDetailTop .top1 .sharea').on('tap',function(){
+				$('#proDetailShare').css('display','block');
+			});
+
+			//点击分享框中的取消
+			$('#proDetailShare button').on('tap',function(){
+				$('#proDetailShare').css('display','none');
+			});
+
+			//点击收藏
+			var shoucangokTimer=null;
+			var shoucangxTimer=null;
+			$('#proDetailTop .top1 .shoucanga').on('tap',function(){
+				if(is_login==0)
+				{
+					window.location.href='/Member/Login?href={$info.id}';
+				}
+				else
+				{
+					$.ajax({
+						//提交数据的类型 POST GET
+						type:"POST",
+						//提交的网址
+						url:"{:U('Product/addcollection')}",
+						//提交的数据
+						data:{'product_id':product_id},
+						//返回数据的格式
+						datatype: "json",//"xml", "html", "script", "json", "jsonp", "text".
+						//在请求之前调用的函数
+						//成功返回之后调用的函数             
+						success:function(json){
+							//alert($(".pro_num .gmbtn").attr("data-zt"));
+							if(json.status<1)
+							{
+								$.toast(json.info,'cancel', function() {
+								});
+							}
+							else
+							{
+								$.toast(json.info, function() {
+									/*var cstr=$(".td03").html();
+									if(cstr.indexOf("cur")>=0){
+									}*/
+									$('.collect_btn').toggleClass("cur");
+								});
+							}
+						}   ,  
+					 });
+					var okValue=$(this).find('.shoucangok').css('display');
+					if(okValue=='none'){
+						//添加收藏
+						$(this).find('.shoucangok').css('display','block');
+						$(this).find('.shoucang').css('display','none');
+						//弹出收藏成功提示 1s后消失
+						$('#shoucangokTip').animate({'opacity':1},500,'ease',function(){
+							shoucangokTimer=setTimeout(function(){
+								shoucangokTimer=null;
+								$('#shoucangokTip').animate({'opacity':0},500,'ease');
+							},500)
+						});
+					}else{
+						//取消收藏
+						$(this).find('.shoucangok').css('display','none');
+						$(this).find('.shoucang').css('display','block');
+						//弹出取消收藏成功提示 1s后消失
+						$('#shoucangxTip').animate({'opacity':1},500,'ease',function(){
+							shoucangxTimer=setTimeout(function(){
+								shoucangxTimer=null;
+								$('#shoucangxTip').animate({'opacity':0},500,'ease');
+							},500)
+						});
+					}
+				}
+			});
+
+			//电话号码处理成，带有*****
+			var alltel=$('#proDetailMain .pingjia .main .pingjiaCom .title .phone');
+			for(var i=0;i<alltel.length;i++){
+				var str=alltel[i].innerHTML;
+				var reg=/(\d{3})(\d{5})(\d{3})/;
+				alltel[i].innerHTML=str.replace(reg,'$1*****$3');
+			}
+
+			//规格
+			//初始化
+			var getSelectNum=$('#proDetailMain .basicInfo .infoContent .select span.num').text();
+			//alert(getSelectNum);
+			if(getSelectNum>1){
+				//$('#proDetailGuige .num .addJianCom input').val(getSelectNum);
+			}else{
+				$('#proDetailGuige .num .addJianCom input').val(1);
+			}
+			$('#proDetailGuige .num .addJianCom .jian')[0].className='hz jian nooperate';
+			$('#proDetailGuige .num .addJianCom .add')[0].className='hz add canoperate';
+			//点击+
+			$('#proDetailGuige .num .addJianCom .add').on('tap',function(){
+				var kucun={$info.depot_num};//从后台获取的库存
+				var currNum=$('#proDetailGuige .num .addJianCom input').val();
+				currNum++;
+				if(currNum>kucun){currNum=kucun;}
+				$('#proDetailGuige .num .addJianCom input').val(currNum);
+				$('#proDetailMain .basicInfo .infoContent .select span.num').text(currNum);//件数跟随改变
+			});
+			//点击-
+			$('#proDetailGuige .num .addJianCom .jian').on('tap',function(){
+				var currNum=$('#proDetailGuige .num .addJianCom input').val();
+				currNum--;
+				if(currNum<1){currNum=1;}
+				$('#proDetailGuige .num .addJianCom input').val(currNum);
+				$('#proDetailMain .basicInfo .infoContent .select span.num').text(currNum);//件数跟随改变
+			});
+			//点击x
+			$('#proDetailGuige .top .close').on('tap',function(){
+				$('#proDetailGuige').css('display','none');
+			});
+			//选中的分类项
+			$('#proDetailGuige .fenlei .content p').on('tap',function(){
+				$(this).addClass('select').siblings().removeClass('select');
+				$('#proDetailMain .basicInfo .infoContent .select span.color').text($(this).text());//颜色跟随改变
+			});
+
+			//基本信息
+			//轮播
+			var lunbosw = new Swiper('#proDetailMain .basicInfo .lunbo', {
+				autoplay: 3000,
+				loop:true,
+				autoplayDisableOnInteraction:false,
+				pagination : '.swiper-pagination',
+				paginationType : 'fraction'
+			});
+
+			//点击规格
+			$('#proDetailMain .basicInfo .infoContent .select').on('tap',function(){
+				$('#proDetailGuige').css('display','block');
+			});
+
+			//点击加入购物车 选择规格显示
+			$('#proDetailBot .cart').on('tap',function(){
+				if($("#proDetailGuige").css("display")=='block')
+				{
+					addcart();
+					//alert('加入购物车');
+				}
+				else
+				{
+					ergodic();
+					getpriceattr();
+					$('#proDetailGuige').css('display','block');
+				}
+			});
+
+			//点击立即购买 选择规格显示
+			$('#proDetailBot .mai').on('tap',function(){
+				if($("#proDetailGuige").css("display")=='block')
+				{
+					addcart();
+					//alert('加入购物车');
+				}
+				else
+				{
+					ergodic();
+					getpriceattr();
+					$('#proDetailGuige').css('display','block');
+				}
+			});
+
+
+var is_login={$is_login};
+function addcart()
+{
+	if(is_login==0)
+	{
+		window.location.href='/Member/Login?href={$info.id}';
+	}
+	else
+	{
+			$.ajax({
+				//提交数据的类型 POST GET
+				type:"POST",
+				//提交的网址
+				url:"{:U('Cart/insert')}",
+				//提交的数据
+				data:{'amount':$("#amount").val(),'attr':$('#sel_attr').val(),'product_id':product_id,'share_user_id':share_user_id},
+				//返回数据的格式
+				datatype: "json",//"xml", "html", "script", "json", "jsonp", "text".
+				//在请求之前调用的函数
+				//成功返回之后调用的函数             
+				success:function(json){
+					//alert($(".pro_num .gmbtn").attr("data-zt"));
+					if(json.status<1)
+					{
+						alert(json.info);
+					}
+					else
+					{
+							if($(".pro_num .gmbtn").attr("data-zt")=='立即购买')
+							{
+								window.location.href='{:U('Cart/index')}';
+							}
+							else
+							{
+								if(confirm("加入购物车成功,是否立即前往?"))
+								{
+									window.location.href='{:U('Cart/index')}';
+								}
+							}
+					}
+				}      
+			 });
+	}
+	//$.toptip($('#sel_attr').val(),'success');
+}
+function collection(product_id)
+{
+	if(is_login==0)
+	{
+		window.location.href='/Member/Login?href={$info.id}';
+	}
+	else
+	{
+		$.ajax({
+				//提交数据的类型 POST GET
+				type:"POST",
+				//提交的网址
+				url:"{:U('Product/addcollection')}",
+				//提交的数据
+				data:{'product_id':product_id},
+				//返回数据的格式
+				datatype: "json",//"xml", "html", "script", "json", "jsonp", "text".
+				//在请求之前调用的函数
+				//成功返回之后调用的函数             
+				success:function(json){
+					//alert($(".pro_num .gmbtn").attr("data-zt"));
+					if(json.status<1)
+					{
+						$.toast(json.info,'cancel', function() {
+						});
+					}
+					else
+					{
+						$.toast(json.info, function() {
+							/*var cstr=$(".td03").html();
+							if(cstr.indexOf("cur")>=0){
+							}*/
+							$('.collect_btn').toggleClass("cur");
+						});
+					}
+				}   ,  
+			 });
+	}
+}
+
+
+
+
+			//iscroll 下拉加载页面已经存在的内容
+			var currTab=0;//基本信息0 图文详情1 产品参数2 评价3
+			var currPing=false;
+			var currPingTab=0;
+
+			function onload(){
+				loadBin = document.getElementById("loadBin");
+				myScroll = new IScroll('#wrapper',{
+					probeType: 3,
+					click:true
+				});
+				myScroll.on("scroll",scrollFun);
+				myScroll.on("scrollEnd",scrollEndFun);
+			}
+			var page=1;
+			var myScroll,loadBin,isload = false,scrollFun = function(){
+				if((this.y - this.maxScrollY)>>0 < -50){
+					isload = true;
+
+					var infotext=null;
+					if(currTab==0){
+						infotext='继续拖动，查看图文详情';
+					}else if(currTab==1){
+						infotext='继续拖动，查看产品参数';
+					}else if(currTab==2){
+						infotext='继续拖动，查看评价';
+					}else if(currPing){
+						infotext='松开手指加载更多';
+					}
+
+					loadBin.innerHTML = infotext;
+					myScroll.refresh();
+					myScroll.off("scroll",scrollFun);
+				}
+			},
+			scrollEndFun = function(){
+				if(isload){
+					isload = false;
+					//替换#wrapper .list li里面的内容
+					if(currTab==0){
+						$('#wrapper .list > li:only-child').html('<div class="tuwenDetail">'+$('#proDetailMain .tuwenDetail').html()+'</div>');
+					}else if(currTab==1){
+						$('#wrapper .list > li:only-child').html('<div class="proCanshu">'+$('#proDetailMain .proCanshu').html()+'</div>');
+					}else if(currTab==2){
+						console.log('向上滚动到评价');
+						currPing=true;
+						//iscroll滚动区域里面，不能再有一个滚动区域  评价里面还有滚动区域
+						$('#wrapper').remove();
+						//在评价里面创建wrapper
+						$('#proDetailMain > .contain .pingjia .main .contain').prepend('<div id="wrapper"><div class="maxWidth"><ul class="list"></ul><div id="loadBin"></div></div></div>');
+						onload();
+						//填入全部评价
+						$.ajax({
+							type: 'GET',
+							url: 'data/商品详情全部评价.html',
+							dataType: 'json',
+							success: function(data){
+								var str='';
+								//总体评价
+								str+='<li><div class="allPingjia pingjiaCom"><div class="summary"><div class="left"><p class="sumzhi">'+data.sumScore+'</p><span>整体评价</span></div><div class="right">';
+								for(var m=0;m<Math.floor(data.sumScore);m++){
+									str+='<span class="hz huaorange">&#xe614;</span>';
+								}
+								for(var n=0;n<5-Math.floor(data.sumScore);n++){
+									str+='<span class="hz huagray">&#xe614;</span>';
+								}
+								str+='</div></div><ul>';
+								//列表
+								for(var i=0;i<data.lists.length;i++){
+									var score=data.lists[i].score;
+									str+='<li><div class="title clear"><p class="touxiang" style="background-image: url('+data.lists[i].touxiang+')"></p><span class="phone">'+data.lists[i].tel+'</span><span class="time">'+data.lists[i].time+'</span></div><div class="content"><p class="hua">';
+									for(var j=0;j<Math.floor(score);j++){
+										str+='<span class="hz huaorange">&#xe614;</span>';
+									}
+									for(var k=0;k<5-Math.floor(score);k++){
+										str+='<span class="hz huagray">&#xe614;</span>';
+									}
+									str+='<span class="zhi">'+score+'</span></p><p class="word">'+data.lists[i].word+'</p></div></li>';
+								}
+								str+='</div></li>';//allPingjia的</div>
+								$('#wrapper .list').append(str);
+
+								myScroll.refresh();
+							},
+							error: function(xhr, type){
+								console.log('Ajax error!');
+							}
+						});
+						//显示评价区域
+						$('#proDetailMain > .contain .pingjia').css('display','block');
+						currTab=3;
+					}else if(currPingTab==0){
+						console.log('全部评价继续加载');
+						$.ajax({
+							type: 'GET',
+							url: 'data/商品详情全部评价.html',
+							dataType: 'json',
+							success: function(data){
+								page++;
+
+								var str='';
+								for(var i=0;i<data.lists.length;i++){
+									var score=data.lists[i].score;
+									str+='<li><div class="title clear"><p class="touxiang" style="background-image: url('+data.lists[i].touxiang+')"></p><span class="phone">'+data.lists[i].tel+'</span><span class="time">'+data.lists[i].time+'</span></div><div class="content"><p class="hua">';
+									for(var j=0;j<Math.floor(score);j++){
+										str+='<span class="hz huaorange">&#xe614;</span>';
+									}
+									for(var k=0;k<5-Math.floor(score);k++){
+										str+='<span class="hz huagray">&#xe614;</span>';
+									}
+									str+='<span class="zhi">'+score+'</span></p><p class="word">'+data.lists[i].word+'</p></div></li>';
+								}
+
+								$('#wrapper .list .allPingjia > ul').append(str);
+
+								loadBin.innerHTML = "";
+								myScroll.on("scroll",scrollFun);
+								myScroll.refresh();
+							},
+							error: function(xhr, type){
+								console.log('Ajax error!');
+							}
+						});
+					}else if(currPingTab==1){
+						//好评
+						console.log('好评继续加载');
+						$.ajax({
+							type: 'GET',
+							url: 'data/商品详情好评.html',
+							dataType: 'json',
+							success: function(data){
+								page++;
+								var str='';
+								for(var i=0;i<data.lists.length;i++){
+									var score=data.lists[i].score;
+									str+='<li><div class="title clear"><p class="touxiang" style="background-image: url('+data.lists[i].touxiang+')"></p><span class="phone">'+data.lists[i].tel+'</span><span class="time">'+data.lists[i].time+'</span></div><div class="content"><p class="hua">';
+									for(var j=0;j<Math.floor(score);j++){
+										str+='<span class="hz huaorange">&#xe614;</span>';
+									}
+									for(var k=0;k<5-Math.floor(score);k++){
+										str+='<span class="hz huagray">&#xe614;</span>';
+									}
+									str+='<span class="zhi">'+score+'</span></p><p class="word">'+data.lists[i].word+'</p></div></li>';
+								}
+								$('#wrapper .list .goodPingjia > ul').append(str);
+
+								loadBin.innerHTML = "";
+								myScroll.on("scroll",scrollFun);
+								myScroll.refresh();
+							},
+							error: function(xhr, type){
+								console.log('Ajax error!');
+							}
+						});
+					}else if(currPingTab==2){
+						//差评
+						console.log('差评继续加载');
+						$.ajax({
+							type: 'GET',
+							url: 'data/商品详情差评.html',
+							dataType: 'json',
+							success: function(data){
+								page++;
+								var str='';
+								for(var i=0;i<data.lists.length;i++){
+									var score=data.lists[i].score;
+									str+='<li><div class="title clear"><p class="touxiang" style="background-image: url('+data.lists[i].touxiang+')"></p><span class="phone">'+data.lists[i].tel+'</span><span class="time">'+data.lists[i].time+'</span></div><div class="content"><p class="hua">';
+									for(var j=0;j<Math.floor(score);j++){
+										str+='<span class="hz huaorange">&#xe614;</span>';
+									}
+									for(var k=0;k<5-Math.floor(score);k++){
+										str+='<span class="hz huagray">&#xe614;</span>';
+									}
+									str+='<span class="zhi">'+score+'</span></p><p class="word">'+data.lists[i].word+'</p></div></li>';
+								}
+								$('#wrapper .list .chaPingjia > ul').append(str);
+
+								loadBin.innerHTML = "";
+								myScroll.on("scroll",scrollFun);
+								myScroll.refresh();
+							},
+							error: function(xhr, type){
+								console.log('Ajax error!');
+							}
+						});
+					}
+
+					if(currTab<3){
+						//等于3说明已经到底了
+						console.log('顶部tab切换，tab更新class');
+						//切换tab的时候，让滚动条在顶部
+						myScroll._translate(0,0);//查看源码，里面提供方法
+
+						loadBin.innerHTML = "";
+						myScroll.on("scroll",scrollFun);
+						myScroll.refresh();
+
+						currTab++;
+						$('#proDetailTop .top2 li.active').removeClass('active');
+						$('#proDetailTop .top2 li').eq(currTab).addClass('active');
+					}
+				}
+			};
+
+			//点击nav li切换当前状态
+			$('#proDetailTop .top2 li').on('tap',function(){
+				var currIndex=$(this).index();//这个地方获取的时候，就是加1后的
+				$(this).addClass('active').siblings().removeClass('active');
+
+				//替换#wrapper .list li里面的内容
+				if(currIndex==0){
+					currPing=false;
+					if($('#wrapper').length==0){
+						//不显示评价 创建wrapper 初始化
+						$('#proDetailMain > .contain .pingjia').css('display','none');
+						$('#proDetailMain > .contain').prepend('<div id="wrapper"><div class="maxWidth"><ul class="list"><li></li></ul><div id="loadBin"></div></div></div>');
+						onload();
+					}
+
+					//在li里面塞入 要显示的内容
+					$('#wrapper .list > li:only-child').html('<div class="basicInfo">'+$('#proDetailMain .basicInfo').html()+'</div>');
+					currTab=0;
+				}else if(currIndex==1){
+					currPing=false;
+					if($('#wrapper').length==0){
+						//不显示评价 创建wrapper 初始化
+						$('#proDetailMain > .contain .pingjia').css('display','none');
+						$('#proDetailMain > .contain').prepend('<div id="wrapper"><div class="maxWidth"><ul class="list"><li></li></ul><div id="loadBin"></div></div></div>');
+						onload();
+					}
+
+					//在li里面塞入 要显示的内容
+					$('#wrapper .list > li:only-child').html('<div class="tuwenDetail">'+$('#proDetailMain .tuwenDetail').html()+'</div>');
+					currTab=1;
+				}else if(currIndex==2){
+					currPing=false;
+					if($('#wrapper').length==0){
+						//不显示评价 创建wrapper 初始化
+						$('#proDetailMain > .contain .pingjia').css('display','none');
+						$('#proDetailMain > .contain').prepend('<div id="wrapper"><div class="maxWidth"><ul class="list"><li></li></ul><div id="loadBin"></div></div></div>');
+						onload();
+					}
+
+					//在li里面塞入 要显示的内容
+					$('#wrapper .list > li:only-child').html('<div class="proCanshu">'+$('#proDetailMain .proCanshu').html()+'</div>');
+					currTab=2;
+				}else if(currIndex==3){
+					console.log('tab切换到评价');
+					currPing=true;
+					//iscroll滚动区域里面，不能再有一个滚动区域  评价里面还有滚动区域
+					$('#wrapper').remove();
+					//在评价里面创建wrapper
+					$('#proDetailMain > .contain .pingjia .main .contain').prepend('<div id="wrapper"><div class="maxWidth"><ul class="list"></ul><div id="loadBin"></div></div></div>');
+					onload();
+					//填入全部评价
+					$.ajax({
+						type: 'GET',
+						url: 'data/商品详情全部评价.html',
+						dataType: 'json',
+						success: function(data){
+							var str='';
+							//总体评价
+							str+='<li><div class="allPingjia pingjiaCom"><div class="summary"><div class="left"><p class="sumzhi">'+data.sumScore+'</p><span>整体评价</span></div><div class="right">';
+							for(var m=0;m<Math.floor(data.sumScore);m++){
+								str+='<span class="hz huaorange">&#xe614;</span>';
+							}
+							for(var n=0;n<5-Math.floor(data.sumScore);n++){
+								str+='<span class="hz huagray">&#xe614;</span>';
+							}
+							str+='</div></div><ul>';
+							//列表
+							for(var i=0;i<data.lists.length;i++){
+								var score=data.lists[i].score;
+								str+='<li><div class="title clear"><p class="touxiang" style="background-image: url('+data.lists[i].touxiang+')"></p><span class="phone">'+data.lists[i].tel+'</span><span class="time">'+data.lists[i].time+'</span></div><div class="content"><p class="hua">';
+								for(var j=0;j<Math.floor(score);j++){
+									str+='<span class="hz huaorange">&#xe614;</span>';
+								}
+								for(var k=0;k<5-Math.floor(score);k++){
+									str+='<span class="hz huagray">&#xe614;</span>';
+								}
+								str+='<span class="zhi">'+score+'</span></p><p class="word">'+data.lists[i].word+'</p></div></li>';
+							}
+							str+='</div></li>';//allPingjia的</div>
+							$('#wrapper .list').append(str);
+
+							myScroll.refresh();
+						},
+						error: function(xhr, type){
+							console.log('Ajax error!');
+						}
+					});
+					//显示评价区域
+					$('#proDetailMain > .contain .pingjia').css('display','block');
+					currTab=3;
+				}
+				//切换tab的时候，让滚动条在顶部
+				myScroll._translate(0,0);//查看源码，里面提供方法
+				myScroll.refresh();//用于刷新页面
+			});
+
+			//评价
+			//当评价里面的数量超过999，则显示999+
+			var pingjiaSum=$('#proDetailMain .pingjia .top .all').text();
+			var pingjiaGood=$('#proDetailMain .pingjia .top .good').text();
+			var pingjiaBad=$('#proDetailMain .pingjia .top .bad').text();
+			if(pingjiaSum>999){
+				$('#proDetailMain .pingjia .top .all').text('999+');
+			}
+			if(pingjiaGood>999){
+				$('#proDetailMain .pingjia .top .good').text('999+');
+			}
+			if(pingjiaBad>999){
+				$('#proDetailMain .pingjia .top .bad').text('999+');
+			}
+			//切换评论 好评 差评
+			$('#proDetailMain .pingjia .top li').on('tap',function(){
+				var currIndex=$(this).index();
+				$(this).addClass('active').siblings().removeClass('active');
+
+				$('#wrapper .list').html('');
+				if(currIndex==0){
+					//全部评价
+					console.log('tab切换到全部评价');
+					currPing=true;
+					currPingTab=0;
+					//填入全部评价
+					$.ajax({
+						type: 'GET',
+						url: 'data/商品详情全部评价.html',
+						dataType: 'json',
+						success: function(data){
+							page=1;
+
+							var str='';
+							//总体评价
+							str+='<li><div class="allPingjia pingjiaCom"><div class="summary"><div class="left"><p class="sumzhi">'+data.sumScore+'</p><span>整体评价</span></div><div class="right">';
+							for(var m=0;m<Math.floor(data.sumScore);m++){
+								str+='<span class="hz huaorange">&#xe614;</span>';
+							}
+							for(var n=0;n<5-Math.floor(data.sumScore);n++){
+								str+='<span class="hz huagray">&#xe614;</span>';
+							}
+							str+='</div></div><ul>';
+							//列表
+							for(var i=0;i<data.lists.length;i++){
+								var score=data.lists[i].score;
+								str+='<li><div class="title clear"><p class="touxiang" style="background-image: url('+data.lists[i].touxiang+')"></p><span class="phone">'+data.lists[i].tel+'</span><span class="time">'+data.lists[i].time+'</span></div><div class="content"><p class="hua">';
+								for(var j=0;j<Math.floor(score);j++){
+									str+='<span class="hz huaorange">&#xe614;</span>';
+								}
+								for(var k=0;k<5-Math.floor(score);k++){
+									str+='<span class="hz huagray">&#xe614;</span>';
+								}
+								str+='<span class="zhi">'+score+'</span></p><p class="word">'+data.lists[i].word+'</p></div></li>';
+							}
+							str+='</div></li>';//allPingjia的</div>
+							$('#wrapper .list').append(str);
+
+							myScroll.refresh();
+						},
+						error: function(xhr, type){
+							console.log('Ajax error!');
+						}
+					});
+					//显示评价区域
+					$('#proDetailMain > .contain .pingjia').css('display','block');
+					currTab=3;
+				}else if(currIndex==1){
+					//好评
+					console.log('tab切换到好评');
+					currPing=true;
+					currPingTab=1;
+					$.ajax({
+						type: 'GET',
+						url: 'data/商品详情好评.html',
+						dataType: 'json',
+						success: function(data){
+							page=1;
+
+							var str='';
+							str+='<li><div class="goodPingjia pingjiaCom"><ul>';
+
+							for(var i=0;i<data.lists.length;i++){
+								var score=data.lists[i].score;
+								str+='<li><div class="title clear"><p class="touxiang" style="background-image: url('+data.lists[i].touxiang+')"></p><span class="phone">'+data.lists[i].tel+'</span><span class="time">'+data.lists[i].time+'</span></div><div class="content"><p class="hua">';
+								for(var j=0;j<Math.floor(score);j++){
+									str+='<span class="hz huaorange">&#xe614;</span>';
+								}
+								for(var k=0;k<5-Math.floor(score);k++){
+									str+='<span class="hz huagray">&#xe614;</span>';
+								}
+								str+='<span class="zhi">'+score+'</span></p><p class="word">'+data.lists[i].word+'</p></div></li>';
+							}
+							str+='</ul></div></li>'
+							$('#wrapper .list').append(str);
+
+							myScroll.refresh();
+						},
+						error: function(xhr, type){
+							console.log('Ajax error!');
+						}
+					});
+				}else if(currIndex==2){
+					//差评
+					console.log('tab切换到差评');
+					currPing=true;
+					currPingTab=2;
+					$.ajax({
+						type: 'GET',
+						url: 'data/商品详情差评.html',
+						dataType: 'json',
+						success: function(data){
+							page=1;
+
+							var str='';
+							str+='<li><div class="chaPingjia pingjiaCom"><ul>';
+
+							for(var i=0;i<data.lists.length;i++){
+								var score=data.lists[i].score;
+								str+='<li><div class="title clear"><p class="touxiang" style="background-image: url('+data.lists[i].touxiang+')"></p><span class="phone">'+data.lists[i].tel+'</span><span class="time">'+data.lists[i].time+'</span></div><div class="content"><p class="hua">';
+								for(var j=0;j<Math.floor(score);j++){
+									str+='<span class="hz huaorange">&#xe614;</span>';
+								}
+								for(var k=0;k<5-Math.floor(score);k++){
+									str+='<span class="hz huagray">&#xe614;</span>';
+								}
+								str+='<span class="zhi">'+score+'</span></p><p class="word">'+data.lists[i].word+'</p></div></li>';
+							}
+							str+='</ul></div></li>'
+							$('#wrapper .list').append(str);
+
+							myScroll.refresh();
+						},
+						error: function(xhr, type){
+							console.log('Ajax error!');
+						}
+					});
+				}
+				//切换tab的时候，让滚动条在顶部
+				myScroll._translate(0,0);//查看源码，里面提供方法
+				myScroll.refresh();//用于刷新页面
+			});
+
+		</script>
+	</body>
+</html>							

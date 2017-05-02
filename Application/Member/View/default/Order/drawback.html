@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<meta name="format-detection" content="telephone=no">
+		<title>退款订单</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/zepto.js"></script>
+		<script src="__PUBLIC__/Home/js/delIOS_huitan.js"></script>
+	</head>
+	<body class="box">
+		<!--正文区域-->
+		<div id="tuiKuanTop" class="topBackTitle">
+			<div class="contain maxWidth">
+				<a class="hz back" href="{:U('Index/index')}">&#xe600;</a>退款
+			</div>
+		</div>
+		<div id="tuiKuanMain" class="fastscroll">
+			<div class="contain maxWidth">
+				<div id="wrapper" class="maxWidth">
+					<div>
+						<ul class="list wai">
+							<volist name="list" id="l">
+							<li>
+								<div class="bgulCon">
+									<a href="{:U('Order/view',array('id'=>$l['id']))}">
+										<ul>
+											<li>
+												<span class="left">订单编号：{$l.sn}</span>
+												<span class="right red">退款成功</span>
+											</li>
+										</ul>
+									</a>
+								</div>
+								<div class="ddproList">
+										<ul class="lis">
+											<volist name="l.list" id="v">
+											<li class="clear">
+												<a href="{:U('/Product/detail',array('id'=>$v['product_id']))}">
+												<div class="left">
+													<img src="{$v.image}">
+												</div>
+												<div class="right">
+													<p class="title">{$v.title}</p>
+													<p class="price">
+														<em>&yen;<span>{$v.product_price}</span></em><del>&yen;{$v.market_price}</del><span class="r">&times;<span>{$v.product_num}</span></span>
+													</p>
+												</div>
+												</a>
+											</li>
+											</volist>
+										</ul>
+								</div>
+								<div class="bgulCon bot">
+									<ul>
+										<li>
+											<span class="right">交易金额:&yen;<span class="jymoney">{$l.money}</span>，退款金额:<span class="tuiMoney">&yen;<em>{$l.money}</em></span></span>
+										</li>
+									</ul>
+								</div>
+							</li>
+							</volist>
+						</ul>
+						<div id="loadBin"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			//返回按钮
+			/*$('#tuiKuanTop .back').on('click',function(){
+				window.history.go(-1);
+			});*/
+
+			//根据图片的宽度，确定图片的高度
+			window.addEventListener('load',function(){
+				var imgw=$('#tuiKuanMain .ddproList .lis .clear .left img').width();
+				$('#tuiKuanMain .ddproList .lis .clear .left img').height(imgw);
+				$('#tuiKuanMain .ddproList .lis .clear .right').height(imgw);
+			},false);
+
+			//点击删除订单
+			function delDingdanBtn(){
+				$('#tuiKuanMain .bgulCon li .del').on('click',function(ev){
+					ev.stopPropagation();
+					console.log('删除订单操作');
+				});
+			}
+			delDingdanBtn();
+
+			//计算 商品个数 和 总计
+			function zongji(){
+				var lis=$('#tuiKuanMain .contain .wai>li');
+				for(var i=0;i<lis.length;i++){
+					var lisumMoney=0;
+					var moneys=$(lis[i]).find('.right .price em span');
+					for(var m=0;m<moneys.length;m++){
+						var num=$(moneys[m]).parent().siblings('span.r').children('span').text();
+						lisumMoney=lisumMoney+parseFloat(num)*parseFloat(moneys[m].innerHTML);
+					}
+					$(lis[i]).find('.bot .jymoney').text(lisumMoney.toFixed(2));
+					$(lis[i]).find('.bot .tuiMoney').text(lisumMoney.toFixed(2));
+				}
+			}
+			zongji();
+		</script>
+	</body>
+</html>

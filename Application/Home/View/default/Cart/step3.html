@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<meta name="format-detection" content="telephone=no">
+		<title>{:C('WEB_SITE_TITLE')}</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/zepto.js"></script>
+		<script src="__PUBLIC__/Home/js/delIOS_huitan.js"></script>
+		<include file="Public/weixin"/>
+	</head>
+	<body class="box">
+		<!-- 遮罩 -->
+		<div id="zhezhao" style="display:none"></div>
+		<!-- 弹出框 选择配送方式 -->
+		<!--<div class="orderSelectSendTypeK" style="display:none">-->
+			<!--<div class="top">选择配送方式</div>-->
+			<!--<div class="middle">-->
+				<!--<ul>-->
+					<!--<li class="clear selected">-->
+						<!--<p class="tit l">自提</p>-->
+						<!--<div class="selectArea r">-->
+							<!--<div class="circleGreen" style="-display: none">-->
+								<!--<span class="hz active">&#xe613;</span>-->
+							<!--</div>-->
+						<!--</div>-->
+					<!--</li>-->
+					<!--<li class="clear">-->
+						<!--<p class="tit l">送货</p>-->
+						<!--<div class="selectArea r">-->
+							<!--<div class="circleGreen" style="display: none">-->
+								<!--<span class="hz active">&#xe613;</span>-->
+							<!--</div>-->
+						<!--</div>-->
+					<!--</li>-->
+				<!--</ul>-->
+			<!--</div>-->
+			<!--<div class="bot">确定</div>-->
+		<!--</div>-->
+		<!-- 弹出框 选择支付方式  -->
+		<!--<div class="orderSelectPayK" style="display:none">-->
+			<!--<div class="top">选择支付方式</div>-->
+			<!--<div class="middle">-->
+				<!--<ul>-->
+					<!--<li class="clear" data-type="0">-->
+						<!--<p class="tit l">微信支付</p>-->
+						<!--<div class="selectArea r">-->
+							<!--<div class="circleGreen">-->
+								<!--<span class="hz">&#xe613;</span>-->
+							<!--</div>-->
+						<!--</div>-->
+					<!--</li>-->
+					<!--<li class="clear" data-type="1">-->
+						<!--<p class="tit l">余额支付</p>-->
+						<!--<div class="selectArea r">-->
+							<!--<div class="circleGreen">-->
+								<!--<span class="hz">&#xe613;</span>-->
+							<!--</div>-->
+						<!--</div>-->
+					<!--</li>-->
+				<!--</ul>-->
+			<!--</div>-->
+			<!--<div class="bot">确定</div>-->
+		<!--</div>-->
+		<!-- 弹出框 输入支付密码 -->
+		<div id="maKuang" style="display:none">
+			<div class="top">
+				<span class="title">输入支付密码</span>
+				<div class="inputArea">
+					<input type="password" id="code" style="width:150px;margin-left:30%;text-align:center;"/>
+				</div>
+			</div>
+			<div class="bot">
+				<a href="javascript:;" class="cancel">取消</a><a href="javascript:;" class="sure">确认</a>
+			</div>
+		</div>
+		<!--提示文字-->
+		<div class="tip" style="opacity: 0;z-index: -1"></div>
+		<!--正文区域-->
+		<div id="dingdanQuerenDanTop" class="topBackTitle">
+			<div class="contain maxWidth">
+				<a class="hz back" href="javascript:;">&#xe600;</a>确认订单
+			</div>
+		</div>
+		<div id="dingdanQuerenDanMain" class="fastscroll dingdanMain">
+			<div class="contain maxWidth">
+				<div class="line"></div>
+				<!-- {:U('/Member/UserAddress/index')}&pro_id={$pro_id}&num={$product_num}&spell_id={$_GET['spell_id']} -->
+				<a href="javascript:;" onclick="javascript:chooseAddr();" class="top">
+					<div class="clear">
+						<span class="hz pos">&#xe60d;</span>
+						<div class="center">
+							<p>收货人: <span>{$useraddress.name}</span></p>
+							<p>联系方式: <span>{$useraddress.mobile}</span></p>
+							<p>收货地址: <span>{$useraddress.address}</span></p>
+						</div>
+						<span class="hz jiantou">&#xe60c;</span>
+					</div>
+				</a>
+				<div class="paySendCom zhifu">
+					<div class="con">
+						<p class="tit">支付方式</p>
+						<ul>
+							<li class="clear">
+								<div class="col-6">微信支付</div>
+								<div class="col-6 textR">
+									<div class="circleGreen wx" data-type="0">
+										<span class="hz">&#xe613;</span>
+									</div>
+								</div>
+							</li>
+							<li class="clear">
+								<div class="col-6">余额支付</div>
+								<div class="col-6 textR">
+									<div class="circleGreen yue" data-type="1">
+										<span class="hz">&#xe613;</span>
+									</div>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<div class="paySendCom peisong">
+					<div class="con clear oneType">
+						<div class="col-6">配送方式</div>
+						<div class="col-6 textR">送货上门</div>
+					</div>
+				</div>
+				<div class="ddproList">
+					<ul class="list">
+						<li class="clear">
+							<div class="left">
+								<img src="{$spell.image}">
+							</div>
+							<div class="right">
+								<p class="title"><a href="{:U('Spell/detail',array('id'=>$spell['id']))}">{$spell.title}</a></p>
+								<p class="price">
+									<em>&yen;{$spell.price}</em><del>&yen;{$spell.oldprice}</del><span class="r">&times;<span>{$product_num}</span></span>
+								</p>
+							</div>
+						</li>
+					</ul>
+				</div>
+				<div class="priceList">
+					<ul>
+						<li>
+							<span class="left">商品金额</span>
+							<span class="right">&yen;{$promoney}</span>
+						</li>
+						<li>
+							<span class="left">运费</span>
+							<span class="right">+&yen;{$express_money}</span>
+						</li>
+					</ul>
+				</div>
+				<div class="liuyan">
+					<div class="clear">
+						<div class="col-2 left">留言</div>
+						<div class="col-10">
+							<input type="text" placeholder="请输入留言内容" id="note">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="dingdanQuerenDanBot" class="dingdanBot">
+			<div class="contain maxWidth">
+				合计：<span>&yen;<em>{$total_price}</em></span>
+				<a href="javascript:addorder();">去支付</a>
+			</div>
+		</div>
+<input type="hidden" id="total_price" value="{$total_price}" />
+<input type="hidden" id="express_money" value="{$express_money}" />
+<input type="hidden" id="product_num" value="{$product_num}" />
+<input type="hidden" id="spe_id" value="{$spell_id}" />
+<input type="hidden" id="paytype" value="{$paytype}">;
+<!--送货上门地址ID-->
+<input type="hidden" id="address_id" value="{$useraddress.id}" />
+<input type="hidden" id="team_id" value="{$team_id}" />
+
+		<script>
+		//根据url，自动选择出 支付方式和配送方式 &paytype=1&sendtype=0
+		var paytype = $('#paytype').val();
+		if(paytype==""){
+			$('.yue').removeClass('on');
+			$('.wx').removeClass('on');
+		}else if(paytype==1){
+			$('.yue').addClass('on');//余额
+		}else if(paytype==0){
+			$('.wx').addClass('on');//微信
+		}
+		
+		function gozhifu(){
+			$('#maKuang .top .inputArea input').val('');//清空
+			$('#zhezhao').show();
+			$('#maKuang').show();
+			//点击取消
+			$('#maKuang .bot .cancel').on('click',function(){
+				$('#zhezhao').hide();
+				$('#maKuang').hide();
+			});
+			//点击确定
+			$('#maKuang .bot .sure').on('click',function(){
+				var v=$('#maKuang .top .inputArea input').val();//密码
+				var yue = {$user.money};
+				var team_id = $('#team_id').val();
+				var spe_id = $('#spe_id').val();	//拼团id
+				var address_id=$('#address_id').val();//送货上门地址ID
+				var total_price=$('#total_price').val();//总金额
+				var express_money=$('#express_money').val();//运费
+				var product_num=$('#product_num').val();//运费
+				var typename = $("#chooseImage").text();	
+				var note = $('#note').val();
+				var type = 0;//送货方式
+				if(typename=="自提"){
+					type = 1;
+				}
+				var paytype = 1;
+				//判断支付密码是否正确
+				$.ajax({  
+					type:'post',  
+					traditional :true,  
+					url:"{:U('Cart/checkPaypwd')}",  
+					data:{'pwd':v},  
+					success:function(data){
+						if(data.status==1)
+						{
+							$('#zhezhao').hide();
+							$('#maKuang').hide();
+
+							$.ajax({  
+								type:'post',  
+								traditional :true,  
+								url:"{:U('Cart/addspellorder')}",  
+								data:{'spe_id':spe_id,'address_id':address_id,'total_price':total_price,'express_money':express_money,product_num:product_num,type:type,paytype:paytype,note:note,team_id:team_id},  
+								success:function(data){
+									if(data.status==1)
+									{
+										//tipFun(data.info);
+										setTimeout(function(){
+											window.location.href = "{:U('/Home/Spell/payok')}&order_id="+data.order_id;
+										},1200);
+									}else{
+										tipFun(data.info);
+										return;
+									}
+								}  
+							});
+						}else if(data.status==0){
+							tipFun(data.info);
+							setTimeout(function(){
+								location.href = "{:U('/Member/Index/editpaypwd')}";
+								//location.href = data.url;
+							},1200);
+						}else{
+							tipFun(data.info);
+							$('#maKuang .top .inputArea input').val("");
+							$('#maKuang .top .inputArea input').focus();
+							return;
+						}
+					}  
+				});
+			});
+		}
+			//检查拼团人数是否已满
+			function teamIsFull(){
+				var team_id = $('#team_id').val();
+				var user_id = "{$user.id}";
+				if(user_id==""){
+					location.href = "{:U('/Member/Login/index')}";
+				}
+				if(team_id>0){
+					$.ajax({
+						type: 'GET',
+						url: "{:U('Spell/teamIsFull')}",
+						dataType: 'json',
+						data:{team_id:team_id},
+						success: function(data){
+							//console.log(data);
+							if(data.status<1){
+								tipFun(data.info);
+								return false;
+							}else{
+								return true; 
+							}
+						},
+						error: function(xhr, type){
+							console.log('Ajax error!');
+						}
+					});
+				}else{
+					return true;
+				}
+				
+			}
+			
+			function addorder()
+			{
+				teamIsFull();
+				var team_id = $('#team_id').val();
+				var paypwd = "{$user.paypwd}";
+				var yue = {$user.money};
+				var spe_id = $('#spe_id').val();	//拼团id
+				var address_id=$('#address_id').val();//送货上门地址ID
+				var total_price=$('#total_price').val();//总金额
+				var express_money=$('#express_money').val();//运费
+				var product_num=$('#product_num').val();//运费
+				var typename = $("#chooseImage").text();	
+				var note = $('#note').val();
+				var type = 0;//送货方式
+				if(typename=="自提"){
+					type = 1;
+				}
+				var payname = $('.quanzhifu li .zhifu').text();//支付方式
+				var paytype = $("#paytype").val();
+				if(paytype==""){
+					tipFun('请选择支付方式');
+					return;
+				}
+				if(paytype==1){
+					//paytype = 1;
+					if(paypwd==""){
+						tipFun('您还未设置支付密码');
+						setTimeout(function(){
+							location.href = "{:U('/Member/Index/editpaypwd')}";
+							//location.href = data.url;
+						},1200);
+						return;
+					}
+					if(yue<total_price){
+						tipFun('您的余额不足');
+						return;
+					}
+					gozhifu();
+				}else{
+					$.ajax({  
+						type:'post',  
+						traditional :true,  
+						url:"{:U('Cart/addspellorder')}",  
+						data:{'spe_id':spe_id,'address_id':address_id,'total_price':total_price,'express_money':express_money,product_num:product_num,type:type,paytype:paytype,note:note,team_id:team_id},  
+						success:function(data){
+							//console.log(data);
+							if(data.status==1)
+							{
+								//tipFun(data.info);
+								setTimeout(function(){
+									if(paytype==1){
+										window.location.href = "{:U('/Home/Spell/payok')}&order_id="+data.order_id;
+									}else{
+										window.location.href='/wxpay/example/jsapis.php?order_id='+data.order_id;
+									}
+								},1200);
+							}else{
+								tipFun(data.info);
+								
+								return;
+							}
+						}  
+					});
+				}
+			}
+			//返回按钮
+			$('#dingdanQuerenDanTop .back').on('click',function(){
+				window.history.go(-1);
+			});
+
+			
+			
+			//跳转至选择地址
+			function chooseAddr(){
+				var spe_id = "{$_GET['spell_id']}";
+				var team_id = $('#team_id').val();
+				//var pro_id = {$pro_id};
+				//var num = {$product_num};
+				var paytype = $('#paytype').val();
+				location.href = "{:U('/Member/userAddress')}&team_id="+team_id+"&spell_id="+spe_id+"&paytype="+paytype;
+			}
+
+			//点击 支付方式
+			/*$('#dingdanQuerenDanMain .quanzhifu .zhifu').on('click',function(){
+				var text=$(this).find('.right').text();
+				var num=null;
+				if(text=='余额支付'){
+					num=1;
+				}else if(text=='支付宝支付'){
+					num=2;
+				}else if(text=='微信支付'){
+					num=3;
+				}
+				//location.href='订单确认支付方式.html?zhifuType='+num;
+			});
+
+			//获取参数  余额支付1 支付宝支付2 微信支付3
+			var hrefstr=location.href;
+			if(hrefstr.indexOf('zhifuType=')!=-1){
+				var num=hrefstr.substring(hrefstr.indexOf('zhifuType=')+10);
+				var text=null;
+				if(num==1){
+					text='余额支付';
+				}else if(num==2){
+					text='支付宝支付';
+				}else if(num==3){
+					text='微信支付';
+				}
+				$('#dingdanQuerenDanMain .quanzhifu li .zhifu').text(text);
+			}*/
+
+			//根据图片的宽度，确定图片的高度imgw*525/660
+			window.addEventListener('load',function(){
+				var imgw=$('#dingdanQuerenDanMain .ddproList .list .clear .left img').width();
+				$('#dingdanQuerenDanMain .ddproList .list .clear .left img').height(imgw*525/660);
+				$('#dingdanQuerenDanMain .ddproList .list .clear .right').height(imgw*525/660);
+			},false);
+
+			//tip
+			function tipFun(str){
+				$('.tip').text(str).css({
+					'opacity':'1',
+					'z-index':'9999'
+				});
+				setTimeout(function(){
+					$('.tip').css('opacity','0');
+					setTimeout(function(){
+						$('.tip').css('z-index','-1');
+					},300);
+				},1300);
+			}
+
+		//选择支付方式 微信0 余额1
+		$('#dingdanQuerenDanMain .zhifu ul li .circleGreen').on('click',function(){
+			$('#dingdanQuerenDanMain .zhifu ul li .circleGreen').removeClass('on');
+			$(this).addClass('on');
+
+			var datatype=$(this).attr('data-type');
+			$('#paytype').val(datatype);
+		});
+		//选择配送方式 自提1 送货0
+		$('#dingdanQuerenDanMain .peisong ul li .circleGreen').on('click',function(){
+			$('#dingdanQuerenDanMain .peisong ul li .circleGreen').removeClass('on');
+			$(this).addClass('on');
+
+			var datatype=$(this).attr('data-type');
+
+		});
+
+
+//		//根据页面的url参数确定默认选中的内容-支付方式
+//		setZhifuDefault();
+//		function setZhifuDefault(){
+//			var allli=$('.orderSelectPayK .middle li.clear');
+//			for(var i=0;i<allli.length;i++){
+//				$(allli[i]).removeClass('selected');
+//				if($(allli[i]).attr('data-type')==paytype){
+//					$(allli[i]).addClass('selected');
+//					$(allli[i]).find('.selectArea .hz').addClass('active');
+//				}
+//			}
+//		}
+//		//点击 支付方式
+//		$('#dingdanQuerenDanMain .quanzhifu .zhifu').on('click',function(){
+//			$('#zhezhao').css('display','block');
+//			$('.orderSelectPayK').css('display','block');
+//
+//		});
+//		//选择支付方式
+//		$('.orderSelectPayK .middle li').on('click',function(){
+//			$('.orderSelectPayK .middle li .hz.active').removeClass('active');
+//			$(this).find('.hz').addClass('active');
+//			$(this).addClass('selected').siblings().removeClass('selected');//selected用于判断选择的是那个配送方式
+//		});
+//		//点击确定
+//		$('.orderSelectPayK .bot').on('click',function(){
+//			$('.orderSelectPayK').css('display','none');
+//			$('#zhezhao').css('display','none');
+//
+//			//给页面上更新为 选中的支付方式
+//			var selectTypetext=$('.orderSelectPayK .middle li.selected').find('.tit').text();
+//			//alert(selectTypetext);
+//			if(selectTypetext==""||selectTypetext==null)selectTypetext="请选择";
+//			$('.quanzhifu li .zhifu').text(selectTypetext);
+//			if(selectTypetext=="余额支付"){
+//				$('#paytype').val("1");
+//			}else{
+//				$('#paytype').val("0");
+//			}
+//		});
+
+		//点击配送方式
+//		$('#dingdanQuerenDanMain .quanzhifu li.sendHuo').on('click',function(){
+//			$('.orderSelectSendTypeK').css('display','block');
+//			$('#zhezhao').css('display','block');
+//		});
+//		//选择配送方式
+//		$('.orderSelectSendTypeK .middle li').on('click',function(){
+//			$('.orderSelectSendTypeK .middle li .hz.active').removeClass('active');
+//			$(this).find('.hz').addClass('active');
+//			$(this).addClass('selected').siblings().removeClass('selected');//selected用于判断选择的是那个配送方式
+//		});
+//		//点击确定
+//		$('.orderSelectSendTypeK .bot').on('click',function(){
+//			$('.orderSelectSendTypeK').css('display','none');
+//			$('#zhezhao').css('display','none');
+//
+//			//给页面上更新为 选中的配送方式
+//			var selectTypetext=$('.orderSelectSendTypeK .middle li.selected').find('.tit').text();
+//			$('.quanzhifu .sendHuo .text').text(selectTypetext);
+//		});
+		</script>
+	</body>
+</html>

@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html class="h100">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>{:C('WEB_SITE_TITLE')}</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/zepto.js"></script>
+		<script src="__PUBLIC__/Home/js/iscroll-probe.js"></script>
+		<script src="__PUBLIC__/Home/js/delIOS_huitan.js"></script>
+		<style>
+			/*下拉加载样式*/   
+			#wrapper {
+				position: absolute;
+				z-index: 1;
+				top: 0;
+				bottom: 0;
+				left: 0;
+				width: 100%;
+				overflow: hidden;
+			}
+			#wrapper > div > .list > li{margin-bottom: 10px;}
+			#wrapper > div > .list > li:last-child{margin-bottom: 0;}
+			#loadBin{color: #5d5d5d;text-align: center;line-height: 30px;}
+		</style>
+	<script>
+	function delorder(id)
+	{
+		$('.confirm .top').text('确认删除订单?');
+		$('#zhezhao').css('display','block');
+		$('.confirm').css('display','block');
+
+		//点击取消
+		$('.confirm .bot div.l').on('click',function(){
+			$('#zhezhao').css('display','none');
+			$('.confirm').css('display','none');
+		});
+		//点击确定
+		$('.confirm .bot div.r').on('click',function(){
+			$('#zhezhao').css('display','none');
+			$('.confirm').css('display','none');
+			$.ajax({
+				//提交数据的类型 POST GET
+				type:"POST",
+				//提交的网址
+				url:"__URL__/delorder",
+				//提交的数据
+				data:{'id':id},
+				//返回数据的格式
+				datatype: "json",//"xml", "html", "script", "json", "jsonp", "text".
+				//在请求之前调用的函数
+				//成功返回之后调用的函数
+				success:function(json){
+					tipFun(json.info);
+					setTimeout(function(){
+						window.location.reload();
+					},1000);
+				}
+			});
+		});
+	}
+	</script>
+	</head>
+	<body class="h100 ohid box" onload="onload()">
+		<!-- 生成的二维码 --> 
+		<div class="createMaKuang" style="display:none">
+			<img src="__PUBLIC__/Home/img/logo.jpg">
+		</div>
+		<!-- 遮罩层-->
+		<div id="zhezhao" style="display: none"></div>
+		<!--confirm-->
+		<div class="confirm" style="display: none">
+			<div class="top"></div>
+			<div class="bot clear">
+				<div class="l"><p>取消</p></div>
+				<div class="r"><p>确定</p></div>
+			</div>
+		</div>
+		<!--提示文字-->
+		<div class="tip" style="opacity: 0;z-index: -1"></div>
+		<!--正文区域-->
+		<div id="mydingdanTop" class="topBackTitle">
+			<div class="contain maxWidth">
+				<div class="top1">
+					<a class="hz back" href="{:U('/Member/Index/index')}">&#xe600;</a>我的订单<!--<a href="订单查询.html" class="hz search">&#xe607;</a>-->
+				</div>
+				<div class="top2">
+					<ul class="clear">
+						<li class="{$statuscss[-1]}"><a href="{:U('Order/index')}">全部</a></li>
+						<li class="{$statuscss[0]}"><a href="{:U('Order/index',array('status'=>0))}">待付款</a></li>
+						<li class="{$statuscss[1]}"><a href="{:U('Order/index',array('status'=>1))}">待发货</a></li>
+						<li class="{$statuscss[2]}"><a href="{:U('Order/index',array('status'=>2))}">待收货</a></li>
+						<li class="{$statuscss[3]}"><a href="{:U('Order/index',array('status'=>3))}">已完成</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div id="mydingdanMain" class="fastscroll">
+			<div class="contain maxWidth">
+				<div id="wrapper">
+					<div class="maxWidth">
+						<!--全部 待付款 待发货 待收货 待评价 共用1个ul-->
+						<ul class="list">
+						<volist name="list" id="item">
+							<li class="wai" data-id="{$item.id}">
+								<div class="bgulCon titlebgulCon">
+									<ul>
+										<li>
+											<span class="left">订单编号:{$item.sn}</span>
+											<span class="right red">{$statusarr[$item['status']]}</span>
+										</li>
+									</ul>
+								</div>
+								<div class="ddproList">
+									<ul class="lis">
+										<?php
+										$product_num=0;
+										?>
+										<volist name="item.list" id="vo">
+											<li class="clear">
+												<div class="left">
+													<img src="{$vo.image}">
+												</div>
+												<div class="right">
+													<p class="title">{$vo.title}</p>
+													<?php
+														$product_num+=$vo['product_num'];
+														$attrlist=explode(',',$vo['product_attr']);
+														$attr=array();
+														?>
+													<p class="price">
+														<em><span>{:implode('；',$attr)}{$vo['product_price']}</span></em><del>&yen;{$vo['gprice']}</del><span class="r">&times;<span>{$vo.product_num}</span></span>
+													</p>
+													<!-- <if condition="$item.status eq 2">
+														<a href="http://wpa.qq.com/msgrd?v=3&uin={$website.qq}" class="spriteBtnGray btn">申请售后</a>
+													</if> -->
+					<if condition="$vo['pl'] eq 0">
+													<p class="price">
+					<a href="{:U('/Member/Evaluate/add',array('order_detail_id'=>$vo['id']))}" class="right spriteBtnGray">去评价</a>
+													</p>
+					</if>
+												</div>
+											</li>
+										</volist>
+									</ul>
+								</div>
+								<div class="bgulCon bot">
+									<ul>
+										<li>
+											<span class="right">共<span class="num">{$product_num}</span>件商品 合计:&yen;<span class="sumMoney">{$item['money']}</span>(含运费&yen;<span class="yunMoney">{$item.express_money}</span>)</span>
+										</li>
+										<li>
+										<!--
+										/Member/Order/payok?order_id={$item.id}
+										-->
+											<if condition="$item.status eq 0">
+												<a href="/wxpay/example/jsapi.php?order_id={$item.id}&order_type=0" class="right spriteBtnRed">付款</a>
+												<!--
+												<a href="/wxpay/example/jsapi.php?order_id={$item.id}" class="right spriteBtnRed">付款</a>
+												-->
+												<a href="javascript:cancelorder({$item.id},4,1);" class="right spriteBtnGray">取消订单</a>
+											</if>
+											<if condition="$item.status eq 2">
+												<a href="javascript:;" onclick="cancelorder({$item.id},3,1);" class="right spriteBtnRed">确认收货</a>
+												<a href="http://wpa.qq.com/msgrd?v=3&uin={$website.qq}" class="spriteBtnGray right">申请售后</a>
+											</if>
+											<!-- <if condition="$vo['pl'] eq 0">
+												<a href="{:U('/Member/Evaluate/add',array('order_detail_id'=>$vo['id']))}" class="right spriteBtnRed pingjia">去评价</a>
+											</if> -->
+											<if condition="$item.status eq 1">
+												<a href="javascript:;" data-id="{$item.sn}" class="right spriteBtnGray createMa">生成二维码</a>
+												<a href="http://wpa.qq.com/msgrd?v=3&uin={$website.qq}" class="spriteBtnGray right">申请售后</a>
+												<a href="javascript:cancelorder({$item.id},0,2);" class="right spriteBtnGray" style="margin-right:10px;">退款</a>
+												<!-- <a href="javascript:tuikuan({$item.id});" class="right spriteBtnGray" style="margin-right:10px;">退款</a> -->
+											</if>
+											<if condition="$item.status eq 3">
+												<a href="javascript:delorder({$item.id});" class="right spriteBtnGray delDingdan">删除订单</a>
+											</if>
+											<if condition="$item.status eq 4">
+												<a href="javascript:delorder({$item.id});" class="right spriteBtnGray delDingdan">删除订单</a>
+											</if>
+										</li>
+									</ul>
+								</div>
+							</li>
+							</volist>
+						</ul>
+						<div class="noData" style="display:none">没有更多数据了</div>
+						<div id="loadBin"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+<script>
+	//tip
+	function tipFun(str){
+		$('.tip').text(str).css({
+			'opacity':'1',
+			'z-index':'9999'
+		});
+		setTimeout(function(){
+			$('.tip').css('opacity','0');
+			setTimeout(function(){
+				$('.tip').css('z-index','-1');
+			},300);
+		},1300);
+	}
+function cancelorder(order_id,status,type)
+{
+	var url = "{:U('Order/upstatus')}";
+	if(type==1){
+		//var url='{:U('Order/upstatus')}';
+		if(status==4){
+			$('.confirm .top').text('确认取消订单?');
+		}else if(status==3){
+			$('.confirm .top').text('确认收货?');
+		}
+	}else{
+		url = "{:U('Order/tuikuan')}"
+		$('.confirm .top').text('确认退款吗?');
+	}
+	
+	$('#zhezhao').show();
+	$('.confirm').show();
+	//点击取消
+	$('.confirm .bot div.l').on('click',function(){
+		$('#zhezhao').hide();
+		$('.confirm').hide();
+		/*$('#zhezhao').css('display','none');
+		$('.confirm').css('display','none');*/
+	});
+	//点击确定
+	$('.confirm .bot div.r').on('click',function(){
+		$('#zhezhao').hide();
+		$('.confirm').hide();
+		if(type==1){
+			$.ajax({
+				//提交数据的类型 POST GET
+				type:"POST",
+				//提交的网址
+				url:url,
+				//提交的数据
+				data:{status:status,id:order_id},
+				//返回数据的格式
+				datatype: "json",//"xml", "html", "script", "json", "jsonp", "text".
+				//在请求之前调用的函数
+				//成功返回之后调用的函数
+				success:function(data){
+					tipFun(data.info);
+					if(data.status>0)
+					{
+						setTimeout(function(){
+							window.location.reload();
+						},1500);
+						
+					}
+					//window.location.reload();
+					//$("#msg").html(decodeURI(data));
+				}   ,
+				//调用执行后调用的函数
+				complete: function(XMLHttpRequest, textStatus){
+					//HideLoading();
+				},
+				error: function(){
+				}
+			});
+		}else{
+			$.ajax({
+				url: '{:U("tuikuan")}',
+				type: 'POST',
+				dataType: 'json',
+				data: {id: order_id},
+				success:function(data){
+					tipFun(data.msg);
+					if(data.status==1){
+						//移除dom
+						setTimeout(function(){location.reload();},1000);
+					}
+				}
+			});
+		}
+	});
+}
+</script>
+		<include file="Public:footer" />
+
+		<script>
+			var createMaZhezhao=false;
+			//点击生成二维码
+			$('#mydingdanMain .bot .createMa').on('click',function(){
+				if(!createMaZhezhao){
+					createMaZhezhao=true;
+					var id = $(this).attr('data-id');
+					var url = "{:U('Order/orderQrcode')}&order_id="+id;
+					$('.createMaKuang img').attr('src',url);
+					$('.createMaKuang').css('display','block');
+					$('#zhezhao').css('display','block');
+				}
+			});
+			//点击遮罩
+			$('#zhezhao').on('click',function(){
+				if(createMaZhezhao){
+					createMaZhezhao=false;
+					$('.createMaKuang').css('display','none');
+					$('#zhezhao').css('display','none');
+				}
+			});
+			
+			//点击退款
+			function tuikuan(id){
+				$.ajax({
+					url: '{:U("tuikuan")}',
+					type: 'POST',
+					dataType: 'json',
+					data: {id: id},
+					success:function(data){
+						tipFun(data.msg);
+						if(data.status==1){
+							//移除dom
+							setTimeout(function(){location.reload();},1000);
+						}
+					}
+				});
+			}
+
+			//点击订单列表的li
+			$('#wrapper > div > .list').on('click','li.wai',function(e){
+				if(e.target.nodeName!='A'){
+					var id = $(this).attr('data-id');
+					location.href="{:U('Order/view')}&id="+id;
+				}
+			});
+
+			//iscroll 下拉加载+zeptoajax
+			 function onload(){
+			 	loadBin = document.getElementById("loadBin");
+			 	myScroll = new IScroll('#wrapper',{
+			 		probeType: 3,
+			 		click:true,
+			 		tap:true
+			 	});
+			 	myScroll.on("scroll",scrollFun);
+			 	myScroll.on("scrollEnd",scrollEndFun);
+			 }
+			 var page=2,status="{$status}";
+			 var qq = "{$website.qq}";
+			 var myScroll,
+			 	loadBin,
+			 	isload = false,
+			 	scrollFun = function(){
+			 		if((this.y - this.maxScrollY)>>0 < -50){
+			 			isload = true;
+			 			loadBin.innerHTML = "松开手指加载更多";
+			 			myScroll.refresh();
+			 			myScroll.off("scroll",scrollFun);
+			 		}
+			 	},
+			 	scrollEndFun = function(){
+			 		if(isload){
+			 			isload = false;
+			 			$.ajax({
+			 				type: 'GET',
+			 				url: "{:U('ajaxGetOrderList')}",
+			 				dataType: 'json',
+			 				data:{page:page,status:status},
+			 				success: function(data){
+			 					if(data!=''){
+			 						page++;
+			 						var str='';
+			 						for(var i=0;i<data.length;i++){
+			 							
+			 							str+='<li class="wai">';
+				 						str+='<div class="bgulCon titlebgulCon">\
+												<ul>\
+													<li>\
+														<span class="left">订单编号:'+data[i].sn+'</span>\
+														<span class="right red">'+data[i].statusname+'</span>\
+													</li>\
+												</ul>\
+											  </div>';
+											str+='<div class="ddproList">\
+													 <ul class="lis">';
+									 	for(var k=0;k<data[i].list.length;k++){
+									 		str += '<li class="clear">\
+									  					<div class="left">\
+									  						<img src="'+data[i].list[k].image+'">\
+									  					</div>\
+									  					<div class="right">\
+									  						<p class="title">'+data[i].list[k].title+'</p>\
+									  						<p class="price">\
+									  							<em><span>'+data[i].list[k].product_price+'</span></em><del>&yen;'+data[i].list[k].market_price+'</del><span class="r">&times;<span>'+data[i].list[k].product_num+'</span></span>\
+									  						</p>';
+									 		if(data[i].list[k].pl==0){
+									 			str += '<p class="price">\
+									 						<a href="/Member/Evaluate/add/order_detail_id/'+data[i].list[k].id+'" class="right spriteBtnGray">去评价</a> \
+														</p>';
+									 		}
+									  		  str += '</div>\
+									  		       </li>';
+									 	}
+									 	str += '</ul>\
+											</div>\
+											<div class="bgulCon bot">\
+											<ul>\
+											<li>\
+											<span class="right">共<span class="num">'+data[i].product_num+'</span>件商品 合计:&yen;<span class="sumMoney">'+data[i].money+'</span>(含运费&yen;<span class="yunMoney">'+data[i].express_money+'</span>)</span>\
+											</li>\
+											<li>';
+									 	
+										if(data[i].status==0){
+											str += '<a href="/wxpay/example/jsapi.php?order_id='+data[i].id+'" class="right spriteBtnRed">付款</a>\
+											<a href="javascript:cancelorder('+data[i].id+',4,1)" class="right spriteBtnGray">取消订单</a>';
+										}
+										if(data[i].status==2){
+											str += '<a href="http://wpa.qq.com/msgrd?v=3&uin='+qq+'" class="spriteBtnGray btn">申请售后</a>\
+											<a href="javascript:;" onclick="cancelorder('+data[i].id+',3,1);" class="right spriteBtnRed">确认收货</a>';
+										}
+
+										
+									// 						<if condition="$vo['pl'] eq 0">
+									// 							<a href="/Member/Evaluate/add/order_detail_id/{$vo.id}" class="right spriteBtnRed pingjia">去评价</a>
+									// 						</if>
+
+
+										if(data[i].status==1){
+											str += '<a href="javascript:;" data-id="'+data[i].sn+'" class="right spriteBtnGray createMa">生成二维码</a>\
+												<a href="http://wpa.qq.com/msgrd?v=3&uin='+qq+'" class="spriteBtnGray right">申请售后</a>';
+										}
+										if(data[i].status == 3){
+											str += '<a href="javascript:delorder('+data[i].id+');" class="right spriteBtnGray delDingdan">删除订单</a>';
+										}
+										if(data[i].status==4){
+											str += '<a href="javascript:delorder('+data[i].id+');" class="right spriteBtnGray delDingdan">删除订单</a>';
+										}
+										str += '</li>\
+											</ul>\
+											</div>\
+											</li>';
+			 						}
+			 						 $('#mydingdanMain .list').append(str);
+
+			 						loadBin.innerHTML = "";
+				 					myScroll.on("scroll",scrollFun);
+				 					myScroll.refresh();
+			 					}else{
+			 						//显示没有更多数据了
+									$('.noData').css('display','block');
+									loadBin.innerHTML = "";
+									//没有必要再看到 松开手指加载更多
+									scrollFun = function(){
+										loadBin.innerHTML = "";
+										myScroll.refresh();
+										myScroll.off("scroll",scrollFun);
+									}
+			 					}
+			 				},
+			 				error: function(xhr, type){
+			 					console.log('Ajax error!');
+			 				}
+			 			});
+			 		}
+			 	};
+		</script>
+	</body>
+</html>

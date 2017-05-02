@@ -1,0 +1,301 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>龙驰网信</title>
+<meta name="description" content="龙驰网信" />
+<meta name="keywords" content="龙驰网信" />
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, width=device-width">
+<link href="__PUBLIC__/Home/css/weui.min.css" rel="stylesheet" />
+<link href="__PUBLIC__/Home/css/jquery-weui.css" rel="stylesheet" />
+<link href="__PUBLIC__/Home/css/common.css" rel="stylesheet" />
+<link href="__PUBLIC__/Home/css/style.css" rel="stylesheet" />
+<script src="__PUBLIC__/Home/js/jquery-1.8.3.min.js"></script>
+<script src="__PUBLIC__/Home/js/common.js"></script>
+<script>
+$(function(){
+	
+	$(".edit_btn").click(function(){
+		var str=$(this).html();
+		if(str=="编辑")
+		{
+			$(".container").removeClass("collect_div");
+			
+			$(".xz_operate").show();			
+			$(this).html("完成");			
+		}
+		else{
+			
+			$(".container").addClass("collect_div");
+			$(".xz_operate").hide();
+			$(this).html("编辑");
+			
+		}
+    });
+	$(".sin_xz").click(function(){
+		$(this).toggleClass("cur");
+		var c="";
+		
+		$(".car_ul").each(function(index, element) {
+			var c1="";
+            $(this).find(".sin_xz").each(function(index, element) {
+                if(!$(this).hasClass("cur"))
+				{
+					c1=1;
+				}
+            });
+			if(c1==1)
+			{
+				$(this).prev().children("i").removeClass("cur");
+			}
+			else
+			{
+				$(this).prev().children("i").addClass("cur");
+			}
+        });
+		
+		
+		$(".sin_xz").each(function(index, element) {
+            if(!$(this).hasClass("cur"))
+			{
+				c=1;
+			}
+			//alert(1);
+        });
+		
+		
+		
+		if(c==1)
+		{
+			$(".all_sin i").removeClass("cur");	
+		}
+		else
+		{
+			$(".all_sin i").addClass("cur");
+		}
+	});
+	
+	$(".current_time i").click(function(){
+		//alert(1);
+		$(this).toggleClass("cur");
+		if($(this).hasClass("cur"))
+		{		
+			$(this).parent().next().find(".sin_xz").addClass("cur");
+		}
+		else
+		{
+			$(this).parent().next().find(".sin_xz").removeClass("cur");
+		}
+		var c2="";
+		$(".current_time i").each(function(index, element) {
+            
+			if(!$(this).hasClass("cur"))
+			{
+				c2=1;
+			}
+			
+        });
+		if(c2==1)
+		{
+			$(".all_sin i").removeClass("cur");	
+		}
+		else
+		{
+			$(".all_sin i").addClass("cur");
+		}
+		
+	});	
+	$(".all_sin").click(function(){
+		$(this).children().toggleClass("cur");
+		if($(this).children().hasClass("cur"))
+		{
+			$(".current_time i").addClass("cur");
+			$(".sin_xz").addClass("cur");
+		}
+		else
+		{
+			$(".current_time i").removeClass("cur");
+			$(".sin_xz").removeClass("cur");
+		}
+	});
+	
+	$(".dele_btn").click(function(){
+		var c=1,
+		l=$(".sin_xz.cur").length;
+		var str='';
+		$(".sin_xz.cur").each(function(index, element) {
+            //var id=$(this).parents("li").attr("data-id");
+			//alert(id);
+			//c++;
+			if(str=='')
+			{
+				str=$(this).parents("li").attr("data-id");
+			}
+			else
+			{
+				str+=','+$(this).parents("li").attr("data-id");
+			}
+        });
+		if(str=='')
+		{
+			$.toast('请选择记录','cancel');
+		}
+		else
+		{
+			$.ajax({  
+				type:'post',  
+				url:"{:U('History/delhistory')}",  
+				data:{'ids':str},  
+				success:function(data){
+					if(data.status==0)
+					{
+						$.toast(data.info,'cancel');
+					}
+					else
+					{
+						$.toast(data.info);
+						window.location.reload();
+					}
+				}  
+			});
+		}
+		/*$.toast("操作成功", function() {
+			//console.log('close');
+		});*/
+	
+	});
+	
+})
+</script>
+</head>
+<body>
+<!--top-->
+<div class="g_wrap top">
+	<table>
+    	<tr>
+        	<td class="td01"><a href="/Member"><img src="__PUBLIC__/Home/images/icon1_03.png" class="img2" /></a></td>
+            <td class="td02">浏览历史</td>
+            <td class="td03"><span class="inbtn edit_btn">编辑</span></td>
+        </tr>
+    </table>
+</div>
+<!--content-->
+<div class="container collect_div my_history g_wrap" style="margin-bottom:60px;"> 
+	<!--<div class="current_time"><i class="single_btn"></i>今天</div> -->  
+    <ul class="car_ul car_list">
+		<volist name="list" id="item">
+    	<li class="clear" data-id="{$item.id}">
+        	<div class="xz_div l"><i class="single_btn sin_xz"></i></div>
+        	<div class="img_div l"><a href="{:U('/Product/detail',array('id'=>$item['product_id']))}"><img src="{$item.image}" /></a></div>
+            <div class="font_div r">
+            	<a href="{:U('/Product/detail',array('id'=>$item['product_id']))}">
+                	<h2>{$item.title}</h2>                    
+                    <div class="price_div">￥<em class="price_now">{$item.gprice}</em></div>
+                </a>                
+            </div>
+        </li>
+		</volist>
+    </ul>
+	<!--
+    <div class="current_time"><i class="single_btn"></i>昨天</div>   
+    <ul class="car_ul car_list">
+    	<li class="clear" data-id="8">
+        	<div class="xz_div l"><i class="single_btn sin_xz"></i></div>
+        	<div class="img_div l"><a href="#"><img src="__PUBLIC__/Home/images/icon_10.png" /></a></div>
+            <div class="font_div r">
+            	<a href="#">
+                	<h2>1208千兆1200M无线路由器智能家用WIFI穿墙王</h2>                    
+                    <div class="price_div">￥<em class="price_now">200</em></div>
+                </a>                
+            </div>
+        </li>
+        <li class="clear" data-id="1">
+        	<div class="xz_div l"><i class="single_btn sin_xz"></i></div>
+        	<div class="img_div l"><a href="#"><img src="__PUBLIC__/Home/images/icon_10.png" /></a></div>
+            <div class="font_div r">
+            	<a href="#">
+                	<h2>1208千兆1200M无线路由器智能家用WIFI穿墙王</h2>                    
+                    <div class="price_div">￥<em class="price_now">200</em></div>
+                </a>                
+            </div>
+        </li>
+        <li class="clear" data-id="1">
+        	<div class="xz_div l"><i class="single_btn sin_xz"></i></div>
+        	<div class="img_div l"><a href="#"><img src="__PUBLIC__/Home/images/icon_10.png" /></a></div>
+            <div class="font_div r">
+            	<a href="#">
+                	<h2>1208千兆1200M无线路由器智能家用WIFI穿墙王</h2>                    
+                    <div class="price_div">￥<em class="price_now">200</em></div>
+                </a>                
+            </div>
+        </li>
+        <li class="clear" data-id="1">
+        	<div class="xz_div l"><i class="single_btn sin_xz"></i></div>
+        	<div class="img_div l"><a href="#"><img src="__PUBLIC__/Home/images/icon_10.png" /></a></div>
+            <div class="font_div r">
+            	<a href="#">
+                	<h2>1208千兆1200M无线路由器智能家用WIFI穿墙王</h2>                    
+                    <div class="price_div">￥<em class="price_now">200</em></div>
+                </a>                
+            </div>
+        </li>
+        <li class="clear" data-id="1">
+        	<div class="xz_div l"><i class="single_btn sin_xz"></i></div>
+        	<div class="img_div l"><a href="#"><img src="__PUBLIC__/Home/images/icon_10.png" /></a></div>
+            <div class="font_div r">
+            	<a href="#">
+                	<h2>1208千兆1200M无线路由器智能家用WIFI穿墙王</h2>                    
+                    <div class="price_div">￥<em class="price_now">200</em></div>
+                </a>                
+            </div>
+        </li>
+        <li class="clear" data-id="1">
+        	<div class="xz_div l"><i class="single_btn sin_xz"></i></div>
+        	<div class="img_div l"><a href="#"><img src="__PUBLIC__/Home/images/icon_10.png" /></a></div>
+            <div class="font_div r">
+            	<a href="#">
+                	<h2>1208千兆1200M无线路由器智能家用WIFI穿墙王</h2>                    
+                    <div class="price_div">￥<em class="price_now">200</em></div>
+                </a>                
+            </div>
+        </li>
+        <li class="clear" data-id="1">
+        	<div class="xz_div l"><i class="single_btn sin_xz"></i></div>
+        	<div class="img_div l"><a href="#"><img src="__PUBLIC__/Home/images/icon_10.png" /></a></div>
+            <div class="font_div r">
+            	<a href="#">
+                	<h2>1208千兆1200M无线路由器智能家用WIFI穿墙王</h2>                    
+                    <div class="price_div">￥<em class="price_now">200</em></div>
+                </a>                
+            </div>
+        </li>
+        <li class="clear" data-id="1">
+        	<div class="xz_div l"><i class="single_btn sin_xz"></i></div>
+        	<div class="img_div l"><a href="#"><img src="__PUBLIC__/Home/images/icon_10.png" /></a></div>
+            <div class="font_div r">
+            	<a href="#">
+                	<h2>1208千兆1200M无线路由器智能家用WIFI穿墙王</h2>                    
+                    <div class="price_div">￥<em class="price_now">200</em></div>
+                </a>                
+            </div>
+        </li>
+    </ul>-->
+</div>
+
+<!--xz-->
+<div class="xz_operate clear g_wrap" style="display:none; bottom:0px;">
+	<div class="l">
+    	<label class="all_sin"><i class="single_btn"></i> 全选</label>
+    </div>
+    <div class="r buy_home">
+        <span class="com_btndiv">
+        	<a href="#" class="weui_btn weui_btn_warn com_btn bg1 dele_btn">删除记录</a>
+        </span>
+    </div>
+</div>
+<script src="__PUBLIC__/Home/js/jquery-2.1.4.js"></script>
+<script src="__PUBLIC__/Home/js/jquery-weui.js"></script>
+
+</body>
+</html>

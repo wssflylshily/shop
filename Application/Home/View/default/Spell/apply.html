@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>参加团购</title>
+	<script type="text/javascript" src="__PUBLIC__/Home/js/jquery-1.8.3.min.js"></script>
+	<include file="Public/weixin"/>
+	<style type="text/css">
+		
+	</style>
+</head>
+<body>
+	<div class="con">
+		<input type="hidden" value="{$info.id}" name="sid"> 
+		<input type="hidden" value="{$proinfo.id}" name="pid">
+		<h3 id="title">{$proinfo.title}</h3>
+		<img src="{$proinfo.image}"><br/>
+		<button id="sub">立即参加</button><br />
+		<em>参加人数 &nbsp;{$info.addspell}/<span>{$info.num}</span></em>
+		<p >介绍</p>
+		<p id="gprice">商城价格：{$proinfo.gprice}</p>
+		<p id="cost">团购价格: {$info.cost}</p>
+	</div>
+<script type="text/javascript">
+	$(function(){
+		var is_login={$is_login};
+
+		$('#sub').click(function(){
+			if(is_login==0)
+			{
+				var cf =confirm("你还未登录，是否前往登陆？")
+				if (cf==1) {
+					window.location.href='/Member/Login?href={$info.id}';
+				}else{
+					return false;
+				}
+			}
+			else
+			{
+				var $title,$gprice,$cost,$pid,$sid;
+				$pid =$("input[name='pid']").val();
+				$title =$("#title").html();
+				$gprice =$('#gprice').html();
+				$cost =$('#cost').html();
+				$sid =$("input[name='sid']").val();
+				$.ajax({
+					url: '__APP__/Spell/addSpell',
+					type: 'POST',
+					dataType: 'json',
+					data: {'title': $title,'gprice':$gprice,'cost':$cost,'pid':$pid,'sid':$sid,},
+
+					success:function(data){
+						alert(data.msg);
+					}
+				})
+			}	
+		})
+	})
+</script>
+
+</body>
+</html>

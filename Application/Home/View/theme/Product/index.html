@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>{:C('WEB_SITE_TITLE')}</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/swiper-3.3.1.min.css">
+		<script src="__PUBLIC__/Home/js/swiper-3.3.1.min.js"></script>
+
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/zepto.js"></script>
+		<script src="__PUBLIC__/Home/js/iscroll-probe.js"></script>
+		<style>
+			/*下拉加载样式*/
+			#wrapper {
+				position: absolute;
+				z-index: 1;
+				top: 0;
+				bottom: 0;
+				left: 0;
+				width: 100%;
+				overflow: hidden;
+			}
+			#loadBin{color: #5d5d5d;text-align: center;line-height: 30px;}
+		</style>
+	</head>
+	<body onLoad="onload()">
+		<!--正文区域-->
+		<div id="fenleiTop">
+			<div class="contain maxWidth">
+				<div class="top1">
+					<a href="javascript:;" class="hz back">&#xe600;</a>
+					分类
+					<a href="javascript:;" class="right">筛选</a>
+				</div>
+				<div class="top2">
+					<ul class="clear">
+						<li class="<if condition="$cat_id eq 0">active</if>"><a href="/Product">全部</a></li>
+						<volist name="catelist" id="item">
+						<li class="<if condition="$cat_id eq $item['id']">active</if>"><a href="{:U('Product/index',array('id'=>$item['id']))}">{$item.title}</a></li>
+						</volist>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div id="fenleiMain" class="fastscroll">
+			<div id="wrapper">
+				<div class="maxWidth">
+					<!--轮播不放到ul里面-->
+					<div class="lunbo maxWidth">
+						<div class="swiper-container">
+							<div class="swiper-wrapper">
+							<volist name="focuslist" id="item">
+								<div class="swiper-slide">
+									<a href="javascript:;" style="background-image:url({$item.image})"></a>
+								</div>
+							</volist>
+							</div>
+							<div class="swiper-pagination"></div>
+						</div>
+					</div>
+					<ul class="list content clear maxWidth">
+					<volist name="list" id="item">
+						<li>
+						<a href='{:U('Product/detail',array('id'=>$item['id']))}'>
+							<img src="{$item.image}">
+							<p class="title">{$item.title}</p>
+							<p class="price clear">
+								<em>&yen;{$item.gprice}</em>
+								<del>&yen;{$item.market_price}</del>
+							</p>
+							<p class="peoplemai clear">
+								<span class="people">已有<em>{$item.sell_num}</em>人购买</span>
+								<a class="tui" href="javascript:;">推</a>
+								<a class="fan" href="javascript:;">返</a>
+							</p>
+						</a>
+
+		
+
+						</li>
+					</volist>
+					</ul>
+					<div id="loadBin"></div>
+				</div>
+			</div>
+		</div>
+		<include file="Public:footer" />
+
+		<script>
+			//返回按钮
+			$('#fenleiTop .top1 .back').on('tap',function(){
+				window.history.go(-1);
+			});
+
+			//轮播
+			var mySwiper = new Swiper('#fenleiMain .lunbo .swiper-container', {
+				autoplay: 3000,
+				loop:true,
+				autoplayDisableOnInteraction:false,
+				pagination : '.swiper-pagination'
+			});
+
+			//导航区域，根据内容确定宽度
+			var navlis=$('#fenleiTop .top2 ul li');
+			var ulWidth=0;
+			for(var i=0;i<navlis.length;i++){
+				ulWidth+=$(navlis[i]).width();
+			}
+			$('#fenleiTop .top2 ul').width(ulWidth);
+
+			//点击 右上角 筛选 跳转到搜索列表，并打开筛选侧边栏
+			$('#fenleiTop .top1 a').on('tap',function(){
+				location.href='/Search';
+			});
+
+			//iscroll 下拉加载+zeptoajax
+			function onload(){
+				loadBin = document.getElementById("loadBin");
+				myScroll = new IScroll('#wrapper',{
+					probeType: 3,
+					click:true
+				});
+				myScroll.on("scroll",scrollFun);
+				myScroll.on("scrollEnd",scrollEndFun);
+			}
+			var page=2;
+			var myScroll,
+					loadBin,
+					isload = false,
+					scrollFun = function(){
+						if((this.y - this.maxScrollY)>>0 < -50){
+							isload = true;
+							loadBin.innerHTML = "松开手指加载更多";
+							myScroll.refresh();
+							myScroll.off("scroll",scrollFun);
+						}
+					},
+					scrollEndFun = function(){
+						if(isload){
+							isload = false;
+							
+							var $cat_id =GetQueryString('id');
+							$.ajax({
+								type: 'POST',
+								url: '{:U('ajaxlist')}',
+								dataType: 'json',
+								data:{page:page,cat_id:$cat_id},
+								success: function(data){
+									page++;
+									for(var i=0;i<data.length;i++){
+										$('#wrapper .list').append('<li><img src="'+data[i].image+'"><p class="title"><a href="__APP__/Product/detail/id/'+data[i].id+'">'+data[i].title+'</a></p><p class="price clear"><em>&yen;'+data[i].gprice+'</em><del>&yen;'+data[i].market_price+'</del></p><p class="peoplemai clear"><span class="people">已有<em>'+data[i].sell_num+'</em>人购买</span><a class="tui" href="javascript:;">推</a><a class="fan" href="javascript:;">返</a></p></li>');
+									}
+									loadBin.innerHTML = "";
+									myScroll.on("scroll",scrollFun);
+									myScroll.refresh();
+								},
+								error: function(xhr, type){
+									console.log('Ajax error!');
+								}
+							});
+						}
+					};
+
+			//导航区域 点击切换active
+			$('#fenleiTop .top2 li').on('tap',function(){
+				$(this).addClass('active').siblings().removeClass('active');
+				page=1;
+				$('#wrapper .list').html('');
+
+				//切换tab的时候，让滚动条在顶部
+				myScroll._translate(0,0);//查看源码，里面提供方法
+
+			// 	$.ajax({
+			// 		type: 'POST',
+			// 		url: '{:U('ajaxvlist')}',
+			// 		dataType: 'json',
+			// 		data:{page:page},
+			// 		success: function(data){
+			// 			page++;
+			// 			for(var i=0;i<data.lists.length;i++){
+			// 				$('#wrapper .list').append('<li><img src="'+data[i].pic+'"><p class="title"><a href="'+data[i].ahref+'">'+data[i].title+'</a></p><p class="price clear"><em>&yen;'+data[i].chipPrice+'</em><del>&yen;'+data[i].guiPrice+'</del></p><p class="peoplemai clear"><span class="people">已有<em>'+data[i].goumaiPeopleNum+'</em>人购买</span><a class="tui" href="javascript:;">推</a><a class="fan" href="javascript:;">返</a></p></li>');
+			// 			}
+			// 			myScroll.refresh();
+			// 		},
+			// 		error: function(xhr, type){
+			// 			console.log('Ajax error!');
+			// 		}
+			// 	});
+			});
+
+			//让图片的高度等于图片的宽度  图片宽度是不确定值
+			$('#fenleiMain .content li img').height($('#fenleiMain .content li img').width());
+		</script>
+		<script type="text/javascript">
+			function GetQueryString(name)
+			{
+			     var reg = new RegExp("(^|/)"+ name +"/([^&]*)(&|$)");
+			     var r = window.location.search.substr(1).match(reg);
+			     if(r!=null)return  unescape(r[2]); return null;
+			}
+ 
+		</script>
+	</body>
+</html>

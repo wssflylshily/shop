@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html style="max-width:720px;min-height:100%;">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<meta name="format-detection" content="telephone=no">
+		<title>{:C('WEB_SITE_TITLE')}</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css?4545">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css?4545" />
+		<script src="__PUBLIC__/Home/js/delIOS_huitan.js"></script>
+		<script src="__PUBLIC__/Home/js/jquery-1.8.3.min.js"></script>
+		<script src="__PUBLIC__/Home/js/common.js"></script>
+	</head>
+	<body class="box" style="max-width:720px;min-height: 100%;">
+		<!--正文区域-->
+		<div id="addShareMain" class="fastscroll">
+			<div class="maxWidth">
+				<div class="line1">
+					<img src="{$spell.image}"/>
+					<div class="text">
+						<p class="name textline1">{$spell.title}</p>
+						<p class="price">
+							价格：
+							<span class="red">&yen;<span class="money">{$spell.price}</span></span>
+							<del class="gray">&yen;<span class="money">{$spell.oldprice}</span></del>
+						</p>
+					</div>
+				</div>
+				<div class="line2">
+					<span class="hz">&#xe681;</span>
+					<span class="text">请输入分享理由（300字以内）</span>
+				</div>
+				<textarea id="content" maxlength="300">{$share_desc}</textarea>
+				<a href="javascript:;" class="submit">确认</a>
+			</div>
+		</div>
+		<!-- tip -->
+		<div class="tip" style="opacity:0;z-index:-1"></div>
+
+		<script>
+		//660 525
+		setImgH();
+		function setImgH(){
+			var w=$('#addShareMain img').width();
+			$('#addShareMain img').height(525*w/660);
+		}
+
+		//money显示.00
+		CashToZero2('#addShareMain .money');
+
+
+		//点击确认
+		$('#addShareMain .submit').on('click',function(){
+			var v=$('#content').val();
+			/*if(!notEmpty(v)){
+				tipFun('请输入分享理由');
+				return;
+			}*/
+			var id = "{$spell.id}";
+			$.ajax({
+				type:'post',   
+				url:"{:U('Spell/editdes')}",  
+				data:{content:v,id:id},  
+				success:function(data){
+					location.href = data.url;
+				}
+			});
+			//分享操作
+		});
+		</script>
+	</body>
+</html>

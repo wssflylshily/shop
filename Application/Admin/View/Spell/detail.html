@@ -1,0 +1,89 @@
+<extend name="Public/base"/>
+
+<block name="body">
+	<div class="main-title">
+		<h2>{$spell.title}-参团人员信息</h2>
+	</div>
+
+	<div class="cf">
+		<a class="btn" href="javascript:history.go(-1);">返 回</a>
+		<if condition="$spell['state'] eq 3 and $team['status'] eq 0">
+		<a class="btn ajax-post confirm" target-form="ids" href="__URL__/tuikuan/spellid/{$spell['id']}">退 款</a>
+		</if>
+	</div>
+
+	<div class="data-table table-striped">
+		<table>
+			<thead>
+				<tr>
+					<th class="row-selected">
+						<input class="checkbox check-all" type="checkbox">
+					</th>
+					<th>订单号</th>
+					<th>用户</th>
+					<th>参团时间</th>
+					<th>订单状态</th>
+					<th>订单金额</th>
+					<!-- <th>报名人数</th>
+                    <th>拼团状态</th>
+					<th>操作</th> -->
+				</tr>
+			</thead>
+			<tbody>
+				<notempty name="list">
+				<volist name="list" id="item">
+					<tr>
+						<td><input class="ids row-selected" type="checkbox" name="ids[]" id="" value="{$item['id']}"> </td>
+						<td><a href="__URL__/views/id/{$item.id}">{$item.sn}</a></td>
+						<td>{$item.name}</td>
+                        <td>{$item.addtime|date="Y-m-d H:i:s",###}</td>
+                        <td>
+                        	<if condition="$item['is_drawback'] eq 1 and $item['paytime'] gt 0">
+                        	已退款
+                        	<else/>
+                        	{$statarr[$item['status']]}
+                        	</if>
+                        </td>
+                        <td>
+                        	{$item.money}
+                        </td>
+                        
+					</tr>
+				</volist>
+				<else/>
+				<td colspan="6" class="text-center"> aOh! 暂时还没有内容! </td>
+				</notempty>
+			</tbody>
+		</table>
+	</div>
+		<div class="page">
+        {$page}
+		</div>
+</block>
+
+<block name="script">
+<script type="text/javascript">
+	//导航高亮
+	highlight_subnav('{:U('Spell/index')}');
+
+    $(function() {
+    	//点击排序
+    	$('.list_sort').click(function(){
+    		var url = $(this).attr('url');
+    		var ids = $('.ids:checked');
+    		var param = '';
+    		if(ids.length > 0){
+    			var str = new Array();
+    			ids.each(function(){
+    				str.push($(this).val());
+    			});
+    			param = str.join(',');
+    		}
+
+    		if(url != undefined && url != ''){
+    			window.location.href = url + '/ids/' + param;
+    		}
+    	});
+    });
+</script>
+</block>

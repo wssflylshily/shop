@@ -1,0 +1,186 @@
+<extend name="Public/base"/>
+<block name="sidebar">
+    <include file="sidemenu" />
+</block>
+<block name="body">
+	<div class="main-title">
+		<h2>订单管理</h2>
+	</div>
+
+	<div class="cf">
+		<a class="btn" href="__URL__">全部({$statusnum.total})</a>
+		<a class="btn" href="{:U('index',array('status'=>0))}">待付款({$statusnum[0]})</a>
+		<a class="btn" href="{:U('index',array('status'=>1))}">待发货({$statusnum[1]})</a>
+		<a class="btn" href="{:U('index',array('status'=>2))}">待收货({$statusnum[2]})</a>
+		<a class="btn" href="{:U('index')}&status=3">已完成({$statusnum[3]})</a>
+		<a class="btn" href="{:U('index',array('status'=>4))}">已取消({$statusnum[4]})</a>
+		<a class="btn" href="{:U('index',array('isdraw'=>1))}">已退款({$drawbacknum})</a>
+		<!-- 高级搜索 -->
+		<div class="search-form fr cf">
+			<div class="btn-group-click adv-sch-pannel fl">
+                <button class="btn">高 级<i class="btn-arrowdown"></i></button>
+                <div class="dropdown cf">
+                	<div class="row">
+                		<label>下单时间：</label>
+                		<input type="text" id="time_start" name="time_start" class="text input-2x" value="" placeholder="起始时间" /> -
+                		<input type="text" id="time_end" name="time_end" class="text input-2x" value="" placeholder="结束时间" />
+                	</div>
+                </div>
+            </div>
+			<div class="sleft">
+				<input type="text" name="title" id="order_id" class="search-input" value="{:I('title')}" placeholder="请输入订单号">
+				<a class="sch-btn" href="javascript:;" id="search" url="{:U('order/index')}"><i class="btn-search"></i></a>
+			</div>
+	</div>
+
+
+	<div class="data-table table-striped">
+		<table>
+			<thead>
+				<tr>
+					<th class="row-selected">
+						<input class="checkbox check-all" type="checkbox">
+					</th>
+					<th>ID</th>
+					<th>订单号</th>
+					<th>买家账号</th>
+                    <th>总额</th>
+                    <th>下单时间</th>
+                    <th>提货方式</th>
+                    <th>状态</th>
+					<th>操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				<notempty name="list">
+				<volist name="list" id="channel">
+					<tr>
+						<td><input class="ids row-selected" type="checkbox" name="" id="" value="{$channel['id']}"> </td>
+						<td>{$channel.id}</td>
+						<td>{$channel.sn}</td>
+						<td>{:getusername($channel['user_id'])}</td>
+                        <td>{:tofloatnum($channel['money'])}</td>
+                        <td>{:date("Y-m-d H:i:s",$channel['addtime'])}</td>
+                        <td>{$typearr[$channel['type']]}</td>
+                        <td>
+                        <if condition="$channel['is_drawback'] eq 1">已退款
+                        <else/>
+                        {$statusarr[$channel['status']]}
+                        </if>
+                        </td>
+						<td>
+						<if condition="$channel.status eq 0">
+							<a class="confirm ajax-get" href='__URL__/upstatus&id={$channel.id}&status=1'>付款</a>
+						</if>
+						<if condition="$channel.status eq 1">
+							<a class="confirm ajax-get" href='__URL__/upstatus&id={$channel.id}&status=2'>发货</a>
+						</if>
+						<!--
+						<if condition="$channel.status eq 2">
+							<a class="confirm ajax-get" href='__URL__/upstatus&id={$channel.id}&status=3'>发货</a>
+						</if>
+						-->
+						<if condition="$channel.status eq 2">
+							<a class="confirm ajax-get" href='__URL__/upstatus&id={$channel.id}&status=3'>完成</a>
+						</if>
+						<if condition="$channel.status eq 0">
+							<a class="confirm ajax-get" href='__URL__/upstatus&id={$channel.id}&status=4'>取消</a>
+						</if>
+							<a title="详情" href="__URL__/views/id/{$channel.id}">详情</a>
+						<if condition="$channel.status eq 0 or $channel.status eq 3">
+							<a class="confirm ajax-get" title="删除" href="__URL__/del/id/{$channel.id}">删除</a>
+						</if>
+						</td>
+					</tr>
+				</volist>
+				<else/>
+				<td colspan="6" class="text-center"> aOh! 暂时还没有内容! </td>
+				</notempty>
+			</tbody>
+		</table>
+	</div>
+		<div class="page">
+        {$page}
+		</div>
+</block>
+
+<block name="script">
+<link href="__STATIC__/datetimepicker/css/datetimepicker.css" rel="stylesheet" type="text/css">
+<php>if(C('COLOR_STYLE')=='blue_color') echo '<link href="__STATIC__/datetimepicker/css/datetimepicker_blue.css" rel="stylesheet" type="text/css">';</php>
+<link href="__STATIC__/datetimepicker/css/dropdown.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="__STATIC__/datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript" src="__STATIC__/datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+<script type="text/javascript">
+    $(function() {
+    	/*$("#search").click(function(){
+       		var $id =$("#order_id").val();
+       		var url ='__URL__/index/id/'+$id;
+			window.location.href = url;
+		});*/
+    	$("#search").click(function(){
+    		var url = $(this).attr('url');
+            var query  = $('.search-form').find('input').serialize();
+            query = query.replace(/(&|^)(\w*?\d*?\-*?_*?)*?=?((?=&)|(?=$))/g,'');
+            query = query.replace(/^&/g,'');
+            if( url.indexOf('?')>0 ){
+                url += '&' + query;
+            }else{
+                url += '?' + query;
+            }
+    		window.location.href = url;
+    	});
+    	//回车搜索
+    	$(".search-input").keyup(function(e){
+    		if(e.keyCode === 13){
+    			$("#search").click();
+    			return false;
+    		}
+    	});
+
+        $('#time_start').datetimepicker({
+            format: 'yyyy-mm-dd',
+            language:"zh-CN",
+    	    minView:2,
+    	    autoclose:true
+        });
+
+        $('#time_end').datetimepicker({
+            format: 'yyyy-mm-dd',
+            language:"zh-CN",
+    	    minView:2,
+    	    autoclose:true
+        });
+		/* 状态搜索子菜单 */
+		$(".search-form").find(".drop-down").hover(function(){
+			$("#sub-sch-menu").removeClass("hidden");
+		},function(){
+			$("#sub-sch-menu").addClass("hidden");
+		});
+		$("#sub-sch-menu li").find("a").each(function(){
+			$(this).click(function(){
+				var text = $(this).text();
+				$("#sch-sort-txt").text(text).attr("data",$(this).attr("value"));
+				$("#sub-sch-menu").addClass("hidden");
+			})
+		});
+
+    	//点击排序
+    	$('.list_sort').click(function(){
+    		var url = $(this).attr('url');
+    		var ids = $('.ids:checked');
+    		var param = '';
+    		if(ids.length > 0){
+    			var str = new Array();
+    			ids.each(function(){
+    				str.push($(this).val());
+    			});
+    			param = str.join(',');
+    		}
+
+    		if(url != undefined && url != ''){
+    			window.location.href = url + '/ids/' + param;
+    		}
+    	});
+    });
+</script>
+</block>

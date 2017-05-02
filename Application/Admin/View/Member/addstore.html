@@ -1,0 +1,295 @@
+<extend name="Public/base"/>
+
+<!-- 子导航 -->
+<block name="sidebar">
+    <include file="sidemenu" />
+</block>
+
+<block name="body">
+    <script type="text/javascript" src="http://api.map.baidu.com/api?ak=yzcR8urje8y2I1L3pAzuZGfjCxmo1Yja&v=2.0&services=false"></script>
+	<script type="text/javascript" src="__STATIC__/uploadify/jquery.uploadify.min.js"></script>
+	<script charset="utf-8" src="http://map.qq.com/api/js?v=2.exp"></script>
+    <div class="main-title">
+        <h2><if condition="$info['id'] eq ''">新增<else/>编辑</if>自提点</h2>
+    </div>
+    <form action="__URL__/insertstore" method="post" class="form-horizontal">
+        <input type="hidden" name="id" value="{$info.id}">
+        
+        <div class="form-item">
+            <label class="item-label">自提点名称<span class="check-tips"></span></label>
+            <div class="controls">
+                <input type="text" class="text input-large" name="sname" value="{$info.sname}">
+            </div>
+        </div>
+        <div class="form-item">
+            <label class="item-label">联系电话</label>
+            <div class="controls">
+                <input type="text" class="text input-large" name="mobile" value="{$info.mobile}">
+            </div>
+        </div>
+        
+        <div class="form-item">
+            <label class="item-label">所在地区</label>
+            <div class="controls">
+                <select name="area_0" class="bindDB" style="margin-right:10px">
+                     <option value="0">请选择</option>
+                     <volist name="areas" id="a">
+                     <option value="{$a['id']}" <if condition="$info['area_0'] eq $a['id']">selected</if>>{$a['title']}</option>
+                     </volist>
+             	</select>
+             	<if condition="$info['area_1'] gt 0">
+             	<select name="area_1" class="bindDB" style="margin-right:10px">
+                     <volist name="city" id="c">
+                     <option value="{$c['id']}" <if condition="$info['area_1'] eq $c['id']">selected</if>>{$c['title']}</option>
+                     </volist>
+             	</select>
+             	</if>
+             	<if condition="$info['area_2'] gt 0">
+             	<select name="area_2" class="bindDB" style="margin-right:10px">
+                     <volist name="area" id="a">
+                     <option value="{$a['id']}" <if condition="$info['area_2'] eq $a['id']">selected</if>>{$a['title']}</option>
+                     </volist>
+             	</select>
+             	</if>
+             	
+            </div>
+        </div>
+        
+        <div class="controls">
+        	<label class="item-label">自提点logo<span class="check-tips"></span></label>
+			<div class="controls">
+				<input type="file" id="logo_img">
+				<input type="hidden" name="image" id="logo_img_id" value=""/>
+				<div class="upload-img-box"><img src="{$info.image}"/></div>
+			</div>
+			<script type="text/javascript">
+				//上传图片
+				/* 初始化上传插件 */
+				$("#logo_img").uploadify({
+					"height"          : 30,
+					"swf"             : "/Public/static/uploadify/uploadify.swf",
+					"fileObjName"     : "download",
+					"buttonText"      : "上传图片",
+					"uploader"        : "{:U('File/uploadPicture',array('session_id'=>session_id()))}",
+					"width"           : 120,
+					'removeTimeout'	  : 1,
+					'fileTypeExts'	  : '*.jpg; *.png; *.gif;',
+					"onUploadSuccess" : logo_img_id,
+					'onFallback' : function() {
+						alert('未检测到兼容版本的Flash.');
+					}
+				});
+				function logo_img_id(file, data){
+					var data = $.parseJSON(data);
+					var src = '';
+					if(data.status){
+						$("#logo_img_id").val(data.path);
+						src = data.url || '' + data.path
+						$("#logo_img_id").parent().find('.upload-img-box').html(
+							'<div class="upload-pre-item"><img src="' + src + '"/></div>'
+						);
+					} else {
+						updateAlert(data.info);
+						setTimeout(function(){
+							$('#top-alert').find('button').click();
+							$(that).removeClass('disabled').prop('disabled',false);
+						},1500);
+					}
+				}
+				</script>
+		</div>
+
+        <div class="form-item">
+            <label class="item-label">地址<span class="check-tips"></span></label>
+            <div class="controls">
+                <input type="text" id="text_"  class="text input-large" name="sadd" value="{$info.sadd}">
+                <input type="button" class="btn" style="margin-left: 15px;" value="查询" onclick="javascript:search();"/><!--  onclick="searchByStationName();" -->
+            </div>
+            
+        </div>
+      
+        <div class="form-item">
+            <label class="item-label">经度坐标</label>
+            <div class="controls">
+                <input type="text" id="resultx_" class="text input-large" name="sjingdu" value="{$info.sjingdu}">
+            </div>
+        </div>
+        <div class="form-item">
+            <label class="item-label">纬度坐标</label>
+            <div class="controls">
+                <input type="text" id="resulty_" class="text input-large" name="sweidu" value="{$info.sweidu}">
+            </div>
+        </div>
+		<div class="form-item">
+	        <!-- <div id="container" style="position:absolute;margin-top:30px;width:730px;height:590px;top:50;border: 1px solid gray;overflow:hidden;">
+	        </div> -->
+	        <div style="width:600px;height:500px;border:0px solid gray;" id="container"></div>
+        </div>
+                  
+        <div class="form-item">
+            <button class="btn submit-btn ajax-post" id="submit" type="submit" target-form="form-horizontal">确 定</button>
+            <button class="btn btn-return" onclick="javascript:window.location.href='__URL__/store';return false;">返 回</button>
+        </div>
+    </form>
+</block>
+
+<block name="script">
+<script type="text/javascript" src="/Public/Home/js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="/Public/Home/js/selectmore.js"></script>
+    <script type="text/javascript">
+	    
+        //导航高亮
+        highlight_subnav('{:U('Member/store')}');
+        
+        $(function(){
+        	var url = "{:U('Areas/getareas')}";
+    		bindDB({ajaxurl:url},function(v){});
+        
+        })
+    </script>
+    <script type="text/javascript">
+    
+  	var searchService, markers = [];
+	function init() {
+		//设置地图中心点
+	  	var myLatlng = new qq.maps.LatLng(39.11234352310039,117.1485471727101);
+	  	//定义工厂模式函数
+	  	var myOptions = {
+	    	zoom: 12,               //设置地图缩放级别
+	    	center: myLatlng,      //设置中心点样式
+	    	mapTypeId: qq.maps.MapTypeId.ROADMAP  //设置地图样式详情参见MapType
+	  	}
+	  	//获取dom元素添加地图信息
+	  	var map = new qq.maps.Map(document.getElementById("container"), myOptions);
+
+	  	//绑定单击事件添加参数
+	  	qq.maps.event.addListener(map, 'click', function(event) {
+		  	$("input[name = 'sjingdu']").val(event.latLng.getLng());		//精度
+	      	$("input[name = 'sweidu']").val(event.latLng.getLat());		//纬度
+	      	
+	  	});
+		  
+	  
+	  	var latlngBounds = new qq.maps.LatLngBounds();
+	  	//设置Poi检索服务，用于本地检索、周边检索
+	  	searchService = new qq.maps.SearchService({
+	      	//设置搜索范围为北京
+	      	location: '天津',
+	      	//设置搜索页码为1
+	      	pageIndex: 1,
+	      	//设置每页的结果数为5
+	      	pageCapacity: 5,
+	      	//设置展现查询结构到infoDIV上
+	      	panel: document.getElementById('infoDiv'),
+	      	//设置动扩大检索区域。默认值true，会自动检索指定城市以外区域。
+	      	autoExtend: true,
+	      	//检索成功的回调函数
+	      	complete: function(results) {
+	          	//设置回调函数参数
+	          	var pois = results.detail.pois;
+	          	for (var i = 0, l = pois.length; i < l; i++) {
+	              	var poi = pois[i];
+	              	//扩展边界范围，用来包含搜索到的Poi点
+	              	latlngBounds.extend(poi.latLng);
+	              	var marker = new qq.maps.Marker({
+	                  	map: map,
+	                  	position: poi.latLng
+	              	});
+	
+	              	marker.setTitle(i + 1);
+	
+	              	markers.push(marker);
+	
+	          	}
+	          	//调整地图视野
+	          	map.fitBounds(latlngBounds);
+	      	},
+	      	//若服务请求失败，则运行以下函数
+	      	error: function() {
+	          	alert("出错了。");
+	      	}
+	  	});
+	  	
+	}
+  	//清除地图上的marker
+    function clearOverlays(overlays) {
+        var overlay;
+        while (overlay = overlays.pop()) {
+            overlay.setMap(null);
+        }
+    }
+  	//设置搜索的范围和关键字等属性
+    function search() {
+  	  	var keyword = $("input[name='sadd']").val();
+        //var keyword = document.getElementById("keyword").value;
+        clearOverlays(markers);
+        //根据输入的城市设置搜索范围
+        // searchService.setLocation("北京");
+        //根据输入的关键字在搜索范围内检索
+        searchService.search(keyword);
+    }
+  	//异步加载地图库函数文件
+	function loadScript() {
+	  //创建script标签
+	  var script = document.createElement("script");
+	  //设置标签的type属性
+	  script.type = "text/javascript";
+	  //设置标签的链接地址
+	  script.src = "http://map.qq.com/api/js?v=2.exp&callback=init";
+	  //添加标签到dom
+	  document.body.appendChild(script);
+	}
+	
+	window.onload = loadScript;    // dom文档加载结束开始加载 此段代码
+
+</script>
+     <!--  <script type="text/javascript">
+            //创建Map实例
+            var map = new BMap.Map("container");
+            var point = new BMap.Point(117.155087,39.118257);
+            map.centerAndZoom(point,15);
+            //添加鼠标滚动缩放
+            map.enableScrollWheelZoom();
+            //添加缩略图控件
+            map.addControl(new BMap.OverviewMapControl({isOpen:false,anchor:BMAP_ANCHOR_BOTTOM_RIGHT}));
+            //添加缩放平移控件
+            map.addControl(new BMap.NavigationControl());
+            //添加比例尺控件
+            map.addControl(new BMap.ScaleControl());
+            //添加地图类型控件
+            //map.addControl(new BMap.MapTypeControl());
+            
+            //设置标注的图标
+            var icon = new BMap.Icon("__PUBLIC__/Admin/images/point.png",new BMap.Size(100,100));
+            //设置标注的经纬度
+            var marker = new BMap.Marker(new BMap.Point(117.155087,39.118257),{icon:icon});
+            //把标注添加到地图上
+            map.addOverlay(marker);
+            var content = "<table>";  
+                content = content + "<tr><td> 编号：001</td></tr>";  
+                content = content + "<tr><td> 地点：天津市南开区</td></tr>"; 
+                content = content + "<tr><td> 时间：2016-11-12</td></tr>";  
+                content += "</table>";
+            var infowindow = new BMap.InfoWindow(content);
+            marker.addEventListener("click",function(){
+                this.openInfoWindow(infowindow);
+            });
+            
+            //点击地图，获取经纬度坐标
+            map.addEventListener("click",function(e){
+                $("input[name = 'sjingdu']").val(e.point.lng);
+                $("input[name = 'sweidu']").val(e.point.lat);
+                //document.getElementById("aa").innerHTML = "经度坐标："++" &nbsp;纬度坐标："+;
+            });
+            
+            //关键字搜索
+            function search(){
+                var keyword = $("input[name='sadd']").val();
+                var local = new BMap.LocalSearch(map, {
+                renderOptions:{map: map}
+            });
+                local.search(keyword);
+            }
+        </script>-->
+
+</block>

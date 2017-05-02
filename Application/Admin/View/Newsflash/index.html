@@ -1,0 +1,83 @@
+<extend name="Public/base"/>
+<block name="sidebar">
+    <include file="sidemenu" />
+</block>
+<block name="body">
+	<div class="main-title">
+		<h2>快报管理</h2>
+	</div>
+
+	<div class="cf">
+		<present name="Think.get.hid">
+			<a class="btn" href="{$Think.get.refer|base64_decode}">返 回</a>
+		</present>
+		<a class="btn" href="__URL__/add/hid/{$Think.get.hid}">新 增</a>
+	</div>
+
+	<div class="data-table table-striped">
+		<table>
+			<thead>
+				<tr>
+					<th class="row-selected">
+						<input class="checkbox check-all" type="checkbox">
+					</th>
+					<th>ID</th>
+					<th>名称</th>
+					<th>链接</th>
+                    <th>排序</th>
+					<th>操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				<notempty name="list">
+				<volist name="list" id="channel">
+					<tr>
+						<td><input class="ids row-selected" type="checkbox" name="" id="" value="{$channel['id']}"> </td>
+						<td>{$channel.id}</td>
+						<td><a href="__URL__/edit/id/{$channel.id}">{$channel.title}</a></td>
+                        <td><a target="_blank" href="{$channel['link_url']}">{$channel['link_url']}</a></td>
+                        <td>{$channel.oid}</td>
+						<td>
+							<a title="编辑" href="__URL__/edit/id/{$channel.id}">编辑</a>
+							<a class="confirm ajax-get" title="删除" href="__URL__/del/id/{$channel.id}">删除</a>
+						</td>
+					</tr>
+				</volist>
+				<else/>
+				<td colspan="6" class="text-center"> aOh! 暂时还没有内容! </td>
+				</notempty>
+			</tbody>
+		</table>
+	</div>
+	<!-- 分页 -->
+    <div class="page">
+        {$page}
+    </div>
+</block>
+
+<block name="script">
+<script type="text/javascript">
+
+//导航高亮
+highlight_subnav('{:U('Newsflash/index')}');
+    $(function() {
+    	//点击排序
+    	$('.list_sort').click(function(){
+    		var url = $(this).attr('url');
+    		var ids = $('.ids:checked');
+    		var param = '';
+    		if(ids.length > 0){
+    			var str = new Array();
+    			ids.each(function(){
+    				str.push($(this).val());
+    			});
+    			param = str.join(',');
+    		}
+
+    		if(url != undefined && url != ''){
+    			window.location.href = url + '/ids/' + param;
+    		}
+    	});
+    });
+</script>
+</block>

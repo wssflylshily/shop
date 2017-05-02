@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8"> 
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>{:C('WEB_SITE_TITLE')}</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/zepto.js"></script> 
+		<script src="__PUBLIC__/Home/js/common.js"></script>
+		<script src="__PUBLIC__/Home/js/delIOS_huitan.js"></script>
+	</head>
+	<body class="box">
+		<!--提示文字-->
+		<div class="tip" style="opacity: 0;z-index: -1"></div>
+		<!--正文区域-->
+		<div id="gerenGaiNameTop" class="topBackTitle">
+			<div class="contain maxWidth">
+				<a class="hz back" href="javascript:history.go(-1);">&#xe600;</a>余额支付密码<!-- <a href="javascript:;" class="save">保存</a> -->
+			</div>
+		</div>
+		<div id="gaiPwdMain" class="fastscroll ownZiliao">
+			<div class="contain maxWidth">
+				<if condition="$user['paypwd'] neq ''">
+				<div class="inputs">
+					<div class="inputArea">
+						<span>原密码</span><input type="password" placeholder="请输入原密码" id="old_pass">
+					</div>
+					<div class="inputArea">
+						<span>新密码</span><input type="password" placeholder="请输入新密码" id="new_pass">
+					</div>
+					<div class="inputArea">
+						<span>确认密码</span><input type="password" placeholder="请确认新密码" id="new_pass_1">
+					</div>
+				</div>
+				<else/>
+				<div class="inputs">
+					<div class="inputArea">
+						<span>密码</span><input type="password" placeholder="请输入密码" id="pass1">
+					</div>
+					<div class="inputArea">
+						<span>确认密码</span><input type="password" placeholder="请确认新密码" id="pass2">
+					</div>
+				</div>
+				</if>
+				<button class="submitbtn">确认</button>
+			</div>
+		</div>
+		
+
+		<script>
+			//返回按钮
+			/*$('#gerenGaiNameTop .back').on('tap',function(){
+				window.history.go(-1);
+				//window.location.href='{:U('Index/baseinfo')}';
+			});*/
+
+			//tip
+			function tipFun(str){
+				$('.tip').text(str).css({
+					'opacity':'1',
+					'z-index':'9999'
+				});
+				setTimeout(function(){
+					$('.tip').css('opacity','0');
+					setTimeout(function(){
+						$('.tip').css('z-index','-1');
+					},300);
+				},1300);
+			}
+
+			//点击 x
+			$('#gerenGaiNameMain .inputs .close').on('tap',function(){
+				$('#gerenGaiNameMain .inputs input').val('');
+			});
+
+			$('.submitbtn').click(function(){
+				var pwd = "{$user.paypwd}";
+				var data = {};
+				if(pwd==""){
+					var pwd1 = $('#pass1').val();
+					var pwd2 = $("#pass2").val();
+					if(pwd1==""){
+						tipFun("请输入密码");return;
+					}
+					if(pwd2==""){
+						tipFun("请确认密码");return;
+					}
+					if(pwd1!=pwd2){
+						tipFun("两次输入的密码不一致，请确认1");return;
+					}
+					data = {pwd1:pwd1,pwd2:pwd2};
+				}else{
+					var oldpwd = $("#old_pass").val();
+					var pwd1 = $("#new_pass").val();
+					var pwd2 = $("#new_pass_1").val();
+					if(oldpwd==""){
+						tipFun("请输入原密码");return;
+					}
+					if(pwd1==""){
+						tipFun("请输入新密码");return;
+					}
+					if(pwd2==""){
+						tipFun("请确认新密码");return;
+					}
+					if(pwd1!=pwd2){
+						tipFun("两次输入的新密码不同，请确认");return;
+					}
+					data = {oldpwd:oldpwd,pwd1:pwd1,pwd2:pwd2};
+				}
+				console.log(data);
+				$.ajax({
+					type:"POST",
+					url:"__URL__/editpaypwd",
+					data:data,
+					datatype: "json",//"xml", "html", "script", "json", "jsonp", "text".
+					success:function(data){
+						if(data.status==1){
+							tipFun(data.info);
+							setTimeout(function(){
+								if(data.url!=''){
+									location.href = data.url;
+								}else{
+									location.href = "{:U('Index/baseinfo')}";
+								}
+							},1200);
+						}else{
+							tipFun(data.info);
+						}           
+					}       
+				 });
+			});
+			
+			//点击 保存
+			/*$('#gerenGaiNameTop .save').on('tap',function(){
+				var name=$('#gerenGaiNameMain .inputs input').val();
+				if(!notEmpty(name)){
+					tipFun("{$placeholder}");
+					return;
+				}
+				var minlen = "{$minlen}";
+				var maxlen = "{$maxlen}";
+				if(minlen!=""&&name.length<minlen){
+					tipFun('最少'+minlen+'个字符');
+					return;
+				}
+				if(maxlen!=""&&name.length>maxlen){
+					tipFun('最多'+maxlen+'个字符');
+					return;
+				}
+				if(!iscnENnum(name)){
+					tipFun('{$ts}');
+					return;
+				}
+
+				//console.log('保存操作');
+				$.ajax({
+					//提交数据的类型 POST GET
+					type:"POST",
+					//提交的网址
+					url:"__URL__/save",
+					//提交的数据
+					data:{{$field_name}:$('#{$field_name}').val(),id:$('#id').val()},
+					//返回数据的格式
+					datatype: "json",//"xml", "html", "script", "json", "jsonp", "text".
+					//在请求之前调用的函数
+					//成功返回之后调用的函数             
+					success:function(data){
+						if(data.status==0)
+						{
+							tipFun(data.info);
+							/*$.toast(data.info,'cancel', function() {
+							});*/
+						/*}
+						else
+						{
+							tipFun(data.info);
+							setTimeout(function(){
+								if(data.url!=''){
+									location.href = data.url;
+								}else{
+									location.href = "{:U('Index/baseinfo')}";
+								}
+							},1200);
+							//$.toast(data.info, function() {
+							//});
+						}
+						//alert(data.info);
+						//window.location.reload();
+						//$("#msg").html(decodeURI(data));            
+					}   ,
+					//调用执行后调用的函数
+					complete: function(XMLHttpRequest, textStatus){
+					   //alert(XMLHttpRequest.responseText);
+					   //alert(textStatus);
+						//HideLoading();
+					},
+					error: function(){
+					}         
+				 });
+			});*/
+		</script>
+	</body>
+</html>

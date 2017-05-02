@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>已结佣金</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/zepto.js"></script>
+		<script src="__PUBLIC__/Home/js/iscroll-probe.js"></script>
+		<script src="__PUBLIC__/Home/js/delIOS_huitan.js"></script>
+		<style>
+			/*下拉加载样式*/
+			#wrapper {
+				position: absolute;
+				z-index: 1;
+				top: 0;
+				bottom: 0;
+				left: 0;
+				width: 100%;
+				overflow: hidden;
+			}
+			#loadBin{color: #5d5d5d;text-align: center;line-height: 30px;}
+		</style>
+	</head>
+	<body onLoad="onload()" class="box">
+		<!--正文区域-->
+		<div id="yongjinTop" class="top1top2">
+			<div class="contain maxWidth">
+				<div class="top1">
+					<a class="hz back" href="/Member">&#xe600;</a>已结佣金
+				</div>
+				<div class="middle">
+					<span class="sanjiaoGray"></span>
+					<span class="sanjiaoWhite"></span>
+					<p class="title">可用余额<span><em>{$user.jie_money}</em>元</span></p>
+					<a href="__URL__/withdraw" class="bgbtn">提现</a>
+				</div>
+				<div class="top2">
+					<ul class="clear">
+						<li class="active"><a href="javascript:;">佣金获取</a></li>
+						<li><a href="__URL__/drawrecord">佣金支出</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div id="yongjinMain" class="fastscroll">
+			<div class="contain maxWidth">
+				<div id="wrapper" class="maxWidth">
+					<div>
+						<!--佣金获取 和 佣金支出公用一个ul-->
+						<ul class="list ullistlr2line">
+						<volist name="list" id="item">
+							<li>
+								<div class="clear top">
+									<p class="left danhao">
+										订单号{$item.order_sn}
+									</p>
+									<p class="right price">
+										+&yen;<span>{$item.money}</span>
+									</p>
+								</div>
+								<div class="clear">
+									<p class="left">{:date('Y-m-d',$item['addtime'])}</p>
+									<p class="right"><!--已付款--></p>
+								</div>
+							</li>
+						</volist>
+						</ul>
+						<div id="loadBin"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			//返回按钮
+			$('#yongjinTop .back').on('tap',function(){
+				window.history.go(-1);
+			});
+
+			//iscroll 下拉加载+zeptoajax
+			function onload(){
+				loadBin = document.getElementById("loadBin");
+				myScroll = new IScroll('#wrapper',{
+					probeType: 3,
+					click:true
+				});
+				myScroll.on("scroll",scrollFun);
+				myScroll.on("scrollEnd",scrollEndFun);
+			}
+
+			var page=1;
+			var myScroll,
+					loadBin,
+					isload = false,
+					scrollFun = function(){
+						if((this.y - this.maxScrollY)>>0 < -50){
+							isload = true;
+							loadBin.innerHTML = "松开手指加载更多";
+							myScroll.refresh();
+							myScroll.off("scroll",scrollFun);
+						}
+					},
+					scrollEndFun = function(){
+						if(isload){
+							isload = false;
+							if(currIndex==0){//佣金获取
+								$.ajax({
+									type: 'GET',
+									url: 'data/我的已结佣金佣金获取.html',
+									dataType: 'json',
+									success: function(data){
+										page++;
+										for(var i=0;i<data.lists.length;i++){
+											$('#wrapper .list').append('<li><div class="clear top"><p class="left danhao">订单号'+data.lists[i].dingdanNum+'</p><p class="right price">+&yen;<span>'+data.lists[i].money+'</span></p></div><div class="clear"><p class="left">'+data.lists[i].time+'</p><p class="right">'+data.lists[i].state+'</p></div></li>');
+										}
+										loadBin.innerHTML = "";
+										myScroll.on("scroll",scrollFun);
+										myScroll.refresh();
+									},
+									error: function(xhr, type){
+										console.log('Ajax error!');
+									}
+								});
+							}else if(currIndex==1){//佣金支出
+								$.ajax({
+									type: 'GET',
+									url: 'data/我的已结佣金佣金支出.html',
+									dataType: 'json',
+									success: function(data){
+										page++;
+										for(var i=0;i<data.lists.length;i++){
+											$('#wrapper .list').append('<li><div class="clear top"><p class="left danhao">'+data.lists[i].title+'</p><p class="right price">-&yen;<span>'+data.lists[i].money+'</span></p></div><div class="clear"><p class="left">'+data.lists[i].time+'</p><p class="right">'+data.lists[i].state+'</p></div></li>');
+										}
+										loadBin.innerHTML = "";
+										myScroll.on("scroll",scrollFun);
+										myScroll.refresh();
+									},
+									error: function(xhr, type){
+										console.log('Ajax error!');
+									}
+								});
+							}
+						}
+					};
+
+			//点击 导航的li
+			var currIndex=0;//默认是在第一个tab上
+			$('#yongjinTop .top2 li').on('tap',function(){
+				currIndex=$(this).index();
+				$(this).addClass('active').siblings().removeClass('active');
+
+				$('#wrapper .list').html('');//清空内容
+
+				//切换tab的时候，让滚动条在顶部
+				myScroll._translate(0,0);//查看源码，里面提供方法
+
+				page=1;
+				if(currIndex==0){//佣金获取
+					$.ajax({
+						type: 'GET',
+						url: 'data/我的已结佣金佣金获取.html',
+						dataType: 'json',
+						success: function(data){
+							page++;
+							for(var i=0;i<data.lists.length;i++){
+								$('#wrapper .list').append('<li><div class="clear top"><p class="left danhao">订单号'+data.lists[i].dingdanNum+'</p><p class="right price">+&yen;<span>'+data.lists[i].money+'</span></p></div><div class="clear"><p class="left">'+data.lists[i].time+'</p><p class="right">'+data.lists[i].state+'</p></div></li>');
+							}
+							myScroll.refresh();
+						},
+						error: function(xhr, type){
+							console.log('Ajax error!');
+						}
+					});
+				}else if(currIndex==1){//佣金支出
+					$.ajax({
+						type: 'GET',
+						url: 'data/我的已结佣金佣金支出.html',
+						dataType: 'json',
+						success: function(data){
+							page++;
+							for(var i=0;i<data.lists.length;i++){
+								$('#wrapper .list').append('<li><div class="clear top"><p class="left danhao">'+data.lists[i].title+'</p><p class="right price">-&yen;<span>'+data.lists[i].money+'</span></p></div><div class="clear"><p class="left">'+data.lists[i].time+'</p><p class="right">'+data.lists[i].state+'</p></div></li>');
+							}
+							myScroll.refresh();
+						},
+						error: function(xhr, type){
+							console.log('Ajax error!');
+						}
+					});
+				}
+			});
+		</script>
+	</body>
+</html>
+
+
+
+

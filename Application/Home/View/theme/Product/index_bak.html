@@ -1,0 +1,136 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>{:C('WEB_SITE_TITLE')}</title>
+<meta name="description" content="{:C('WEB_SITE_DESCRIPTION')}" />
+<meta name="keywords" content="{:C('WEB_SITE_KEYWORD')}" />
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, width=device-width">
+<link href="__PUBLIC__/Home/css/weui.min.css" rel="stylesheet" />
+<link href="__PUBLIC__/Home/css/jquery-weui.css" rel="stylesheet" />
+<link href="__PUBLIC__/Home/css/swiper.min.css" rel="stylesheet" />
+<link href="__PUBLIC__/Home/css/common.css" rel="stylesheet" />
+<link href="__PUBLIC__/Home/css/style.css" rel="stylesheet" />
+<script src="__PUBLIC__/Home/js/jquery-1.8.3.min.js"></script>
+<script src="__PUBLIC__/Home/js/common.js"></script>
+<script src="__PUBLIC__/Home/js/swiper-3.3.1.jquery.min.js"></script>
+</head>
+<body>
+<!--top-->
+<div class="g_wrap top">
+	<table>
+    	<tr>
+        	<td class="td01"><a href="/"><img src="__PUBLIC__/Home/images/icon1_03.png" class="img2" /></a></td>
+            <td class="td02">龙驰网信商城</td>
+            <td class="td03">&nbsp;</td>
+        </tr>
+    </table>
+</div>
+<!--content-->
+<div class="container g_wrap" style="padding-top:31px;">
+    <div class="parade g_wrap">
+    	<ul class="clear">
+        	<li class="l col-sm-3">
+            	<a href="{:U('Product/index',array('cat_id'=>$cat_id,'keywords'=>$keywords,'desc'=>$desc))}"><span <if condition="$order eq 0">class="s01 {$curclass[0]}"</if>>综合</span></a>
+            </li>
+            <li class="l col-sm-3">
+            	<a href="{:U('Product/index',array('cat_id'=>$cat_id,'keywords'=>$keywords,'order'=>1,'desc'=>$desc))}"><span <if condition="$order eq 1">class="s01 {$curclass[1]}"</if>>销量</span></a>
+            </li>
+            <li class="l col-sm-3">
+            	<a href="{:U('Product/index',array('cat_id'=>$cat_id,'keywords'=>$keywords,'order'=>2,'desc'=>$desc))}"><span <if condition="$order eq 2">class="s01 {$curclass[2]}"</if>>价格</span></a>
+            </li>
+            <li class="l col-sm-3">
+            	<a href="{:U('Product/index',array('cat_id'=>$cat_id,'keywords'=>$keywords,'order'=>3,'desc'=>$desc))}"><span <if condition="$order eq 3">class="s01 {$curclass[3]}"</if>>最新</span></a>
+            </li>
+        </ul>
+    </div>
+    <div class="pro_div">
+    	<ul id="p_list">
+			<volist name="list" id="item">
+        	<li>
+            	<a href="{:U('Product/detail',array('id'=>$item['id']))}" class="clear">
+                	<div class="img_div img_w l"><img src="{$item.image}" /></div>
+                    <div class="font_div r">
+                    	<h2>{$item.title}</h2>
+                        <ol class="clear">
+                        	<span class="l s01">￥{$item.gprice}</span><span class="r s03">已售<i>{$item.sell_num}</i>件</span>
+                        </ol>
+                    </div>
+                </a>
+            </li>
+			</volist>
+        </ul>        
+    </div>
+    <div class="weui-infinite-scroll">
+      <div class="infinite-preloader"></div>
+      正在加载
+    </div>
+</div>
+<!--footer-->
+<include file="Public:footer" />
+<script>
+var page=1;
+var loading = false;
+var str='';
+var order={$order};
+var desc={$desc};
+
+/*if($("#p_list li").length>5){
+  loading = false;
+  $(".weui-infinite-scroll").show();
+}
+else
+{
+	loading = true;						
+}*/
+
+$(document.body).infinite().on("infinite", function() {
+	if(loading) return;
+	loading = true;
+	
+	var $noti=$(".weui-infinite-scroll");
+	$noti.show();
+	
+	setTimeout(function() {
+		page++;
+		$.ajax({
+			url:"{:U('Index/ajaxlist')}",
+			data:{page:page,order:order,desc:desc},
+			error: function(){
+				wrx_alert("访问超时!");
+			},
+			dataType:'json',
+			success:function(data){
+				for( var i=0;i<data.length;i++)
+				{
+					str+='<li><a href="/Product/detail/id/'+data[i].id+'" class="clear">';
+					str+='<div class="img_div img_w l"><img src="'+data[i].image+'" /></div>';
+					str+='<div class="font_div r">';
+					str+='<h2>'+data[i].title+'</h2>';
+					str+='<ol class="clear"><span class="l s01">￥'+data[i].gprice+'</span><span class="r s03">已售<i>'+data[i].sell_num+'</i>件</span>';
+					str+='</ol></div></a></li>';
+				}
+				$("#p_list").append(str);
+				if(data.length<1)
+				{
+					setTimeout(function() {
+						$noti.html("已经没有了");
+						$noti.hide();
+					},2000);
+				}
+				else{
+					setTimeout(function() {
+						  $noti.html("<div class='infinite-preloader'></div>正在加载");
+						  $noti.hide();
+						}, 2000);	
+				}
+				//$sort_name.html(html);
+			}
+		});
+	  /*$("#p_list").append("<li><a href='#' class='clear'><div class='img_div img_w l'><img src='__PUBLIC__/Home/images/icon_25.png' /></div><div class='font_div r'><h2>无线路由器四天线wifghi穿墙王300M</h2><ol class='clear'><span class='l s01'>￥200</span><span class='r s03'>已售<i>291</i>件</span></ol></div></a></li>");*/
+	  
+	  loading = false;
+	}, 2000);
+});
+</script>

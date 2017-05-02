@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html style="max-width:720px;min-height: 100%;">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>{:C('WEB_SITE_TITLE')}</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css" />
+		<script src="__PUBLIC__/Home/js/zepto.js"></script>
+	</head>
+	<body class="fastscroll bgGreen" style="max-width:720px;min-height: 100%;">
+		<!--输入验证码的弹框-->
+		<div id="maKuang" style="display:none">
+			<div class="top">
+				<span class="title">输入验证码</span>
+				<div class="inputArea">
+					<input type="text" id="code"/>
+					<p class="ma">
+						<img id="verify_code" src="__URL__/verify" onclick="verifycode()"/>
+					</p>
+				</div>
+			</div>
+			<div class="bot">
+				<a href="javascript:;" class="cancel">取消</a><a href="javascript:;" class="sure">确认</a>
+			</div>
+		</div>
+		<!--遮罩层-->
+		<div id="zhezhao" style="display:none"></div>
+		<!--正文区域-->
+		<div id="zhuceMain" class="lzMain zmMain maxWidth">
+			<img src="__PUBLIC__/Home/img/logo.jpg" class="top"/>
+			<div class="middle">
+				<div class="phone inputArea">
+					<span>手机号</span><input type="tel" placeholder="请输入手机号" id="login_user"/>
+				</div>
+				<div class="key inputArea">
+					<span>密码</span><input type="password" placeholder="请输入密码" id="login_pass"/>
+				</div>
+				<div class="ckeckkey inputArea">
+					<span>确认密码</span><input type="password" placeholder="请再次输入密码" id="repassword"/>
+				</div>
+				<div class="ma inputArea">
+					<span>短信验证码</span><input type="text" placeholder="请输入短信验证码" id="sms"/><em class="sendma">获取验证码</em>
+				</div>
+			<input type="hidden" id="successsms" value="" />
+				<div class="zhuceArea">
+					<a href="/Member" class="zhuce">登录</a>
+					<!--<a href="密码找回1.html" class="wangji">忘记密码?</a>-->
+				</div>
+				<a href="javascript:;" class="submitbtn">注册</a>
+			</div>
+		</div>
+
+		<script>
+function verifycode()
+{
+	var verifysrc='__URL__/verify&rand='+Math.random();
+	$('#verify_code').attr('src',verifysrc);
+}
+function sendsms()
+{
+	$.ajax({
+		type: "post",
+		dataType: "json",
+		url: "__URL__/sendsms",
+		data: {mobile:$('#login_user').val()},
+		success: function(json){
+			if(json.status<1)
+			{
+				alert(json.info);
+				//$.toast(json.info,'cancel', function() {
+				//});
+			}
+			else
+			{
+				$('#successsms').val(json.info);
+			}
+		}
+	})
+}
+			//点击获取验证码
+			$('#zhuceMain .middle .ma .sendma').on('tap',function(){
+				$('#maKuang').css('display','block');
+				$('#zhezhao').css('display','block');
+			});
+
+			//点击取消
+			$('#maKuang .bot .cancel').on('tap',function(){
+				$('#maKuang .top .inputArea input').val('');//清空弹框input值
+				$('#maKuang').css('display','none');
+				$('#zhezhao').css('display','none');
+			});
+
+			//点击确定
+			$('#maKuang .bot .sure').on('tap',function(){
+				if($('#code').val()=='')
+				{
+					alert('请输入验证码');
+				}
+				else
+				{
+					$.ajax({
+						type: "post",
+						dataType: "json",
+						url: "__URL__/checkcode",
+						data: {code:$('#code').val()},
+						success: function(json){
+							if(json.status<1)
+							{
+								alert('验证码错误');
+							}
+							else
+							{
+								alert('已经发送验证码');
+								sendsms();
+								$('#maKuang .top .inputArea input').val('');//清空弹框input值
+								$('#maKuang').css('display','none');
+								$('#zhezhao').css('display','none');
+							}
+						}
+					})
+				}
+				/*var getValue=$('#maKuang .top .inputArea input').val();
+//				console.log(getValue);
+				$('#maKuang .top .inputArea input').val('');//清空弹框input值
+				$('#maKuang').css('display','none');
+				$('#zhezhao').css('display','none');*/
+			});
+
+			//点击注册
+			$('#zhuceMain .middle .submitbtn').on('tap',function(){
+				//console.log('注册');
+				var login_pass	=	$('#login_pass').val();
+				var repassword	=	$('#repassword').val();
+				var myreg = /^(((13[0-9]{1})|(15[0-9]{1})|(18[0-9]{1}))+\d{8})$/; 
+				if($('#login_user').val()=='')
+				{
+					alert('请输入手机号');
+					$('#login_user').val('');
+					$('#login_user').focus();
+					return false;
+				}
+				else if(!myreg.test($('#login_user').val())) 
+				{ 
+					alert('请输入有效的手机号码！'); 
+					$('#login_user').focus();
+					return false; 
+				}
+				else if(login_pass.length<6)
+				{
+					alert('密码不能小于6位');
+					$('#login_pass').focus();
+					return false;
+				}
+				else if(login_pass!=repassword)
+				{
+					alert('两次密码不一致')
+					return false;
+				}
+				else if($('#sms').val()=='')
+				{
+					alert('请输入短信验证码!');
+					return false;
+				}
+				else if($('#sms').val()!=$('#successsms').val())
+				{
+					alert('验证码不正确'+$('#sms').val());
+					return false;
+				}
+				else
+				{
+					var user_id={$user_id};
+					$.ajax({
+						type: "post",
+						dataType: "json",
+						url: "__URL__/index",
+						data: {login_user:$('#login_user').val(),login_pass:login_pass,repassword:repassword,sms:$('#sms').val(),user_id:user_id},
+						success: function(json){
+							if(json.status==1)
+							{
+								window.location.href='/Member';
+							}
+							else
+							{
+								alert(json.info);
+							}
+						}
+					})
+				}
+			});
+		</script>
+	</body>
+</html>

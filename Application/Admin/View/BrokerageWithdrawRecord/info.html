@@ -1,0 +1,42 @@
+<extend name="Public/base"/>
+
+<block name="body">
+	<script type="text/javascript" src="__STATIC__/uploadify/jquery.uploadify.min.js"></script>
+    <div class="main-title">
+        <h2>提现申请详细</h2>
+    </div>
+    <form action="__URL__/del" method="post" class="form-horizontal">
+        <input type="hidden" name="id" value="{$info.id}" />
+        <div class="form-item">
+            <label class="item-label">申请用户：<b style="font-weight:normal;">{:getbankname($info['user_id'])}</b></label>
+        </div>
+        <div class="form-item">
+            <label class="item-label">开户行：<b style="font-weight:normal;">{:getbank($bank['type_id'])}</b></label>
+        </div>
+        <div class="form-item">
+            <label class="item-label">银行卡号：<b style="font-weight:normal;">{$bank.card_num}</b></label>
+        </div>
+        <div class="form-item">
+            <label class="item-label">持卡人：<b style="font-weight:normal;">{$bank.name}</b></label>
+        </div>
+        <div class="form-item">
+            <label class="item-label">预留手机号：<b style="font-weight:normal;">{$bank.mobile}</b></label>
+        </div>
+        <div class="form-item">
+            <label class="item-label">提现金额：<b style="font-weight:normal;">{$info.money}</b></label>
+        </div>
+        <div class="form-item">
+            <label class="item-label">申请时间：<b style="font-weight:normal;">{$info.addtime|date="Y-m-d",###}</b></label>
+        </div>
+        <div class="form-item">
+            <button class="btn btn-return" onclick="javascript:window.location.href='__URL__';return false;">返 回</button>
+        </div>
+    </form>
+</block>
+
+<block name="script">
+    <script type="text/javascript">
+        //导航高亮
+        highlight_subnav("{:U('BrokerageWithdrawRecord/index')}");
+    </script>
+</block>

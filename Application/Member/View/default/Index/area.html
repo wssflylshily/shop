@@ -1,0 +1,89 @@
+<include file="Public:header" />
+<script>
+/*清空*/
+$(function(){
+	$(".clear_ca").click(function(){
+		$(this).prev().val("");	
+	});
+	$("#area_id").click(function(){
+		var str=$(this).attr("data-va");		
+		$("input[name='city_qy']").each(function(index, element) {
+            if($(this).attr("data-va")==str)
+			{
+				$(this).attr("checked","checked");	
+			}
+        });
+		$(".boxshadow").show();
+		$(".boxcontent").show();
+	});
+	$("input[name='city_qy']").change(function(){
+		$("#area_id").val($(this).val());
+		$("#area_id").attr("data-va",$(this).attr("data-va"));
+		//alert($("#area_id").attr("data-va"));
+		$(".boxshadow").hide();
+		$(".boxcontent").hide();
+	});
+	$('#save').click(function(){
+		$.ajax({
+			//提交数据的类型 POST GET
+			type:"POST",
+			//提交的网址
+			url:"__URL__/area",
+			//提交的数据
+			data:{area_id:$("#area_id").attr("data-va")},
+			//返回数据的格式
+			datatype: "json",//"xml", "html", "script", "json", "jsonp", "text".
+			//在请求之前调用的函数
+			//成功返回之后调用的函数             
+			success:function(json){ 
+				if(json.status>0)
+				{
+					$.toast(json.info, function() {
+						//console.log('close');
+						/*if(cart_id!='')
+						{
+							window.location.href='/Member/UserAddress?cart_id='+cart_id;
+						}
+						else
+						{
+							window.location.href='/Member/UserAddress';
+						}*/
+					});
+				}
+				else
+				{
+					$.toast(json.info,'cancel', function() {
+						//console.log('close');
+					});
+				}
+			}
+		});
+	})
+})
+</script>
+<!--content-->
+
+<div class="boxshadow"></div>
+<div class="boxcontent sin_xz">
+	<volist name="arealist" id="item">
+	<label>
+    	{$item.title}<input name="city_qy" type="radio" value="{$item.title}" class="single_btn r" data-va="{$item.id}"/>
+    </label>
+	</volist>    
+</div>
+
+<div class="container g_wrap per_center">
+	<div class="com_div com_diva">
+   		<input type="text" name="name" id="area_id" placeholder="选择所在城市" value="{$user.area_name}" class="inp w1 city" data-va="{$user.area_id}"/>        
+   </div>
+</div>
+<script src="__PUBLIC__/Home/js/jquery-2.1.4.js"></script>
+<script src="__PUBLIC__/Home/js/jquery-weui.js"></script>
+<script src="__PUBLIC__/Home/js/city-picker.js"></script>
+<script>
+  /*$(".city").cityPicker({
+	title: "选择所在城市"
+  });*/
+</script>
+</body>
+</html>

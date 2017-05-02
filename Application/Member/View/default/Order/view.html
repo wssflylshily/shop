@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>订单详情</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/zepto.js"></script>
+		<script src="__PUBLIC__/Home/js/delIOS_huitan.js"></script>
+		<style>
+			#dingdanDetailDanMain .table{width: 100%;}
+			#dingdanDetailDanMain .table .L{width:60px;vertical-align: middle}
+			#dingdanDetailDanMain .table .R{text-align:right;vertical-align: middle}
+		</style>
+	</head>
+	<body class="box">
+		<!-- 遮罩 -->
+		<div id="zhezhao" style="display:none"></div>
+		<!-- 弹出框 选择配送方式 -->
+		<!-- <div class="orderSelectSendTypeK" style="display:none">
+			<div class="top">选择配送方式</div>
+			<div class="middle">
+				<ul>
+					<li class="clear selected">
+						<p class="tit l">送货</p>
+						<div class="selectArea r">
+							<div class="circleGreen" style="-display: none">
+								<span class="hz active">&#xe613;</span>
+							</div>
+						</div>
+					</li>
+					<li class="clear">
+						<p class="tit l">自提</p>
+						<div class="selectArea r">
+							<div class="circleGreen" style="display: none">
+								<span class="hz active">&#xe613;</span>
+							</div>
+						</div>
+					</li>
+				</ul>
+			</div>
+			<div class="bot">确定</div>
+		</div> -->
+		<!--正文区域-->
+		<div id="dingdanDetailDanTop" class="topBackTitle">
+			<div class="contain maxWidth">
+				<a class="hz back" href="javascript:;">&#xe600;</a>订单详情
+			</div>
+		</div>
+		<div id="dingdanDetailDanMain" class="fastscroll dingdanMain">
+			<div class="contain maxWidth">
+				<div class="line"></div>
+				<div class="dingdanInfo">
+					<div class="ddqrTitleCom">
+						<span class="hz">&#xe602;</span>订单信息
+					</div>
+					<div class="bgulCon">
+						<ul>
+							<li class="other">
+								<p class="title">收货信息</p>
+								<p class="cont">
+									收货人: <span>{$useraddress.name}</span><br>
+									联系方式: <span>{$useraddress.mobile}</span><br>
+									收货地址: <span>{$useraddress.area}&nbsp;{$useraddress.address}</span>
+								</p>
+							</li>
+							<if condition="$order['type'] eq 1">
+							<li class="other">
+								<p class="title">自提网点信息</p>
+								<p class="cont">
+									网点名称: <span>{$store.sname}</span><br>
+									联系方式: <span>{$store.mobile}</span><br>
+									联系地址: <span>{$store.sadd}</span>
+								</p>
+							</li>
+							</if>
+							<li>
+								<span class="left">支付方式</span>
+								<span class="right"><if condition="$order.paytype eq 1">余额支付<else/>微信支付</if></span>
+							</li>
+							<li class="sendHuo">
+								<span class="left">配送方式</span>
+								<!-- <span class="hz right arrowR">&#xe60c;</span> -->
+								<span class="right text"><if condition="$order['type'] eq 1">自提<else/>送货</if></span>
+							</li>
+							<li class="table">
+								<p class="L tableCell">备注</p>
+								<p class="R tableCell">{$order.note}</p>
+							</li>
+						</ul>
+					</div>
+					<ul class="ulConNobg">
+						<li>
+							<span class="left">订单编号</span>
+							<span class="right">{$order.sn}</span>
+						</li>
+						<li>
+							<span class="left">订单时间</span>
+							<span class="right">{:date('Y-m-d H:i:s',$order['addtime'])}</span>
+						</li>
+						<li>
+							<span class="left">订单状态</span>
+							<span class="right">{$statusarr[$order['status']]}</span>
+						</li>
+					</ul>
+				</div>
+				<div class="ddproList">
+					<p class="ddqrTitleCom">
+						<span class="hz">&#xe61e;</span>商品清单
+					</p>
+					<ul class="list">
+					<?php
+					$product_price=0;
+					?>
+					<volist name="orderlist" id="item">
+					<?php
+					$product_price+=$item['product_price']*$item['product_num'];
+					?>
+						<li class="clear">
+							<div class="left">
+								<img src="{$item.image}">
+							</div>
+							<div class="right">
+								<p class="title"><a href="javascript:;">{$item.title}</a></p>
+								<p class="price">
+									<em>&yen;{$item.product_price}</em><del>&yen;{$item.market_price}</del><span class="r">&times;<span>{$item.product_num}</span></span>
+								</p>
+							</div>
+						</li>
+					</volist>
+					</ul>
+				</div>
+				<div class="priceList">
+					<p class="ddqrTitleCom">
+						<span class="hz">&#xe61d;</span>价格清单
+					</p>
+					<div class="bgulCon">
+						<ul>
+							<li>
+								<span class="left">商品金额</span>
+								<span class="right">&yen;{$product_price}</span>
+							</li>
+							
+							<li>
+								<span class="left">运费</span>
+								<span class="right">+&yen;{$order.express_money}</span>
+							</li>
+							
+							<if condition="$order['coupon_money'] gt 0">
+							<li>
+								<span class="left">优惠券</span>
+								<span class="right">-&yen;{$order.coupon_money}</span>
+							</li>
+							</if>
+							<if condition="$order['status'] gt 0 and $order['status'] lt 4">
+							<li>
+								<span class="left">实付款</span>
+								<span class="right red">&yen;{$order.money}</span>
+							</li>
+							</if>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<!--
+		{:U('Order/payok',array('order_id'=>$order['id']))}
+		-->
+		<div id="dingdanDetailDanBot" class="dingdanBot">
+			<div class="contain maxWidth">
+				合计：<span>&yen;<em>{$order.money}</em></span>
+				<if condition="$order['status'] eq 0"><a href="/wxpay/example/jsapi.php?order_id={$order.id}">去支付</a></if>
+			</div>
+		</div>
+
+		<script>
+			//返回按钮
+			$('#dingdanDetailDanTop .back').on('tap',function(){
+				window.history.go(-1);
+			});
+
+			//点击配送方式
+			/*$('#dingdanDetailDanMain .bgulCon li.sendHuo').on('click',function(){
+				$('.orderSelectSendTypeK').css('display','block');
+				$('#zhezhao').css('display','block');
+			});*/
+			//选择配送方式
+			$('.orderSelectSendTypeK .middle li').on('click',function(){
+				$('.orderSelectSendTypeK .middle li').find('.circleGreen').css('display','none');
+				$(this).find('.circleGreen').css('display','block');
+				$(this).addClass('selected').siblings().removeClass('selected');//selected用于判断选择的是那个配送方式
+			});
+			//点击确定
+			$('.orderSelectSendTypeK .bot').on('click',function(){
+				$('.orderSelectSendTypeK').css('display','none');
+				$('#zhezhao').css('display','none');
+
+				//给页面上更新为 选中的配送方式
+				var selectTypetext=$('.orderSelectSendTypeK .middle li.selected').find('.tit').text();
+				$('.bgulCon li.sendHuo .text').text(selectTypetext);
+			});
+		</script>
+	</body>
+</html>

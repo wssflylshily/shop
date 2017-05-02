@@ -1,0 +1,125 @@
+<extend name="Public/base" />
+
+<!-- 子导航 -->
+<block name="sidebar">
+    <include file="sidemenu" />
+</block>
+
+<block name="body">
+<link href="__STATIC__/datetimepicker/css/datetimepicker.css" rel="stylesheet" type="text/css">
+<php>if(C('COLOR_STYLE')=='blue_color') echo '<link href="__STATIC__/datetimepicker/css/datetimepicker_blue.css" rel="stylesheet" type="text/css">';</php>
+<link href="__STATIC__/datetimepicker/css/dropdown.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="__STATIC__/datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript" src="__STATIC__/datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+
+	<script type="text/javascript" src="__STATIC__/uploadify/jquery.uploadify.min.js"></script>
+	<div class="main-title cf">
+		<h2>
+			{$info.title} 详细信息
+		</h2>
+	</div>
+	<!-- 标签页导航 -->
+<div class="tab-wrap">
+	<!-- <ul class="tab-nav nav">
+		<li data-tab="tab0"class="current"><a href="javascript:void(0);">基础</a></li>
+		
+		<?php
+		$navnum=$key+1;
+		?>
+	</ul> -->
+	<div class="tab-content">
+		<!-- 表单 -->
+        <div id="tab0" class="tab-pane in tab0">
+			<div class="form-item cf">
+				<div class="controls">
+					<label class="item-label"><b>拼团名称：</b>{$info.title}</label>
+				</div>
+				<div class="controls">
+					<label class="item-label"><b>原价格：</b>{$info.oldprice}</label>
+				</div>
+				<div class="controls">
+					<label class="item-label"><b>拼团价格：</b>{$info.price}</label>
+				</div>
+				<div class="controls">
+					<label class="item-label"><b>快递费：</b>{$info.express_money}</label>
+				</div>
+				<div class="controls">
+					<label class="item-label"><b>开团人数：</b>{$info.num}</label>
+				</div>
+				<div class="controls">
+					<label class="item-label">
+						<b>开始日期：</b>{:date('Y-m-d H:i:s',$info['start_date'])}
+					</label>
+				</div>
+				<div class="controls">
+					<label class="item-label">
+						<b>截止日期：</b>{:date('Y-m-d H:i:s',$info['end_date'])}
+					</label>
+				</div>
+				<div class="controls">
+					<label class="item-label"><b>封面图：</b></label>
+					<div class="controls">
+						<div class="upload-img-box">
+						<img style="max-width:50%;" src="{$info.image}"/>
+						</div>
+					</div>
+				</div>
+				
+				<div class="controls">
+					<label class="item-label"><b>幻灯片：</b></label>
+					<div class="controls">
+						<div class="upload-img-box">
+						<volist name="piclist" id="item">
+						<div class="upload-pre-item1  upload-pre-item"><img src="{$item.path}" onclick="delthispic(this,{$item.id})"/></div>
+						</volist>
+						</div>
+					</div>
+				</div>
+				
+				<div class="controls">
+					<label class="item-label"><b>排列序号：</b>{$info.order_num}</label>
+				</div>
+				
+				<label class="item-label"><b>内容</b><span class="check-tips"></span></label>
+				<div class="controls">
+				<textarea name="content">{$info.content}</textarea>
+				</div>
+				{:hook('adminArticleEdit', array('name'=>'content','value'=>$field['value']))}
+				
+				<label class="item-label"><b>推荐语</b><span class="check-tips"></span></label>
+				<div class="controls">
+				<textarea style="width:60%;height:150px;" name="describe">{$info.describe}</textarea>
+				</div>
+				
+				<label class="item-label"><b>产品保障描述</b><span class="check-tips"></span></label>
+				<div class="controls">
+				<textarea name="guarantee">{$info.guarantee}</textarea>
+				</div>
+				{:hook('adminArticleEdit', array('name'=>'guarantee','value'=>$field['value']))}
+				
+				
+			</div>
+		</div>
+		<div class="form-item cf">
+			<a class="btn btn-return" href="javascript:history.go(-1);">返 回</a>
+		</div>
+		<br />
+	</div>
+</div>
+</block>
+
+<block name="script">
+<link href="__STATIC__/datetimepicker/css/datetimepicker.css" rel="stylesheet" type="text/css">
+<php>if(C('COLOR_STYLE')=='blue_color') echo '<link href="__STATIC__/datetimepicker/css/datetimepicker_blue.css" rel="stylesheet" type="text/css">';</php>
+<link href="__STATIC__/datetimepicker/css/dropdown.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="__STATIC__/datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript" src="__STATIC__/datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+
+
+<script type="text/javascript">
+	//导航高亮
+	highlight_subnav('{:U('Spell/index')}');
+	
+</script>
+
+</block>

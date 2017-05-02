@@ -1,0 +1,144 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>{:C('WEB_SITE_TITLE')}</title>
+<meta name="description" content="{:C('WEB_SITE_DESCRIPTION')}" />
+<meta name="keywords" content="{:C('WEB_SITE_KEYWORD')}" />
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, width=device-width">
+<link href="__PUBLIC__/Home/css/weui.min.css" rel="stylesheet" />
+<link href="__PUBLIC__/Home/css/jquery-weui.css" rel="stylesheet" />
+<link href="__PUBLIC__/Home/css/common.css" rel="stylesheet" />
+<link href="__PUBLIC__/Home/css/style.css" rel="stylesheet" />
+<style>
+.ts_notice{text-align:center; display:none;}
+.ts_notice span{display:inline-block; line-height:24px; font-size:14px; color:#fff; background:#dcdcdc; border-radius:12px; padding:0px 10px;}
+.boxcontent{height:auto; padding:25px 10px;}
+.boxcontent .inp1{ width:100%; line-height:28px; border:1px solid #dcdcdc; padding:0px 5px;}
+</style>
+<script src="__PUBLIC__/Home/js/jquery-1.8.3.min.js"></script>
+<script src="__PUBLIC__/Home/js/common.js"></script>
+<script>
+$(function(){
+    $(".buy_carid").click(function(){
+        $(".boxshadow").show();
+        $(".boxcontent").show();
+    })
+    $(".boxshadow").click(function(){
+        $(".boxshadow").hide();
+        $(".boxcontent").hide();
+    });
+    
+    $(".show-toast").click(function() {
+        if($(".card_num").val()!=""){
+            var sn=$(".card_num").val();
+            $.ajax({  
+                type:'post',  
+                traditional :true,  
+                url:"{:U('Index/snupgrade')}",  
+                data:{'sn':sn},  
+                success:function(data){
+                    if(data.status==0)
+                    {
+                        alert(data.info);
+                    }
+                    else
+                    {
+                        ///wxpay/example/jsapi.php?order_id=3
+                        //window.location.href='/wxpay/example/jsapi.php?order_id='+data.order_id;
+                        $.toast("升级成功", function() {
+                          console.log('close');
+                        });
+                        $(".boxshadow").hide();
+                        $(".boxcontent").hide();
+                        
+                        $(".buy_btn").hide();
+                        $(".finish_btn").show();
+                    }
+                    //refreshRmb(1);  
+                    /*if(data.info=='请登陆')
+                    {
+                        window.location.href='/Login';
+                    }
+                    else
+                    {
+                        alert(data.info);
+                    }*/
+                    //window.location.reload();
+                }  
+            });
+            /*$.toast("升级成功", function() {
+              console.log('close');
+            });
+            $(".boxshadow").hide();
+            $(".boxcontent").hide();
+            
+            $(".buy_btn").hide();
+            $(".finish_btn").show();
+            */
+        }
+        else{
+            $(".ts_notice").show();
+            $(".ts_notice span").html("请输入正确的卡号！");
+        }
+      })
+})
+</script>
+
+</head>
+<body>
+<!--top-->
+<div class="g_wrap top">
+    <table>
+        <tr>
+            <td class="td01"><a href="/Member"><img src="__PUBLIC__/Home/images/icon1_03.png" class="img2" /></a></td>
+            <td class="td02">升级VIP</td>
+            <td class="td03">&nbsp;</td>
+        </tr>
+    </table>
+</div>
+<!--content-->
+<div class="container g_wrap" style="padding-top:20px;"> 
+    <div class="vip_div">
+        <h2>龙驰网信</h2>
+        <if condition="$user.type eq 0">
+        <h3><!--卡号：13666669999--><i class="r">￥{$money}</i></h3>
+        </if>
+    </div>
+    <div class="vip_intro">
+        <h2>购卡说明：</h2>
+        <p>1. 购买龙驰网信VIP在我网消费可享VIP优惠价，可参与会员优惠活动等专享服务。<br />
+2. 本网VIP一经购买终身有效。<br />
+3. VIP各项服务特权最终解释权归龙驰网信有限公司所有。</p>
+    </div>
+    <div class="com_btndiv buy_btn">
+        <a href="{:U('Member/Index/upgradevipcreate')}" id="show-toast-text" class="comm_btn">购买VIP</a>
+    </div>
+    <div class="com_btndiv buy_btn">
+        <a href="javascript:;" class="comm_btn buy_carid">输入您已购买的卡号</a>
+    </div>
+	<!--
+    <div class="com_btndiv finish_btn">
+        <a href="javascript:;" class="comm_btn dis">恭喜您已是尊贵的VIP</a>
+    </div>
+	-->
+</div>
+
+<div class="boxshadow"></div>
+<div class="boxcontent">
+    <table width="100%">
+        <tr><td style="padding:10px 0px;"><input type="text" name="card_num" placeholder="请输入会员卡卡号" class="inp1 card_num" value="" /></td></tr>
+        <tr><td>
+        <div class="ts_notice"><span>输入正确的卡号</span></div>
+        <div class="com_btndiv"><a href="javascript:;" class="comm_btn show-toast" style="border-radius:4px; margin-top:10px; width:100%;">确定</a></div></td></tr>
+    
+    
+    </table>
+</div>
+
+<script src="__PUBLIC__/Home/js/jquery-2.1.4.js"></script>
+<script src="__PUBLIC__/Home/js/jquery-weui.js"></script>
+
+</body>
+</html>

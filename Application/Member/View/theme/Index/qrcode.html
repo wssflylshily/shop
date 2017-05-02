@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html style="width: 100%;min-height: 100%;">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>我的邀请二维码</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/zepto.js"></script>
+	</head>
+	<body style="width: 100%;min-height: 100%;">
+		<!--正文区域-->
+		<div id="myYaoMaMain">
+			<div class="contain maxWidth">
+				<div class="top">
+					<a class="hz back" href="javascript:;">&#xe600;</a>
+				</div>
+				<div class="toptext">
+					<p class="title">我的邀请二维码</p>
+					<p class="con">一日不见, 如三月兮</p>
+				</div>
+				<div class="middle">
+					<div class="wrap">
+						<p class="top">
+							<span>邀请亲朋好友注册消费得佣金!</span>
+						</p>
+						<p class="bot">具体参考返佣规则</p>
+						<img src="__PUBLIC__/Home/img/gift.jpg" class="gift">
+					</div>
+				</div>
+				<div class="bottom">
+					<p>
+						呼吁朋友扫一扫<br>
+						马上下载馋猫解馋APP!
+					</p>
+					<!--<img src="__PUBLIC__/Home/img/ma.jpg">-->
+					<img src="{:qrcode($user_id)}" />
+					<div class="sharebtn">
+						分享<span class="img"></span>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script>
+			//返回按钮
+			$('#myYaoMaMain .back').on('tap',function(){
+				window.history.go(-1);
+			});
+		</script>
+	</body>
+</html>

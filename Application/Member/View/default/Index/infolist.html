@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>消息列表</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/zepto.js"></script>
+		<script src="__PUBLIC__/Home/js/iscroll-probe.js"></script>
+		<script src="__PUBLIC__/Home/js/delIOS_huitan.js"></script>
+		<style>
+			/*下拉加载样式*/
+			#wrapper {
+				position: absolute;
+				z-index: 1;
+				top: 0;
+				bottom: 0;
+				left: 0;
+				width: 100%;
+				overflow: hidden;
+			}
+			#loadBin{color: #5d5d5d;text-align: center;line-height: 30px;}
+		</style>
+	</head>
+	<body class="box">
+		<!--正文区域-->
+		<div id="infolistTop" class="top1top2">
+			<div class="contain maxWidth">
+				<a class="hz back" href="javascript:location.href='/Member';">&#xe600;</a>消息列表
+			</div>
+		</div>
+		<div id="infolistMain" class="fastscroll">
+			<div class="contain maxWidth">
+				<div id="wrapper" class="maxWidth">
+					<div>
+						<ul class="list">
+						<volist name="list" id="item">
+							<li>
+								<div class="top clear">
+									<p class="l">拼团消息<span>1</span></p>
+									<p class="r">{$item.addtime|date="Y-m-d H:i:s",###}</p>
+								</div>
+								<div class="bot">
+									{$item.content}
+								</div>
+							</li>
+						</volist>
+						</ul>
+						<div id="loadBin"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			//返回按钮
+			$('#infolistTop .back').on('tap',function(){
+				window.history.go(-1);
+			});
+
+			//iscroll 下拉加载+zeptoajax
+			function onload(){
+				loadBin = document.getElementById("loadBin");
+				myScroll = new IScroll('#wrapper',{
+					probeType: 3,
+					click:true
+				});
+				myScroll.on("scroll",scrollFun);
+				myScroll.on("scrollEnd",scrollEndFun);
+			}
+
+			var page=1;
+			var myScroll,
+				loadBin,
+				isload = false,
+				scrollFun = function(){
+					if((this.y - this.maxScrollY)>>0 < -50){
+						isload = true;
+						loadBin.innerHTML = "松开手指加载更多";
+						myScroll.refresh();
+						myScroll.off("scroll",scrollFun);
+					}
+				},
+				scrollEndFun = function(){
+					if(isload){
+						isload = false;
+
+						$.ajax({
+							type: 'GET',
+							url: 'data/我的账户余额收入明细.html',
+							dataType: 'json',
+							success: function(data){
+								page++;
+								for(var i=0;i<data.lists.length;i++){
+									$('#wrapper .list').append(
+										'<li>\
+											<div class="top clear">\
+												<p class="l">拼团消息<span>1</span></p>\
+												<p class="r">2016-10-10 16:10:16</p>\
+											</div>\
+											<div class="bot">\
+												您已拼团成功\
+											</div>\
+										</li>'
+									);
+								}
+								loadBin.innerHTML = "";
+								myScroll.on("scroll",scrollFun);
+								myScroll.refresh();
+							},
+							error: function(xhr, type){
+								console.log('Ajax error!');
+							}
+						});
+					}
+				};
+		</script>
+	</body>
+</html>

@@ -1,0 +1,449 @@
+<extend name="Public/base"/>
+
+<block name="body">
+
+<link rel="stylesheet" href="__STATIC__/kindeditor/default/default.css" />
+<script charset="utf-8" src="__STATIC__/kindeditor/kindeditor-min.js"></script>
+<script charset="utf-8" src="__STATIC__/kindeditor/zh_CN.js"></script>
+<link href="__STATIC__/datetimepicker/css/datetimepicker.css" rel="stylesheet" type="text/css">
+<php>if(C('COLOR_STYLE')=='blue_color') echo '<link href="__STATIC__/datetimepicker/css/datetimepicker_blue.css" rel="stylesheet" type="text/css">';</php>
+<link href="__STATIC__/datetimepicker/css/dropdown.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="__STATIC__/datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript" src="__STATIC__/datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+<script charset="utf-8" src="http://map.qq.com/api/js?v=2.exp"></script>
+<script type="text/javascript">
+
+$(function(){
+    $('.date').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language:"zh-CN",
+        minView:2,
+        autoclose:true
+    });
+    $('.time').datetimepicker({
+        format: 'yyyy-mm-dd hh:ii',
+        language:"zh-CN",
+        minView:2,
+        autoclose:true
+    });
+    showTab();
+
+});
+</script>
+	<script type="text/javascript" src="__STATIC__/uploadify/jquery.uploadify.min.js"></script>
+	<div class="main-title">
+		<h2>添加酒店</h2>
+	</div>
+	<div class="tab-wrap">
+		<div class="tab-content">
+			<form action="{:U('Hotel/doadd')}" method="post" class="form-horizontal" enctype="multipart/form-data">
+				<!-- 基础 -->
+				<div id="tab1" class="tab-pane in tab1">
+					<div class="form-item">
+						<label class="item-label">
+							酒店名称<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+							<input type="text" name="title" class="text input-large" value="" required="required"><span class="check-tips"></span>
+						</div>
+						<label class="item-label">
+							缩略图<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+							<div class="controls">
+								<input type="file" id="z_img">
+								<input type="hidden" name="image" id="z_img_id" value="" required="required"/>
+								<div class="upload-img-box"></div>
+							</div>
+							<script type="text/javascript">
+								//上传图片
+								/* 初始化上传插件 */
+								$("#z_img").uploadify({
+									"height"          : 30,
+									"swf"             : "/Public/static/uploadify/uploadify.swf",
+									"fileObjName"     : "download",
+									"buttonText"      : "上传图片",
+									"uploader"        : "{:U('File/uploadPicture',array('session_id'=>session_id()))}",
+									"width"           : 120,
+									'removeTimeout'	  : 1,
+									'fileTypeExts'	  : '*.jpg; *.png; *.gif;',
+									"onUploadSuccess" : z_img_id,
+									'onFallback' : function() {
+										alert('未检测到兼容版本的Flash.');
+									}
+								});
+								function z_img_id(file, data){
+									var data = $.parseJSON(data);
+									var src = '';
+									if(data.status){
+										$("#z_img_id").val(data.path);
+										src = data.url || '' + data.path
+										$("#z_img_id").parent().find('.upload-img-box').html(
+											'<div class="upload-pre-item"><img src="' + src + '"/></div>'
+										);
+									} else {
+										updateAlert(data.info);
+										setTimeout(function(){
+											$('#top-alert').find('button').click();
+											$(that).removeClass('disabled').prop('disabled',false);
+										},1500);
+									}
+								}
+								</script>
+						</div>
+						
+						<label class="item-label">
+							酒店logo<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+							<div class="controls">
+								<input type="file" id="z_img1">
+								<input type="hidden" name="logo" id="z_img_id1" value="" required="required"/>
+								<div class="upload-img-box"></div>
+							</div>
+							<script type="text/javascript">
+								//上传图片
+								/* 初始化上传插件 */
+								$("#z_img1").uploadify({
+									"height"          : 30,
+									"swf"             : "/Public/static/uploadify/uploadify.swf",
+									"fileObjName"     : "download",
+									"buttonText"      : "上传图片",
+									"uploader"        : "{:U('File/uploadPicture',array('session_id'=>session_id()))}",
+									"width"           : 120,
+									'removeTimeout'	  : 1,
+									'fileTypeExts'	  : '*.jpg; *.png; *.gif;',
+									"onUploadSuccess" : z_img_id1,
+									'onFallback' : function() {
+										alert('未检测到兼容版本的Flash.');
+									}
+								});
+								function z_img_id1(file, data){
+									var data = $.parseJSON(data);
+									var src = '';
+									if(data.status){
+										$("#z_img_id1").val(data.path);
+										src = data.url || '' + data.path
+										$("#z_img_id1").parent().find('.upload-img-box').html(
+											'<div class="upload-pre-item"><img src="' + src + '"/></div>'
+										);
+									} else {
+										updateAlert(data.info);
+										setTimeout(function(){
+											$('#top-alert').find('button').click();
+											$(that).removeClass('disabled').prop('disabled',false);
+										},1500);
+									}
+								}
+								</script>
+						</div>
+						<label class="item-label2">
+							幻灯片<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+							<div class="controls">
+								<input type="file" id="sliders">
+								<input type="hidden" name="imglist" id="z_sliders" value=""/>
+								<div class="upload-img-box"></div>
+							</div>
+							<script type="text/javascript">
+								//上传图片
+								/* 初始化上传插件 */
+								$("#sliders").uploadify({
+									"height"          : 30,
+									"swf"             : "/Public/static/uploadify/uploadify.swf",
+									"fileObjName"     : "download",
+									"buttonText"      : "上传图片",
+									"uploader"        : "{:U('File/uploadPicture',array('session_id'=>session_id()))}",
+									"width"           : 120,
+									'removeTimeout'	  : 1,
+									'fileTypeExts'	  : '*.jpg; *.png; *.gif;',
+									"onUploadSuccess" : z_sliders_id,
+									'onFallback' : function() {
+										alert('未检测到兼容版本的Flash.');
+									}
+								});
+								function z_sliders_id(file, data){
+									var data = $.parseJSON(data);
+									var src = '';
+									if(data.status){
+										imglist=$('#z_sliders').val();
+										if(imglist=='')
+										{
+											imglist=data.id;
+										}
+										else
+										{
+											imglist=imglist+','+data.id;
+										}
+										$('#z_sliders').val(imglist);
+										src = data.url || '' + data.path
+										$("#z_sliders").parent().find('.upload-img-box').append(
+											'<div class="upload-pre-item1"><img src="' + src + '" width="100" height="100" onclick="delthispic(this,'+data.id+')"/></div>'
+										);
+									} else {
+										updateAlert(data.info);
+										setTimeout(function(){
+											$('#top-alert').find('button').click();
+											$(that).removeClass('disabled').prop('disabled',false);
+										},1500);
+									}
+								}
+								</script>
+						</div>
+						<label class="item-label">
+							菜系<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+							<input type="text" name="cookstyle" class="text input-large" value="" required="required"><span class="check-tips"></span>
+						</div>
+						<label class="item-label">酒店介绍<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+						<textarea name="content"></textarea>
+						</div>
+						<label class="item-label">菜品介绍<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+						<textarea name="brief"></textarea>
+						<script type="text/javascript">
+							var editor0;
+							KindEditor.ready(function(K) {
+								editor0 = 
+								K.create('textarea[name="content"]', {
+									allowFileManager : false,
+									themesPath: K.basePath,
+									width: '80%',
+									height: '300px',
+									resizeType: 2,
+									pasteType : 2,
+									urlType : 'absolute',
+									fileManagerJson : "{:U('fileManagerJson')}",
+									uploadJson : '{:addons_url("EditorForAdmin://Upload/ke_upimg")}'
+								});
+							});
+							$(function(){
+								//传统表单提交同步
+								$('textarea[name="content"]').closest('form').submit(function(){
+									editor0.sync();
+								});
+								//ajax提交之前同步
+								$('button[type="submit"],#submit,.ajax-post').click(function(){
+									editor0.sync();
+								});
+							})
+						
+							var editor1;
+							KindEditor.ready(function(K) {
+								editor1 = 
+								K.create('textarea[name="brief"]', {
+									allowFileManager : false,
+									themesPath: K.basePath,
+									width: '80%',
+									height: '300px',
+									resizeType: 2,
+									pasteType : 2,
+									urlType : 'absolute',
+									fileManagerJson : "{:U('fileManagerJson')}",
+									uploadJson : '{:addons_url("EditorForAdmin://Upload/ke_upimg")}'
+								});
+							});
+							$(function(){
+								//传统表单提交同步
+								$('textarea[name="brief"]').closest('form').submit(function(){
+									editor1.sync();
+								});
+								//ajax提交之前同步
+								$('button[type="submit"],#submit,.ajax-post').click(function(){
+									editor1.sync();
+								});
+							})
+						</script>
+						</div>
+						
+						<label class="item-label">
+							酒店地址<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+							<input type="text" name="address" class="text input-large" value="" required="required"><span class="check-tips"></span>
+							<input type="button" class="btn" style="margin-left: 15px;" value="查询" onclick="javascript:search();"/>
+						</div>
+						
+			            <label class="item-label">经度坐标</label>
+			            <div class="controls">
+			                <input type="text" id="resultx_" class="text input-large" name="sjingdu" value="{$vo.lng}">
+			            </div>
+            
+			            <label class="item-label">纬度坐标</label>
+			            <div class="controls">
+			                <input type="text" id="resulty_" class="text input-large" name="sweidu" value="{$vo.lat}">
+			            </div>
+	        			<div style="width:600px;height:500px;border:0px solid gray;" id="container"></div>
+                  
+						<label class="item-label">
+							预定电话<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+							<input type="text" name="phone" class="text input-large" value=""><span class="check-tips"></span>
+						</div>
+						<label class="item-label">
+							排序<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+							<input type="text" name="oid" class="text input-large" value="0"><span class="check-tips"></span>
+						</div>
+						
+					</div>
+				</div>
+
+				<div class="form-item">
+					<input type="hidden" name="__forward__" class="text input-large" value="{$__forward__}">
+					<input type="hidden" name="position_id" class="text input-large" value="{$Think.get.hid}"><span class="check-tips"></span>
+					<button type="submit" id="submit" class="btn submit-btn ajax-post" target-form="form-horizontal">确 定</button>
+					<button class="btn btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
+				</div>
+			</form>
+		</div>
+	</div>
+	<script>
+		//导航高亮
+		//highlight_subnav("{:U('Hotel/index')}");
+
+	function delthispic(obj,dataid){
+		if(!confirm("确认删除此图？"))return false;
+		/*var dataid=$(obj).attr('dataid');
+		$('.input_upload_all').val($('.input_upload_all').val().replace(dataid, ""));*/
+		var str='';
+		list=$('#z_sliders').val();
+		arr=list.split(',');
+		for(var i=0;i<arr.length;i++)
+		{
+			if(arr[i]==dataid)continue;
+			if(str=='')
+			{
+				str=arr[i];
+			}
+			else
+			{
+				str=str+','+arr[i];
+			}
+		}
+		$('#z_sliders').val(str);
+		$(obj).parent().remove();
+	}
+	</script>
+	<script>
+    
+  	var searchService, markers = [];
+	function init() {
+		//设置地图中心点
+	  	var myLatlng = new qq.maps.LatLng(39.11234352310039,117.1485471727101);
+	  	//定义工厂模式函数
+	  	var myOptions = {
+	    	zoom: 12,               //设置地图缩放级别
+	    	center: myLatlng,      //设置中心点样式
+	    	mapTypeId: qq.maps.MapTypeId.ROADMAP  //设置地图样式详情参见MapType
+	  	}
+	  	//获取dom元素添加地图信息
+	  	var map = new qq.maps.Map(document.getElementById("container"), myOptions);
+
+	  	//绑定单击事件添加参数
+	  	qq.maps.event.addListener(map, 'click', function(event) {
+		  	$("input[name = 'sjingdu']").val(event.latLng.getLng());		//精度
+	      	$("input[name = 'sweidu']").val(event.latLng.getLat());		//纬度
+	      	
+	  	});
+		  
+	  	var marker = new qq.maps.Marker({
+	         position: myLatlng,
+	         map: map,
+	     });
+	   	 var anchor = new qq.maps.Point(0, 30),
+	           size = new qq.maps.Size(20, 25),
+	           origin = new qq.maps.Point(0, 0),
+	 	      markerIcon = new qq.maps.MarkerImage(
+	       "__PUBLIC__/Admin/images/point.png",
+	       size, 
+	       origin,
+	       anchor
+	     );
+	     marker.setIcon(markerIcon);
+	  	var latlngBounds = new qq.maps.LatLngBounds();
+	  	//设置Poi检索服务，用于本地检索、周边检索
+	  	searchService = new qq.maps.SearchService({
+	      	//设置搜索范围为北京
+	      	location: '天津',
+	      	//设置搜索页码为1
+	      	pageIndex: 1,
+	      	//设置每页的结果数为5
+	      	pageCapacity: 5,
+	      	//设置展现查询结构到infoDIV上
+	      	panel: document.getElementById('infoDiv'),
+	      	//设置动扩大检索区域。默认值true，会自动检索指定城市以外区域。
+	      	autoExtend: true,
+	      	//检索成功的回调函数
+	      	complete: function(results) {
+	          	//设置回调函数参数
+	          	var pois = results.detail.pois;
+	          	for (var i = 0, l = pois.length; i < l; i++) {
+	              	var poi = pois[i];
+	              	//扩展边界范围，用来包含搜索到的Poi点
+	              	latlngBounds.extend(poi.latLng);
+	              	var marker = new qq.maps.Marker({
+	                  	map: map,
+	                  	position: poi.latLng
+	              	});
+	              	marker.setIcon(markerIcon);
+	              	marker.setTitle(i + 1);
+	
+	              	markers.push(marker);
+	
+	          	}
+	          	//调整地图视野
+	          	map.fitBounds(latlngBounds);
+	      	},
+	      	//若服务请求失败，则运行以下函数
+	      	error: function() {
+	          	alert("为搜索到地址");
+	      	}
+	  	});
+	  	
+	}
+  	//清除地图上的marker
+    function clearOverlays(overlays) {
+        var overlay;
+        while (overlay = overlays.pop()) {
+            overlay.setMap(null);
+        }
+    }
+  	//设置搜索的范围和关键字等属性
+    function search() {
+  	  	var keyword = $("input[name='address']").val();
+  	  	if(keyword==""){
+  	  		alert("搜索地址不能为空");return;
+  	  	}
+        //var keyword = document.getElementById("keyword").value;
+        clearOverlays(markers);
+        //根据输入的城市设置搜索范围
+        // searchService.setLocation("北京");
+        //根据输入的关键字在搜索范围内检索
+        searchService.search(keyword);
+    }
+  	//异步加载地图库函数文件
+	function loadScript() {
+	  //创建script标签
+	  var script = document.createElement("script");
+	  //设置标签的type属性
+	  script.type = "text/javascript";
+	  //设置标签的链接地址
+	  script.src = "http://map.qq.com/api/js?v=2.exp&callback=init";
+	  //添加标签到dom
+	  document.body.appendChild(script);
+	}
+	
+	window.onload = loadScript;    // dom文档加载结束开始加载 此段代码
+
+  
+
+</script>
+</block>

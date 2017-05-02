@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+	<head> 
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>{:C('WEB_SITE_TITLE')}</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/jquery-1.8.3.min.js"></script>
+		<script src="__PUBLIC__/Home/js/iscroll-probe.js"></script>
+		<script src="__PUBLIC__/Home/js/delIOS_huitan.js"></script>
+		<style>
+			/*下拉加载样式*/
+			#wrapper {
+				position: absolute;
+				z-index: 1;
+				top: 0;
+				bottom: 0;
+				left: 0;
+				width: 100%;
+				overflow: hidden;
+			}
+			#loadBin{color: #5d5d5d;text-align: center;line-height: 30px;}
+			.noData{color:gray;}
+		</style>
+	</head>
+	<body class="box" onload="onload()">
+		<!--正文区域-->
+		<div id="accountYueTop" class="top1top2">
+			<div class="contain maxWidth">
+				<div class="top1">
+					<a class="hz back" href="{:U('Index/index')}">&#xe600;</a>账户余额
+				</div>
+				<div class="middle">
+					<span class="sanjiaoGray"></span>
+					<span class="sanjiaoWhite"></span>
+					<p class="title">可用余额<span><em>{$user.money}</em>元</span></p>
+					<p class="btns">
+						<a href="__URL__/recharge" class="bgbtn orange fl">充值</a>
+						<a href="__URL__/withdraw" class="bgbtn fl">提现</a>
+					</p>
+				</div>
+				<div class="top2">
+					<ul class="clear">
+						<li><a href="__URL__/balance">收入明细</a></li>
+						<li class="active"><a href="javascript:;">支出明细</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div id="accountYueMain" class="fastscroll">
+			<div class="contain maxWidth">
+				<div id="wrapper" class="maxWidth">
+					<div>
+						<!--收入明细 支出明细 公用一个ul-->
+						<ul class="list ullistlr2line">
+						<volist name="list" id="item">
+							<li>
+								<div class="clear top">
+									<p class="left danhao">
+										{$item.title}
+									</p>
+									<p class="right price textR">
+										-&yen;<span>{$item.money}</span>
+									</p>
+								</div>
+								<div class="clear">
+									<p class="left">{:date('Y-m-d',$item['addtime'])}</p>
+								</div>
+							</li>
+						</volist>
+						</ul>
+						<div id="loadBin"></div>
+						<!-- 暂无数据 -->
+						<div class="noData" style="display:none"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			checknoData();
+			function checknoData(){
+				var windowH=window.innerHeight;
+				var h=windowH-224+'px';
+				$('.noData').css({
+					'height':h,
+					'line-height':h
+				});
+
+				var len=$('#wrapper ul > li').length;
+				if(len==0){
+					$('.noData').text('暂无数据').show();
+				}
+			}
+
+			//iscroll 下拉加载
+			function onload(){
+				loadBin = document.getElementById("loadBin");
+				myScroll = new IScroll('#wrapper',{
+					probeType: 3,
+					click:true
+				});
+				myScroll.on("scroll",scrollFun);
+				myScroll.on("scrollEnd",scrollEndFun);
+			}
+
+			var page=2;
+			var myScroll,
+				loadBin,
+				isload = false,
+				scrollFun = function(){
+					if((this.y - this.maxScrollY)>>0 < -50){
+						isload = true;
+						loadBin.innerHTML = "松开手指加载更多";
+						myScroll.refresh();
+						myScroll.off("scroll",scrollFun);
+					}
+				},
+				scrollEndFun = function(){
+					if(isload){
+						isload = false;
+
+						 $.ajax({
+						 	type: 'GET',
+						 	url: '__URL__/ajaxGetMoreIncome',
+						 	data:{page:page,type:0},
+						 	dataType: 'json',
+						 	success: function(data){
+								if(data.length>0){
+									page++;
+									var str='';
+									for(var i=0;i<data.length;i++){
+										str+='<li>\
+												<div class="clear top">\
+													<p class="left danhao">'+data[i].title+'</p>\
+													<p class="right price textR">\
+														-&yen;<span>'+data[i].money+'</span>\
+													</p>\
+												</div>\
+												<div class="clear">\
+													<p class="left">'+data[i].time+'</p>\
+												</div>\
+											</li>';
+									}
+									$('#wrapper .list').append(str);
+
+									loadBin.innerHTML = "";
+									myScroll.on("scroll",scrollFun);
+									myScroll.refresh();
+								}else{
+									loadBin.innerHTML = "没有更多数据了";
+									myScroll.on("scroll",function(){});
+									myScroll.refresh();
+								}
+						 	},
+						 	error: function(xhr, type){
+						 		console.log('Ajax error!');
+						 	}
+						 });
+					}
+				};
+		</script>
+	</body>
+</html>

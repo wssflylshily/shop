@@ -1,0 +1,134 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>{:C('WEB_SITE_TITLE')}</title>
+<meta name="description" content="{:C('WEB_SITE_DESCRIPTION')}" />
+<meta name="keywords" content="{:C('WEB_SITE_KEYWORD')}" />
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, width=device-width">
+<link href="__PUBLIC__/Home/css/weui.min.css" rel="stylesheet" />
+<link href="__PUBLIC__/Home/css/jquery-weui.css" rel="stylesheet" />
+<link href="__PUBLIC__/Home/css/swiper.min.css" rel="stylesheet" />
+<link href="__PUBLIC__/Home/css/common.css" rel="stylesheet" />
+<link href="__PUBLIC__/Home/css/style.css" rel="stylesheet" />
+<script src="__PUBLIC__/Home/js/jquery-1.8.3.min.js"></script>
+<script src="__PUBLIC__/Home/js/common.js"></script>
+<script src="__PUBLIC__/Home/js/swiper-3.3.1.jquery.min.js"></script>
+<include file="Public/weixin"/>
+<script>
+$(function(){
+	$(".sort_classId li").click(function(){
+		var $id=$(this).attr("data-id"),
+		html="",
+		$sort_name=$(this).parents(".sort_classId").next();
+		
+		$(this).addClass("cur").siblings().removeClass("cur");
+		
+		$.ajax({
+			   url:"{:U('Product/ajaxgetlist')}",
+				data:{catid:$id},
+				error: function(){
+					wrx_alert("访问超时!");
+				},
+				success:function(data){
+					for( var i=0;i<data.length;i++)
+					{
+						//console.log(data[i]['list']);
+						html+="<h2>"+data[i].title+"</h2><ul class=\"clear\">"
+						for(var j=0;j<data[i]['list'].length;j++)
+						{
+							html+="<li class=\"l col-sm-4\"><a href='#' data-id="+data[i]['list'][j].id+">"+data[i]['list'][j].title+"</a></li>"
+						}
+						html+="</ul>"
+						
+					}
+					$sort_name.html(html);
+	$(".sort_className ul li a").click(function(){
+		var dataId=$(this).attr("data-id");
+		$('#cat_id').val(dataId);
+		$(this).addClass("cur");
+		
+		$(this).parents("ul").siblings().children("li").children("a").removeClass("cur")
+		$(this).parent().siblings().children().removeClass("cur");
+	});
+				}
+			});
+			
+		
+	});
+	$(".sort_className ul li a").click(function(){
+		var dataId=$(this).attr("data-id");
+		
+		$(this).addClass("cur");
+		
+		$(this).parents("ul").siblings().children("li").children("a").removeClass("cur")
+		$(this).parent().siblings().children().removeClass("cur");
+	});
+})
+</script>
+</head>
+<body>
+<!--top-->
+<div class="g_wrap top">
+	<table>
+    	<tr>
+        	<td width="10%"><a href="/"><img src="__PUBLIC__/Home/images/icon1_03.png" class="img2" /></a></td>
+            <td colspan="2">
+            	<!--搜索-->
+                <div class="search">
+                <!--<form action="search.html" method="get">-->                
+                    <input name="search_text" id="keywords" type="text" class="ip1" placeholder="请输入要查询的产品名称" />
+					<input type="hidden" id="cat_id" value="0" />
+                    <input name="submit" type="submit" class="ip2" value="搜索" onclick="search()"/>
+                <!--</form>-->
+                </div>
+             </td>
+        </tr>
+    </table>
+</div>
+<script>
+function search()
+{
+	window.location.href='/Product?keywords='+$('#keywords').val();
+}
+</script>
+<!--content-->
+<div class="container g_wrap">
+   <div class="sort_classId">
+   		<ul>
+			<volist name="list" id="item" key="key">
+        	<li data-id="{$item.id}" <if condition="$key eq 1">class="cur"</if>>{$item.title}</li>
+			</volist>
+			<!--
+            <li data-id="">小米路由器</li>
+            <li data-id="">交换机</li>
+            <li data-id="">光纤设备</li>
+            <li data-id="">光纤设备</li>
+            <li data-id="">光纤设备</li>
+			-->
+        </ul>
+   </div>
+   <div class="sort_className">
+		<volist name="list" id="item" key="key">
+		<volist name="item.list" id="val" key="k">
+   		<h2>{$val.title}</h2>
+        <ul class="clear">
+			<volist name="val.list" id="vv" key="v">
+        	<li class="l col-sm-4"><a href="{:U('Product/index',array('id'=>$vv['id']))}" data-id="{$vv.id}">{$vv.title}</a></li>
+			</volist>
+			<!--
+            <li class="l col-sm-4"><a href="#" data-id="">家用</a></li>
+            <li class="l col-sm-4"><a href="#" data-id="" class="cur">网络安全</a></li>
+            <li class="l col-sm-4"><a href="#" data-id="">多业务</a></li>
+            <li class="l col-sm-4"><a href="#" data-id="">宽带路由器</a></li>-->
+        </ul>
+		</volist>
+		</volist>
+   </div>
+</div>
+
+<script src="__PUBLIC__/Home/js/jquery-2.1.4.js"></script>
+<script src="__PUBLIC__/Home/js/jquery-weui.js"></script>
+</body>
+</html>

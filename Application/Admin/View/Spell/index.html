@@ -1,0 +1,100 @@
+<extend name="Public/base"/>
+
+<block name="body">
+	<div class="main-title">
+		<h2>拼团列表</h2>
+	</div>
+
+	<div class="cf">
+		<present name="Think.get.hid">
+			<a class="btn" href="{$Think.get.refer|base64_decode}">返 回</a>
+		</present>
+		<a class="btn" href="__URL__/add">新 增</a>
+		<a class="btn" href="{:U('index')}">全部</a>
+		<a class="btn" href="{:U('index',array('state'=>1))}">未开始</a>
+		<a class="btn" href="{:U('index',array('state'=>2))}">拼团中</a>
+		<a class="btn" href="{:U('index',array('state'=>3))}">已结束</a>
+		<!-- <a class="btn" href="{:U('index',array('state'=>4))}">拼团失败</a> -->
+	</div>
+
+	<div class="data-table table-striped">
+		<table>
+			<thead>
+				<tr>
+					<th class="row-selected">
+						<input class="checkbox check-all" type="checkbox">
+					</th>
+					<th>ID</th>
+					<th>拼团名称</th>
+					<th>开始日期</th>
+					<th>截止日期</th>
+					<th>开团人数</th>
+                    <th>拼团状态</th>
+					<th>操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				<notempty name="list">
+				<volist name="list" id="item">
+					<tr>
+						<td><input class="ids row-selected" type="checkbox" name="" id="" value="{$item['id']}"> </td>
+						<td>{$item.id}</td>
+						<td width="500"><a href="__URL__/info/id/{$item.id}">{$item.title}</a></td>
+                        <td>{:date('Y-m-d H:i:s',$item['start_date'])}</td>
+                        <td>{:date('Y-m-d H:i:s',$item['end_date'])}</td>
+                        <td><span>{$item.num}</td>
+                        <td>
+                        	{$statusarr[$item['state']]}
+                   			
+                        </td>
+						<td>
+						<if condition="$item.state eq 1 or $item['teamnum'] lt 1">
+						<a title="编辑" href="__URL__/edit/id/{$item.id}">编辑</a>&nbsp;&nbsp;
+						<!-- <a class="confirm ajax-get" title="删除" href="__URL__/del/id/{$item.id}">删除</a> -->
+						</if>
+						<if condition="$item.state gt 1 and $item['teamnum'] gt 0">
+						<a title="开团人员" href="__URL__/teams/id/{$item.id}">开团人员</a>&nbsp;&nbsp;
+						</if>
+						
+						<a class="confirm ajax-get" href="__URL__/updateStatus/id/{$item.id}/status/0">删除</a>&nbsp;&nbsp;
+						
+						<a title="预览" href="{:U('/Home/Spell/detail',array('id'=>$item['id']))}" target="_blank">预览</a>&nbsp;&nbsp;
+						</td>
+					</tr>
+				</volist>
+				<else/>
+				<td colspan="8" class="text-center"> aOh! 暂时还没有内容! </td>
+				</notempty>
+			</tbody>
+		</table>
+	</div>
+		<div class="page">
+        {$page}
+		</div>
+</block>
+
+<block name="script">
+<script type="text/javascript">
+	//导航高亮
+	highlight_subnav('{:U('Spell/index')}');
+    $(function() {
+    	//点击排序
+    	$('.list_sort').click(function(){
+    		var url = $(this).attr('url');
+    		var ids = $('.ids:checked');
+    		var param = '';
+    		if(ids.length > 0){
+    			var str = new Array();
+    			ids.each(function(){
+    				str.push($(this).val());
+    			});
+    			param = str.join(',');
+    		}
+
+    		if(url != undefined && url != ''){
+    			window.location.href = url + '/ids/' + param;
+    		}
+    	});
+    });
+</script>
+</block>

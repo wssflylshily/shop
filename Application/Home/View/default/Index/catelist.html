@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html style="max-width: 720px">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>{:C('WEB_SITE_TITLE')}</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/jquery-1.8.3.min.js"></script>
+		<script src="__PUBLIC__/Home/js/common.js"></script>
+		<script src="__PUBLIC__/Home/js/delIOS_huitan.js"></script>
+	</head>
+	<body style="background:#fff" class="box">
+		<div id="listTop">
+			<div class="maxWidth clear">
+				<span class="hz search">&#xe6e5;</span>
+				<a href="javascript:;" class="sou">搜索</a>
+				<div class="inputArea">
+					<input type="text" placeholder="请输入您想要的商品名"/>
+				</div>
+			</div>
+		</div>
+		<div id="listMain" class="fastscroll">
+			<div class="maxWidth clear">
+				<ul class="leftflow">
+					<volist name="catelist" id="cate">
+					<li data-id="{$cate.id}"><if condition="$cate['icon'] gt 0"><img src="{$cate.image}" /></if>{$cate.title}</li>
+					</volist>
+					<!-- <li><img src="../../../../../Public/Home/img/listicon.jpg" />休闲零食</li>-->
+				</ul>
+				<div class="rightflow">
+					<ul class="lie clear">
+						<volist name="prolist" id="pro">
+						<li>
+							<a href="{:U('Product/detail',array('id'=>$pro['id']))}">
+								<img src="{$pro.image}"/>
+								<div class="line1">{$pro.title}</div>
+								<div class="line2">
+									<span class="xian">&yen;<span class="money">{$pro.gprice}</span></span>
+									<del>&yen;<span class="money">{$pro.market_price}</span></del>
+								</div>
+							</a>
+						</li>
+						</volist>
+						<!-- <li>
+							<a href="javascript:;">
+								<img src="../../../../../Public/Home/img/index/compro.jpg"/>
+								<div class="line1">美颂翻糖蛋糕工作室姜饼</div>
+								<div class="line2">
+									<span class="xian">&yen;<span class="money">399</span></span>
+									<del>&yen;<span class="money">499</span></del>
+								</div>
+							</a>
+						</li> -->
+					</ul>
+					<div class="noData" style="display: none;"></div>
+				</div>
+			</div>
+		</div>
+		<include file="Public:footer" />
+		<!--提示文字-->
+		<div class="tip" style="opacity: 0;z-index: -1"></div>
+
+
+		<script>
+			//tip
+			function tipFun(str){
+				$('.tip').text(str).css({
+					'opacity':'1',
+					'z-index':'9999'
+				});
+				setTimeout(function(){
+					$('.tip').css('opacity','0');
+					setTimeout(function(){
+						$('.tip').css('z-index','-1');
+					},300);
+				},1300);
+			}
+			
+			//给左侧第一个加class on
+			$('#listMain .leftflow li').eq(0).addClass('on');
+
+			//设置noData的行高
+			setNoDataLineH();
+			function setNoDataLineH(){
+				var windowH=window.innerHeight;
+				$('#listMain .noData').css('line-height',windowH-100+'px');
+			}
+
+			//检查 有无数据 右侧
+			checkNoData();
+			function checkNoData(){
+				var len=$('#listMain .rightflow .lie li').length;
+				if(len==0){
+					$('#listMain .noData').text('当前分类下无商品喔').show();
+				}else if(len>0){
+					$('#listMain .noData').hide();
+				}
+			}
+
+			//设置右侧区域图片的高度 并且 设置money有.00
+			setRightimgH();
+			function setRightimgH(){
+				//345 300
+				var w=$('#listMain .rightflow .lie li img').width();
+				$('#listMain .rightflow .lie li img').height(300*w/345);
+
+				//money
+				CashToZero1('#listMain .money');
+			}
+
+			//点击搜索
+			$('#listTop .sou').on('click',function(){
+				var cate = $('#listMain .leftflow li.on').attr('data-id');
+				var v = $('#listTop input').val();
+				if(!notEmpty(v)){
+					tipFun('请输入您想要的商品名');
+					return;
+				}
+
+				//搜索操作
+				//右侧需要改变内容
+				$.ajax({
+					type: 'POST',
+					url: "__URL__/ajaxgetproducts",
+					dataType: 'json',
+					data:{cate:cate,keywords:v},
+					success: function(data){
+						$('#listMain .rightflow .lie').html('');//清空
+						var str='';
+						if(data.length>0){
+							for(var i=0;i<data.length;i++){
+								str+='<li>\
+										<a href="/index.php?s=/Product/detail/id/'+data[i].id+'">\
+											<img src="'+data[i].image+'"/>\
+											<div class="line1">'+data[i].title+'</div>\
+											<div class="line2">\
+												<span class="xian">&yen;<span class="money">'+data[i].gprice+'</span></span>\
+												<del>&yen;<span class="money">'+data[i].market_price+'</span></del>\
+											</div>\
+										</a>\
+									</li>';
+							}
+							$('#listMain .rightflow .lie').append(str);
+							setRightimgH();
+							$('#listMain .rightflow').scrollTop(0);
+							checkNoData();
+						}
+					},
+					error: function(xhr, type){
+						console.log('Ajax error!');
+					}
+				});
+			});
+
+			//点击左侧的li
+			$('#listMain .leftflow li').on('click',function(){
+				$(this).addClass('on').siblings().removeClass('on');
+				var catid = $(this).attr('data-id');
+				//右侧需要改变内容
+				$.ajax({
+					type: 'POST',
+					url: "__URL__/ajaxgetproducts",
+					dataType: 'json',
+					data:{cate:catid},
+					success: function(data){
+						$('#listMain .rightflow .lie').html('');//清空
+						var str='';
+						if(data.length>0){
+							for(var i=0;i<data.length;i++){
+								str+='<li>\
+										<a href="/index.php?s=/Product/detail/id/'+data[i].id+'">\
+											<img src="'+data[i].image+'"/>\
+											<div class="line1">'+data[i].title+'</div>\
+											<div class="line2">\
+												<span class="xian">&yen;<span class="money">'+data[i].gprice+'</span></span>\
+												<del>&yen;<span class="money">'+data[i].market_price+'</span></del>\
+											</div>\
+										</a>\
+									</li>';
+							}
+							$('#listMain .rightflow .lie').append(str);
+							setRightimgH();
+							$('#listMain .rightflow').scrollTop(0);
+							checkNoData();
+
+						}
+					},
+					error: function(xhr, type){
+						console.log('Ajax error!');
+					}
+				});
+			});
+		</script>
+	</body>
+</html>

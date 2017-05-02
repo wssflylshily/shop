@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8"> 
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>{$x_title}</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/zepto.js"></script> 
+		<script src="__PUBLIC__/Home/js/common.js"></script>
+		<script src="__PUBLIC__/Home/js/delIOS_huitan.js"></script>
+	</head>
+	<body class="box">
+		<!--提示文字-->
+		<div class="tip" style="opacity: 0;z-index: -1"></div>
+		<!--正文区域-->
+		<div id="gerenGaiNameTop" class="topBackTitle">
+			<div class="contain maxWidth">
+				<a class="hz back" href="javascript:;">&#xe600;</a>{$title}<a href="javascript:;" class="save">保存</a>
+			</div>
+		</div>
+		<div id="gerenGaiNameMain" class="fastscroll top50bot0">
+		<input type="hidden" name="id" id="id" value="{$user.id}" />
+			<div class="contain maxWidth">
+				<div class="inputs">
+					<if condition="$field_name eq 'paypwd'">
+					<input type="password" name="{$field_name}" id="{$field_name}" placeholder="{$placeholder}" value="{$value}" maxlength="20">
+					<else/>
+					<input type="text" name="{$field_name}" id="{$field_name}" placeholder="{$placeholder}" value="{$value}" maxlength="20">
+					</if>
+					<span class="close">
+						<span class="hz x">&#xe625;</span>
+					</span>
+				</div>
+				<p class="info">{$ts}</p>
+			</div>
+		</div>
+
+		<script>
+			//返回按钮
+			$('#gerenGaiNameTop .back').on('tap',function(){
+				//window.history.go(-1);
+				window.location.href='{:U('Index/baseinfo')}';
+			});
+
+			//tip
+			function tipFun(str){
+				$('.tip').text(str).css({
+					'opacity':'1',
+					'z-index':'9999'
+				});
+				setTimeout(function(){
+					$('.tip').css('opacity','0');
+					setTimeout(function(){
+						$('.tip').css('z-index','-1');
+					},300);
+				},1300);
+			}
+
+			//点击 x
+			$('#gerenGaiNameMain .inputs .close').on('tap',function(){
+				$('#gerenGaiNameMain .inputs input').val('');
+			});
+
+			//点击 保存
+			$('#gerenGaiNameTop .save').on('tap',function(){
+				var name=$('#gerenGaiNameMain .inputs input').val();
+				if(!notEmpty(name)){
+					tipFun("{$placeholder}");
+					return;
+				}
+				var minlen = "{$minlen}";
+				var maxlen = "{$maxlen}";
+				if(minlen!=""&&name.length<minlen){
+					tipFun('最少'+minlen+'个字符');
+					return;
+				}
+				if(maxlen!=""&&name.length>maxlen){
+					tipFun('最多'+maxlen+'个字符');
+					return;
+				}
+				name = $.trim(name);
+				if(!iscnENnum(name)){
+					tipFun('{$ts}');
+					return;
+				}
+
+				//console.log('保存操作');
+				$.ajax({
+					//提交数据的类型 POST GET
+					type:"POST",
+					//提交的网址
+					url:"__URL__/save",
+					//提交的数据
+					data:{{$field_name}:$('#{$field_name}').val(),id:$('#id').val()},
+					//返回数据的格式
+					datatype: "json",//"xml", "html", "script", "json", "jsonp", "text".
+					//在请求之前调用的函数
+					//成功返回之后调用的函数             
+					success:function(data){
+						if(data.status==0)
+						{
+							tipFun(data.info);
+							/*$.toast(data.info,'cancel', function() {
+							});*/
+						}
+						else
+						{
+							tipFun(data.info);
+							setTimeout(function(){
+								if(data.url!=''){
+									location.href = data.url;
+								}else{
+									location.href = "{:U('Index/baseinfo')}";
+								}
+							},1200);
+							//$.toast(data.info, function() {
+							//});
+						}
+						//alert(data.info);
+						//window.location.reload();
+						//$("#msg").html(decodeURI(data));            
+					}   ,
+					//调用执行后调用的函数
+					complete: function(XMLHttpRequest, textStatus){
+					   //alert(XMLHttpRequest.responseText);
+					   //alert(textStatus);
+						//HideLoading();
+					},
+					error: function(){
+					}         
+				 });
+			});
+		</script>
+	</body>
+</html>

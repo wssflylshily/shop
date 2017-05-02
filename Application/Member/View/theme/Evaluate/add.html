@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>商品评价</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/zepto.js"></script>
+	</head>
+	<body>
+		<!--正文区域-->
+		<div id="proPingjiaTop" class="topBackTitle">
+			<div class="contain maxWidth">
+				<a class="hz back" href="javascript:;">&#xe600;</a>商品评价
+			</div>
+		</div>
+		<div id="proPingjiaMain" class="fastscroll top50bot0">
+			<div class="contain maxWidth">
+				<ul class="ullist1line">
+					<li>
+						<div class="left">商品评价</div>
+						<div class="right">满意请给5星哦</div>
+					</li>
+					<li>
+						<div class="left">总体评价</div>
+						<div class="right">
+							<span class="hz">&#xe614;</span>
+							<span class="hz">&#xe614;</span>
+							<span class="hz">&#xe614;</span>
+							<span class="hz">&#xe614;</span>
+							<span class="hz">&#xe614;</span>
+						</div>
+					</li>
+				</ul>
+				<textarea class="edit" maxlength="100" placeholder='评价:100字以内'></textarea>
+				<a href="javascript:;" class="orangeBtn">发表评价</a>
+				<input type="hidden" id="order_detail_id" value="{$order_detail_id}" />
+			</div>
+		</div>
+
+		<script>
+			//返回按钮
+			$('#proPingjiaTop .back').on('tap',function(){
+				window.history.go(-1);
+			});
+
+			//点击小花
+			var starNum=null;
+			$('#proPingjiaMain .ullist1line .right .hz').on('tap',function(){
+				$('#proPingjiaMain .ullist1line .right .hz').removeClass('active');
+				starNum=$(this).index()+1;
+				for(var i=0;i<starNum;i++){
+					$('#proPingjiaMain .ullist1line .right .hz').eq(i).addClass('active');
+				}
+			});
+
+			//点击 发表评价
+			$('#proPingjiaMain .orangeBtn').on('tap',function(){
+				var pingjia=$('#proPingjiaMain textarea').val();
+				$.ajax({
+					//提交数据的类型 POST GET
+					type:"POST",
+					//提交的网址
+					url:"__URL__/insert",
+					//提交的数据
+					data:{order_detail_id:$('#order_detail_id').val(),score:starNum,content:pingjia},
+					//返回数据的格式
+					datatype: "json",//"xml", "html", "script", "json", "jsonp", "text".
+					//在请求之前调用的函数
+					//成功返回之后调用的函数             
+					success:function(data){
+						if(data.status==0)
+						{
+							//$.toast(data.info,'cancel', function() {
+							//});
+							alert(data.info);
+						}
+						else
+						{
+							window.location.reload();
+							//$.toast(data.info, function() {
+								//window.location.reload();
+							//});
+						}
+					}
+				 });
+				//console.log(starNum,pingjia);
+			});
+		</script>
+	</body>
+</html>

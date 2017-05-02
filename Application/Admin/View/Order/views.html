@@ -1,0 +1,174 @@
+<extend name="Public/base"/>
+<block name="sidebar">
+    <include file="sidemenu" />
+</block>
+<block name="body">
+	<div class="main-title">
+		<h2>订单详情查看--{$order.sn}</h2>
+	</div>
+
+	<div class="cf">
+	<if condition="$order.status eq 1">
+	<a class="btn" href='__URL__/upstatus&id={$order.id}&status=2'>发货</a>
+	</if>
+		<!--<a class="btn" href="{:U('add')}">新 增</a>-->
+		<!--<a class="btn" href="{:U('grantlist')}">授权商家</a>-->
+	</div>
+
+	<div class="tab-wrap">
+		<div class="tab-content">
+				<input type="hidden" name="id" value="{$order.id}" />
+				<!-- 基础 -->
+				<div id="tab1" class="tab-pane in tab1 dingdan">
+					<div class="form-item" style="">
+						<label class="item-label2" style="text-align: center;">
+							订单号：{$order.sn}
+						</label>
+						<br />
+						<label class="item-label2" style="text-align: center;">
+							下单时间：{$order.addtime|date="Y-m-d H:i:s",###}
+						</label>
+						<br />
+						<label class="item-label2">
+							金额：{$order.money}
+						</label>
+						<br />
+						<label class="item-label2">
+							优惠金额：<if condition="$order['coupon_id'] gt 0">{$order['coupon_money']}
+							<else/>{$order['cashcoup_money']}
+							</if>
+						</label>
+						<br />
+						<label class="item-label2">
+							支付方式：<if condition="paytype eq 1">余额支付<else/>微信支付</if>
+						</label>
+						<br />
+						<label class="item-label2">
+							取货方式：{$typearr[$order['type']]}
+						</label>
+						<br />
+						<label class="item-label2">
+							姓名：{$address.name}
+						</label>
+						<br />
+						<label class="item-label2">
+							电话：{$address.mobile}
+						</label>
+						<br />
+						<label class="item-label2">
+							区域：{$address.area}
+						</label>
+						<br />
+						<label class="item-label2">
+							地址：{$address.address}
+						</label>
+						<if condition="$order.type eq 1">
+						<br />
+						<label class="item-label2">
+							自提点名称：{$store.sname}
+						</label>
+						<br />
+						<label class="item-label2">
+							联系电话：{$store.mobile}
+						</label>
+						<br />
+						<label class="item-label2">
+							联系地址：{$store.sadd}
+						</label>
+						</if>
+						<br />
+						<label class="item-label2">
+							运费：{$order.express_money}
+						</label>
+						<br />
+						<label class="item-label2">
+							留言：{$order.note}
+						</label>
+						<br />
+						<!-- <label class="item-label2">
+							所得积分：{$integral}
+						</label>
+						<br /> -->
+					</div>
+				</div>
+		</div>
+	</div>
+
+	<div class="data-table table-striped">
+		<table>
+			<thead>
+				<tr>
+					<th class="row-selected">
+						<input class="checkbox check-all" type="checkbox">
+					</th>
+					<th>ID</th>
+					<th>商品名称</th>
+					<th>商品规格</th>
+                    <th>商品数量</th>
+                    <th>价格</th>
+					<!--
+					<th>操作</th>
+					-->
+				</tr>
+			</thead>
+			<tbody>
+				<notempty name="list">
+				<volist name="list" id="channel">
+					<tr>
+						<td><input class="ids row-selected" type="checkbox" name="" id="" value="{$channel['id']}"> </td>
+						<td>{$channel.id}</td>
+						<td>{$channel.title}</td>
+						<td>
+						<?php
+						$attrlist=explode(',',$channel['product_attr']);
+						$attr=array();
+						foreach($attrlist as $item1)
+						{
+							list($name,$value)=explode('=',$item1);
+							$attr[]=$name.'：'.$value;
+						}
+						?>
+						{:implode('；',$attr)}
+						</td>
+                        <td>{$channel.product_num}</td>
+                        <td>{$channel.product_price}</td>
+					<!--
+						<td>
+							<a class="confirm ajax-get" title="删除" href="__URL__/deldetail/id/{$channel.id}">删除</a>
+						</td>
+						-->
+					</tr>
+				</volist>
+				<else/>
+				<td colspan="6" class="text-center"> aOh! 暂时还没有内容! </td>
+				</notempty>
+			</tbody>
+		</table>
+	</div>
+</block>
+
+<block name="script">
+<script type="text/javascript">
+    $(function() {
+    	//导航高亮
+    	highlight_subnav("{:U('Order/index')}");
+    	//点击排序
+    	$('.list_sort').click(function(){
+    		var url = $(this).attr('url');
+    		var ids = $('.ids:checked');
+    		var param = '';
+    		if(ids.length > 0){
+    			var str = new Array();
+    			ids.each(function(){
+    				str.push($(this).val());
+    			});
+    			param = str.join(',');
+    		}
+
+    		if(url != undefined && url != ''){
+    			window.location.href = url + '/ids/' + param;
+    		}
+    	});
+    });
+</script>
+</block>

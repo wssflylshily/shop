@@ -1,0 +1,51 @@
+<extend name="Public/base"/>
+<block name="sidebar">
+    <include file="sidemenu" />
+</block>
+<block name="body">
+	<script type="text/javascript" src="__STATIC__/uploadify/jquery.uploadify.min.js"></script>
+	<div class="main-title">
+		<h2>快报编辑</h2>
+	</div>
+	<div class="tab-wrap">
+		<div class="tab-content">
+			<form action="__URL__/doedit" method="post" class="form-horizontal" enctype="multipart/form-data">
+				<input type="hidden" name="id" value="{$vo.id}" />
+				<!-- 基础 -->
+				<div id="tab1" class="tab-pane in tab1">
+					<div class="form-item">
+						<label class="item-label">
+							标题<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+							<input type="text" name="title" class="text input-large" value="{$vo.title}"><span class="check-tips"></span>
+						</div>
+						<label class="item-label">
+							链接地址<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+							<input type="text" name="link_url" class="text input-large" value="{$vo.link_url}"><span class="check-tips"></span>
+						</div>
+						<label class="item-label">
+							排列序号<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+							<input type="text" name="oid" class="text input-large" value="{$vo.oid}"><span class="check-tips"></span>
+						</div>
+					</div>
+				</div>
+
+				<div class="form-item">
+					<button type="submit" id="submit" class="btn submit-btn ajax-post" target-form="form-horizontal">确 定</button>
+					<button class="btn btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</block>
+<block name="script">
+<script type="text/javascript">
+//导航高亮
+highlight_subnav('{:U('Newsflash/index')}');
+</script>
+</block>

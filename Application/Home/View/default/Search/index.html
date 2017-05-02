@@ -1,0 +1,396 @@
+﻿<!DOCTYPE html>
+<html class="wh100">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>{:C('WEB_SITE_TITLE')}</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css" />
+		<script src="__PUBLIC__/Home/js/zepto.js"></script>
+		<script src="__PUBLIC__/Home/js/iscroll-probe.js"></script>
+		<script src="__PUBLIC__/Home/js/delIOS_huitan.js"></script>
+		<include file="Public/weixin"/>
+		<style> 
+			/*下拉加载样式*/
+			#wrapper {
+				position: absolute;
+				z-index: 1;
+				top: 0;
+				bottom: 0;
+				left: 0;
+				width: 100%;
+				overflow: hidden;
+			}
+			#loadBin{color: #5d5d5d;text-align: center;line-height: 30px;}
+		</style>
+	</head>
+	<body class="wh100 box" onLoad="onload()">
+		<!--遮罩层-->
+		<div id="zhezhao" style="display:none"></div>
+		<!--一开始隐藏在右侧的筛选框-->
+		<div id="fenleiShaixuan" style="display: none;" class="fastscroll">
+			<div class="top">
+				<div class="contain maxWidth">
+					<span class="hz back" onclick="javascript:hiddenonetwo()">&#xe600;</span>筛选
+				</div>
+			</div>
+			<div class="main fastscroll">
+				<div class="contain maxWidth">
+					<!--一级界面 二级界面只显示一个-->
+					<!--一级界面-->
+					<div class="oneJi">
+						<div class="price">
+							<p class="title">按价格</p>
+							<div class="content">
+								<input type="text" class="low" placeholder="最低价" id="min_price"><span class="line">——</span><input type="text" class="high" placeholder="最高价" id="max_price">
+							</div>
+						</div>
+						<div class="fenlei">
+							<p class="title">
+								<span>按分类</span>
+								<em><!--用户选了这里才会有内容--></em>
+							</p>
+							<ul class="content">
+							<volist name="onecatelist" id="item">
+								<li><a href="javascript:getsecondlist({$item.id});"><em>{$item.title}</em><span class="hz">&#xe60c;</span></a></li>
+							</volist>
+							</ul>
+						</div>
+					</div>
+<input type="hidden" id="category_id" value="" />
+<script>
+function hiddenonetwo()
+{
+	$('#fenleiShaixuan').css('display','none');
+	$('#zhezhao').css('display','none');
+	$('#fenleiShaixuan').animate({
+		'left':0
+	},500,'ease',function(){
+		//页面不许滚动
+		$('#sousuoListMain').css('overflow-y','hidden');
+	});
+	//$('#fenleiShaixuan .main .twoJi').css('display','none');
+}
+function displayone(wenzi)
+{
+	//alert('d');
+	$('#fenleiShaixuan .main .oneJi').css('display','block');
+	$('#fenleiShaixuan .main .twoJi').css('display','none');
+	//var wenzi=$(this).find('a').text();
+	//alert(wenzi);
+	$('#fenleiShaixuan .main .oneJi .fenlei .title em').text(wenzi);
+}
+function getsecondlist(category_id)
+{
+	$.ajax({
+		//提交数据的类型 POST GET
+		type:"POST",
+		//提交的网址
+		url:"__URL__/getsecondlist",
+		//提交的数据
+		data:{'category_id':category_id},
+		//返回数据的格式
+		datatype: "json",
+		success:function(data){
+			var str='<ul>';
+			for(var i=0;i<data.length;i++)
+			{
+				str+='<li><a href="javascript:$(\'#category_id\').val('+data[i].id+');displayone(\''+data[i].title+'\')">'+data[i].title+'</a></li>';
+			}
+			str+='</ul>';
+			$('#fenleiShaixuan .main .oneJi').css('display','none');
+			$('.twoJi').html(str);
+			$('.twoJi').css('display','block');
+			//$('#twoJi').show();
+			//$("#msg").html(decodeURI(data));            
+		}
+   });
+}
+function search()
+{
+	var url='/Search/index?keywords='+$('#keywords').val();
+	window.location.href=url;
+}
+</script>
+					<!--二级界面 一开始不显示-->
+					<div class="twoJi" style="display: none">
+						<ul>
+						<!--
+							<li><a href="javascript:;">豆浆机</a></li>
+							<li><a href="javascript:;">电磁炉</a></li>
+							<li><a href="javascript:;">电饭煲</a></li>
+							<li><a href="javascript:;">榨汁机</a></li>
+							<li><a href="javascript:;">养生壶</a></li>
+							<li><a href="javascript:;">净水器</a></li>
+							<li><a href="javascript:;">微波炉</a></li>
+							<li><a href="javascript:;">电烤箱</a></li>
+							<li><a href="javascript:;">电饼铛</a></li>
+							<li><a href="javascript:;">面条机</a></li>
+							<li><a href="javascript:;">咖啡机</a></li>
+						-->
+						</ul>
+					</div>
+				</div>
+			</div>
+			<div class="bot">
+				<div class="contain maxWidth">
+					<button class="reset">重置</button><button class="sure">确定</button>
+				</div>
+			</div>
+		</div>
+		<!--正文区域-->
+		<div id="sousuoListTop"> 
+			<div class="contain maxWidth clear">
+				<div class="top1">
+					<a class="hz back" href="/">&#xe600;</a>
+					<div class="ssInputArea">
+						<input type="text" id="keywords" placeholder="请输入要查询的产品名称" value="{$keywords}">
+						<span class="hz search" onclick="search()">&#xe607;</span>
+					</div>
+				</div>
+				<ul class="top2 clear">
+					<li <if condition="$order eq 0">class="active"</if>>
+						<div>
+							<a onclick="javascript:doOrder('zonghe');">
+								<span class="title">综合</span>
+								<p class="twoicon">
+									<span class="hz up <if condition='$desc eq "asc" and $order eq 0'>active</if>">&#xe60a;</span>
+									<span class="hz down <if condition='$desc eq "desc" and $order eq 0'>active</if>">&#xe608;</span>
+								</p>
+								<!-- <if condition="$order eq 0">
+								<span class="hz zh">&#xe60b;</span>
+								</if> -->
+							</a>
+						</div>
+					</li>
+					<li <if condition="$order eq 1">class="active"</if>>
+						<div>
+							<a onclick="javascript:doOrder('xiaoliang');">
+								<span class="title">销量</span>
+								<p class="twoicon">
+									<span class="hz up <if condition='$desc eq "asc" and $order eq 1'>active</if>">&#xe60a;</span>
+									<span class="hz down <if condition='$desc eq "desc" and $order eq 1'>active</if>">&#xe608;</span>
+								</p>
+								<!-- <if condition="$order eq 1">
+								<span class="hz zh">&#xe60b;</span>
+								</if> -->
+							</a>
+						</div>
+					</li>
+					<li <if condition="$order eq 2">class="active"</if>>
+						<div class="price">
+						<if condition="$desc eq 'asc'">
+							<a onclick="javascript:doOrder('price');" >
+						<else />
+							<a onclick="javascript:doOrder('price');" >
+						</if>
+								<span class="title">价格</span>
+								<p class="twoicon">
+									<span class="hz up <if condition='$desc eq "asc" and $order eq 2'>active</if>">&#xe60a;</span>
+									<span class="hz down <if condition='$desc eq "desc" and $order eq 2'>active</if>">&#xe608;</span>
+								</p>
+							</a>
+						</div>
+					</li>
+					<!-- <li>
+						<div>
+							<a href="javascript:;">
+								<span class="title">筛选</span><span class="hz sx">&#xe609;</span>
+							</a>
+						</div>
+					</li> -->
+				</ul>
+			</div>
+		</div>
+
+		
+		<div id="sousuoListMain" class="fastscroll">
+			<div class="contain maxWidth infinite-scroll infinite-scroll-bottom">
+				<div id="wrapper" class="maxWidth">
+					<div>
+						<ul class="list">
+							<volist name="list" id="item">
+							<li>
+								<a href="{:U('Product/detail',array('id'=>$item['id']))}">
+									<div class="clear">
+										<div class="left">
+											<img src="{$item.image}">
+										</div>
+										<div class="right">
+											<p class="title">{$item.title}</p>
+											<p class="price">
+												<em>&yen;{$item.gprice}</em><del>&yen;{$item.market_price}</del>
+											</p>
+											<p class="peoplemai">已有{$item.sell_num}人购买</p>
+											<span class="share"><span class="hz">&#xe60e;</span>分享</span>
+										</div>
+									</div>
+								</a>
+							</li>
+							</volist>
+						</ul>
+						<div class="noData" style="display:none">没有更多数据了</div>
+						<div id="loadBin">
+							<?php
+							if(empty($list))
+							{
+							?>
+							您搜索的{$keywords}没有相关的产品
+							<?php
+							}
+							?>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		<script>
+			//返回按钮
+			/*$('#sousuoListTop .back').on('click',function(){
+				//window.history.go(-1);
+				// location.href='{:U('Index/Index')}';
+			});*/
+
+			//小键盘弹出 底部不固定问题
+			var oldWinHeight=window.innerHeight;
+		    window.addEventListener('resize',function(){
+		        if(window.innerHeight<oldWinHeight){
+		        	//说明键盘出来了
+		            oldWinHeight=window.innerHeight;
+		            document.querySelector('#fenleiShaixuan .bot').style.position='static';
+		            document.querySelector('#fenleiShaixuan .bot').style.marginTop='-100px';
+		            document.querySelector('#fenleiShaixuan .main').style.bottom=0;
+		        }
+		        else if(window.innerHeight>oldWinHeight){
+		        	//键盘收回去了
+		            oldWinHeight=window.innerHeight;
+		            document.querySelector('#fenleiShaixuan .bot').style.position='absolute';
+		            document.querySelector('#fenleiShaixuan .bot').style.marginTop=0;
+		            document.querySelector('#fenleiShaixuan .main').style.bottom='68px';
+		        }
+		    },false);
+
+			//判断当前页面是正常进入，还是从分类界面 点击筛选进入的
+			var hrefstr=location.href;
+			if(hrefstr.indexOf('shaixuan=true')!=-1){
+				//点击筛选进入的
+				//直接打开侧边栏
+				$('#fenleiShaixuan').css('display','block');
+				$('#zhezhao').css('display','block');
+				$('#fenleiShaixuan').animate({
+					'left':0
+				},500,'ease',function(){
+					//页面不许滚动
+					$('#sousuoListMain').css('overflow-y','hidden');
+				});
+			}
+
+			//点击价格 切换箭头颜色
+			$('#sousuoListTop .top2 li div.price').on('tap',function(){
+				var oldColorUp=$(this).find('.up').css('color');
+				var oldColorDown=$(this).find('.down').css('color');
+				$(this).find('.up').css('color',oldColorDown);
+				$(this).find('.down').css('color',oldColorUp);
+			});
+
+			function doOrder(order){
+				var keywords = "{$keywords}";
+				var desc = "{$desc}";
+				var url = "{:U('Search/index')}";
+				if(keywords!="") url += "&keywords="+keywords;
+				if(order=='zonghe') url += "&order=0";
+				if(order=='xiaoliang') url += "&order=1";
+				if(order=='price') url += "&order=2";
+				url += "&desc="+desc;
+				location.href = url;
+			}
+			
+			//点击顶部搜索
+			$('#sousuoListTop .top1 .ssInputArea').on('tap',function(){
+				location.href="{:U('Search/pageindex')}";
+			});
+
+			//iscroll 下拉加载+zeptoajax
+			function onload(){
+				loadBin = document.getElementById("loadBin");
+				myScroll = new IScroll('#wrapper',{
+					probeType: 3,
+					click:true
+				});
+				myScroll.on("scroll",scrollFun);
+				myScroll.on("scrollEnd",scrollEndFun);
+			}
+			var page=2,share="{$share}",keywords="{$keywords}",category="{$category_id}",min_price="{$min_price}",max_price="{$max_price}",order="{$order}",desc="{$desc}";
+			var page=2;
+			var myScroll,
+				loadBin,
+				isload = false,
+				scrollFun = function(){
+					if((this.y - this.maxScrollY)>>0 < -50){
+						isload = true;
+						loadBin.innerHTML = "松开手指加载更多";
+						myScroll.refresh();
+						myScroll.off("scroll",scrollFun);
+					}
+				},
+				scrollEndFun = function(){
+					if(isload){
+						isload = false;
+						
+						 $.ajax({
+						 	type: 'POST',
+						 	url: "{:U('ajaxPage')}",
+						 	dataType: 'json',
+							data:{page:page,keywords:keywords,category_id:category,min_price:min_price,max_price:max_price,order:order,desc:desc},
+						 	success: function(data){
+						 		if(data!=""){
+							 		page++;
+	
+									var str='';
+									for(var i=0;i<data.length;i++){
+										str+='<li>\
+												<a href="/index.php?s=/Product/detail/id/'+data[i].id+'.html">\
+													<div class="clear">\
+														<div class="left">\
+															<img src="'+data[i].image+'">\
+														</div>\
+														<div class="right">\
+															<p class="title">'+data[i].title+'</p>\
+															<p class="price">\
+																<em>&yen;'+data[i].gprice+'</em><del>&yen;'+data[i].market_price+'</del>\
+															</p>\
+															<p class="peoplemai">已有'+data[i].buyer_num+'人购买</p>\
+															<span class="share"><span class="hz">&#xe60e;</span>分享</span>\
+														</div>\
+													</div>\
+												</a>\
+											</li>';
+									}
+									$('#sousuoListMain .list').append(str);
+									
+									loadBin.innerHTML = "";
+									myScroll.on("scroll",scrollFun);
+									myScroll.refresh();
+						 		}else{
+						 			//显示没有更多数据了
+									$('.noData').css('display','block');
+									loadBin.innerHTML = "";
+									//没有必要再看到 松开手指加载更多
+									scrollFun = function(){
+										loadBin.innerHTML = "";
+										myScroll.refresh();
+										myScroll.off("scroll",scrollFun);
+									}
+						 		}
+						 	},
+						 	error: function(xhr, type){
+						 		console.log('Ajax error!');
+						 	}
+						 });
+					}
+				};
+		</script>
+	</body>
+</html>

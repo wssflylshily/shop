@@ -1,0 +1,66 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>龙驰网信</title>
+<meta name="description" content="龙驰网信" />
+<meta name="keywords" content="龙驰网信" />
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, width=device-width">
+<link href="__PUBLIC__/Home/css/weui.min.css" rel="stylesheet" />
+<link href="__PUBLIC__/Home/css/jquery-weui.css" rel="stylesheet" />
+<link href="__PUBLIC__/Home/css/common.css" rel="stylesheet" />
+<link href="__PUBLIC__/Home/css/style.css" rel="stylesheet" />
+<script src="__PUBLIC__/Home/js/jquery-1.8.3.min.js"></script>
+<script src="__PUBLIC__/Home/js/common.js"></script>
+</head>
+<body>
+<!--top-->
+<div class="g_wrap top">
+	<table>
+    	<tr>
+        	<td class="td01"><a href="/Member/Index/shopmoney"><img src="__PUBLIC__/Home/images/icon1_03.png" class="img2" /></a></td>
+            <td class="td02">商城币充值</td>
+            <td class="td03">&nbsp;</td>
+        </tr>
+    </table>
+</div>
+<!--content-->
+<script>
+function callpay()
+{
+	$('#formid').submit();
+	///wxpay/example/recharge.php
+}
+</script>
+<form id="formid" name="myform" method='post' action=''>
+<div class="container g_wrap"> 
+	<div class="com_div">
+    	<table class="pay_table">
+        	<tr>
+            	<td width="30%" class="td01 td02">微信余额：</td><td class="td01">{$money}</td>
+            </tr>
+            <tr>
+            	<td class="td01 td02">冲值金额：</td><td class="td01"><input type="text" name="je" placeholder="请输入金额（1元=100商城币）" class="inp" onblur="getmoney(this)"/></td>
+            </tr>
+            <tr>
+            	<td class="td02">可获商城币：</td><td align="right" class="font2" id="money_txt"><i>0</i></td>
+            </tr>
+        </table>
+    </div>
+	<script>
+	function getmoney(sel)
+	{
+		var money=sel.value*{$website.rate};
+		$('#money_txt').html('<i>'+money+'</i>');
+	}
+	</script>
+    <div class="com_btndiv">
+    	<a href="javascript:callpay();" id="show-toast-text" class="weui_btn weui_btn_primary com_btn1 bg1">确认充值</a>
+    </div>
+</div>
+<script src="__PUBLIC__/Home/js/jquery-2.1.4.js"></script>
+<script src="__PUBLIC__/Home/js/jquery-weui.js"></script>
+
+</body>
+</html>

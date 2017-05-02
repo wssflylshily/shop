@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>{$news.title}</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/zepto.js"></script>
+	</head>
+	<body>
+		<!--正文区域-->
+		<div id="fanliTop" class="topBackTitle">
+			<div class="contain maxWidth">
+				<a class="hz back" href="javascript:;">&#xe600;</a>{$news.title}
+			</div>
+		</div>
+		<div id="fanliMain" class="fastscroll fltgMain">
+			<div class="contain maxWidth">
+				<p class="title">活动规则</p>
+				<div class="content">
+					<p class="tit">活动资格：</p>
+					<p class="cont">{$news.desc}</p>
+					<p class="tit">基本规则：</p>
+					<p class="cont">{$news.content}</p>
+				</div>
+			</div>
+		</div>
+		<script>
+			//返回按钮
+			$('#fanliTop .back').on('tap',function(){
+				window.history.go(-1);
+			});
+		</script>
+	</body>
+</html>

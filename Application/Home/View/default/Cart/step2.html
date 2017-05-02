@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<meta name="format-detection" content="telephone=no">
+		<title>{:C('WEB_SITE_TITLE')}</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/zepto.js"></script>
+		<script src="__PUBLIC__/Home/js/delIOS_huitan.js"></script>
+		<style>
+			#dingdanQuerenDanMain .peisongAddr .cangkuCon .jiantou{vertical-align:middle}
+			#dingdanQuerenDanMain .peisongAddr .cangkuCon .hz{font-size:0.8rem;}
+			#dingdanQuerenDanMain .peisongAddr .cangkuCon .text{width:100%;}
+		</style>
+	</head>
+	<body class="box">
+		<!-- 遮罩 -->
+		<div id="zhezhao" style="display:none"></div>
+		<!-- 弹出框 选择配送方式 -->
+		<!--<div class="orderSelectSendTypeK" style="display:none">-->
+			<!--<div class="top">选择配送方式</div>-->
+			<!--<div class="middle">-->
+				<!--<ul>-->
+					<!--<li class="clear" data-type="1">-->
+						<!--<p class="tit l">自提</p>-->
+						<!--<div class="selectArea r">-->
+							<!--<div class="circleGreen">-->
+								<!--<span class="hz">&#xe613;</span>-->
+							<!--</div>-->
+						<!--</div>-->
+					<!--</li>-->
+					<!--<li class="clear" data-type="0">-->
+						<!--<p class="tit l">送货</p>-->
+						<!--<div class="selectArea r">-->
+							<!--<div class="circleGreen">-->
+								<!--<span class="hz">&#xe613;</span>-->
+							<!--</div>-->
+						<!--</div>-->
+					<!--</li>-->
+				<!--</ul>-->
+			<!--</div>-->
+			<!--<div class="bot">确定</div>-->
+		<!--</div>-->
+		<!-- 弹出框 选择支付方式  -->
+		<!--<div class="orderSelectPayK" style="display:none">-->
+			<!--<div class="top">选择支付方式</div>-->
+			<!--<div class="middle">-->
+				<!--<ul>-->
+					<!--<li class="clear" data-type="0">-->
+						<!--<p class="tit l">微信支付</p>-->
+						<!--<div class="selectArea r">-->
+							<!--<div class="circleGreen">-->
+								<!--<span class="hz">&#xe613;</span>-->
+							<!--</div>-->
+						<!--</div>-->
+					<!--</li>-->
+					<!--<li class="clear" data-type="1">-->
+						<!--<p class="tit l">余额支付</p>-->
+						<!--<div class="selectArea r">-->
+							<!--<div class="circleGreen">-->
+								<!--<span class="hz">&#xe613;</span>-->
+							<!--</div>-->
+						<!--</div>-->
+					<!--</li>-->
+				<!--</ul>-->
+			<!--</div>-->
+			<!--<div class="bot">确定</div>-->
+		<!--</div>-->
+		<!-- 弹出框 输入支付密码 -->
+		<div id="maKuang" style="display:none">
+			<div class="top">
+				<span class="title">输入支付密码</span>
+				<div class="inputArea">
+					<input type="password" id="code" style="width:150px;margin-left:30%;text-align:center;"/>
+				</div>
+			</div>
+			<div class="bot">
+				<a href="javascript:;" class="cancel">取消</a><a href="javascript:;" class="sure">确认</a>
+			</div>
+		</div>
+		<!--提示文字-->
+		<div class="tip" style="opacity: 0;z-index: -1"></div>
+		<!--正文区域-->
+		<div id="dingdanQuerenDanTop" class="topBackTitle">
+			<div class="contain maxWidth">
+				<a class="hz back" href="javascript:;">&#xe600;</a>确认订单
+			</div>
+		</div>
+		<div id="dingdanQuerenDanMain" class="fastscroll dingdanMain">
+			<div class="contain maxWidth">
+				<div class="line"></div>
+				<a href="javascript:toaddr();" class="top"><!-- /Member/UserAddress?cart_id={$cart_id} -->
+					<div class="clear">
+						<span class="hz pos">&#xe60d;</span>
+						<div class="center">
+							<p>收货人: <span>{$useraddress.name}</span></p>
+							<p>联系方式: <span>{$useraddress.mobile}</span></p>
+							<p>收货地址: <span>{$useraddress.address}</span></p>
+						</div>
+						<span class="hz jiantou">&#xe60c;</span>
+					</div>
+				</a>
+				<div class="paySendCom zhifu">
+					<div class="con">
+						<p class="tit">支付方式</p>
+						<ul>
+							<li class="clear">
+								<div class="col-6">微信支付</div>
+								<div class="col-6 textR">
+									<div class="circleGreen wx" data-type="0">
+										<span class="hz">&#xe613;</span>
+									</div>
+								</div>
+							</li>
+							<li class="clear">
+								<div class="col-6">余额支付</div>
+								<div class="col-6 textR">
+									<div class="circleGreen yue" data-type="1">
+										<span class="hz">&#xe613;</span>
+									</div>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<div class="paySendCom peisong">
+					<div class="con">
+						<p class="tit">配送方式</p>
+						<ul>
+							<li class="clear">
+								<div class="col-6">自提</div>
+								<div class="col-6 textR">
+									<div class="circleGreen zt" data-type="1">
+										<span class="hz">&#xe613;</span>
+									</div>
+								</div>
+							</li>
+							<li class="clear">
+								<div class="col-6">送货</div>
+								<div class="col-6 textR">
+									<div class="circleGreen sh" data-type="0">
+										<span class="hz">&#xe613;</span>
+									</div>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<!-- 配送地址，仅仅在配送方式选择的是自提时显示 -->
+				<div class="peisongAddr" style="display:none;">
+					<!-- <p class="tit">自提网点</p>
+					<ul class="lie">
+						on是目前选中的那个 js会设置默认选中第一个-->
+						<!-- data-tel是仓库联系人信息里面的电话  data-addr这个是地址-->
+						<!-- <volist name="depotlist" id="depot">
+						<li class="clear" data-tel="" data-addr="{$depot.sadd}" data-id="{$depot.id}">
+							<div class="selectArea l">
+								<div class="circleGreen">
+									<span class="hz">&#xe613;</span>
+								</div>
+							</div>
+							<div class="l">{$depot.sname}</div>
+						</li>
+						</volist>
+						<li class="clear" data-tel="13820977339" data-addr="天津市河东区大桥道xxxx小区3号105">
+							<div class="selectArea l">
+								<div class="circleGreen">
+									<span class="hz">&#xe613;</span>
+								</div>
+							</div>
+							<div class="l">自提网点2</div>
+						</li>
+					</ul> -->
+					<p class="cangkuTit">自提点信息</p>
+					<div class="cangkuCon table">
+						<div class="tableCell text">
+							<p>自提点：<span class="con">{$store.sname}</span></p>
+							<p class="tel">联系电话：<span class="con">{$store.mobile}</span></p>
+							<p class="addr">联系地址：<span class="con">{$store.sadd}</span></p>
+						</div>
+						<div class="tableCell jiantou">
+							<span class="hz arrowR">&#xe60c;</span>
+						</div>
+					</div>
+				</div>
+				<div class="ddproList">
+					<ul class="list">
+						<volist name="list" id="item">
+						<li class="clear">
+							<div class="left">
+								<img src="{$item.image}">
+							</div>
+							<div class="right">
+								<p class="title"><a href="{:U('Product/detail',array('id'=>$item['product_id']))}">{$item.title}</a></p>
+								<p class="price">
+									<em>&yen;{$item['price']}</em><del>&yen;{$item.gprice}</del><span class="r">&times;<span>{$item.product_num}</span></span>
+								</p>
+							</div>
+						</li>
+						</volist>
+					</ul>
+				</div>
+				
+				<div class="quanzhifu">
+					<ul>
+						<li>
+							<a href="javascript:;" onclick="javascript:choosecoupon();">
+								<span class="left">优惠券</span>
+								<span class="center right">有{$couponnum}张可用优惠券</span>
+								<span class="hz">&#xe60c;</span>
+							</a>		
+						</li>
+					</ul>
+				</div>
+				
+				<div class="priceList">
+					<ul>
+						<li>
+							<span class="left">商品金额</span>
+							<span class="right">&yen;{$promoney}</span>
+						</li>
+						<li>
+							<span class="left">运费</span>
+							<span class="right">+&yen;<b style="font-weight:normal;" class="yunfei">{$express_money}</b></span>
+						</li>
+						<if condition="$coupondetail neq ''">
+						<li>
+							<span class="left">优惠券</span>
+							<span class="right">-&yen;{$coupon.money}</span>
+						</li>
+						</if>
+					</ul>
+				</div>
+				<div class="liuyan">
+					<div class="clear">
+						<div class="col-2 left">留言</div>
+						<div class="col-10">
+							<input type="text" placeholder="请输入留言内容" id="note"/>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="dingdanQuerenDanBot" class="dingdanBot">
+			<div class="contain maxWidth">
+				合计：<span>&yen;<em class="heji">
+				<!-- {$promoney+$express_money} -->
+				{$total_price}
+				</em></span>
+				<a href="javascript:addorder()">去支付</a>
+			</div>
+		</div>
+<input type="hidden" id="total_price" value="{$total_price}" />
+<input type="hidden" id="express_money" value="{$express_money}" />
+<input type="hidden" id="paytype" value="{$paytype}">
+<input type="hidden" id="sendtype" value="{$sendtype}">
+<input type="hidden" id="depotid" value="{$store.id}">
+<!--送货上门地址ID-->
+<input type="hidden" id="address_id" value="{$useraddress.id}" />
+<input type="hidden" id="cart_id" value="{$cart_id}" />
+<input type="hidden" id="coupon_id" value="{$coupondetail.id}" />
+
+		<script>
+			//根据url，自动选择出 支付方式和配送方式 &paytype=1&sendtype=0
+			var paytype = $('#paytype').val();
+			var sendtype = $('#sendtype').val();
+			if(paytype==''){
+				$('.yue').removeClass('on');
+				$('.wx').removeClass('on');
+			}else if(paytype==1){
+				$('.yue').addClass('on');//余额
+			}else if(paytype==0){
+				$('.wx').addClass('on');//微信
+			}
+			if(sendtype==''){
+				$('.zt').removeClass('on');
+				$('.sh').removeClass('on');
+			}else if(sendtype==1){
+				//自提
+				$('.zt').addClass('on');
+				$('.yunfei').text('0');
+				$('#express_money').val('0');
+				$('.heji').text("<?php echo $total_price-$express_money;?>");
+				$('#total_price').val($('.heji').text());
+			}else if(sendtype==0){
+				//送货
+				$('.sh').addClass('on');
+				$('#express_money').val('{$express_money}');
+				$('.yunfei').text("{$express_money}");
+				$('.heji').text("{$total_price}");
+				$('#total_price').val($('.heji').text());
+			}
+			//自提网点是否显示出来
+			checkZitiAreaShow();
+			function checkZitiAreaShow(){
+				//var sendtype = $('#sendtype').val();
+				var text=$('.peisong .circleGreen.on').parent().siblings().text();
+				if(text=='自提'){
+					$('#dingdanQuerenDanMain .peisongAddr').show();
+				}else{
+					$('#dingdanQuerenDanMain .peisongAddr').hide();
+				}
+			}
+			//自提网点，默认选中第一个
+			//$('#dingdanQuerenDanMain .peisongAddr li').eq(0).addClass('on');
+
+			//$('#depotid').val($('#dingdanQuerenDanMain .peisongAddr li,on').attr('data-id'));
+			//$('#dingdanQuerenDanMain .peisongAddr .cangkuCon .addr .con').text($('#dingdanQuerenDanMain .peisongAddr li,on').attr('data-addr'));
+			//$('#dingdanQuerenDanMain .peisongAddr .cangkuCon .tel .con').text($('#dingdanQuerenDanMain .peisongAddr li,on').attr('data-tel'));
+			//点击 自提网点 列表的li
+			$('#dingdanQuerenDanMain .peisongAddr li').on('click',function(){
+				$(this).addClass('on').siblings().removeClass('on');
+				var tel=$(this).attr('data-tel');
+				var addr=$(this).attr('data-addr');
+				var id = $(this).attr('data-id'); 
+
+				$('#dingdanQuerenDanMain .peisongAddr .cangkuCon .tel .con').text(tel);
+				$('#dingdanQuerenDanMain .peisongAddr .cangkuCon .addr .con').text(addr);
+				$('#depotid').val(id);
+			});
+			
+			function gozhifu(){
+				$('#maKuang .top .inputArea input').val('');//清空
+				$('#zhezhao').show();
+				$('#maKuang').show();
+				//点击取消
+				$('#maKuang .bot .cancel').on('click',function(){
+					$('#zhezhao').hide();
+					$('#maKuang').hide();
+				});
+				//点击确定
+				$('#maKuang .bot .sure').on('click',function(){
+					var v=$('#maKuang .top .inputArea input').val();//密码
+					var yue = {$user.money};	//用户的账户余额
+					var cart_ids=$('#cart_id').val();//买了哪几个商品
+					var address_id=$('#address_id').val();//送货上门地址ID
+					var total_price=$('#total_price').val();//总金额
+					var express_money=$('#express_money').val();//运费
+					var depot_id = $('#depotid').val();
+					/*var sendtype = $("#chooseImage").text();			//送货方式
+					var sendid = 0;
+					if(sendtype=="自提"){
+						sendid = 1;
+					}*/
+					var sendid = $('#sendtype').val();
+					
+					var paytype = 1;
+					
+					$.ajax({  
+						type:'post',  
+						traditional :true,  
+						url:"{:U('Cart/checkPaypwd')}",  
+						data:{'pwd':v},  
+						success:function(data){
+							if(data.status==1)
+							{
+								$('#zhezhao').hide();
+								$('#maKuang').hide();
+
+								$.ajax({  
+									type:'post',  
+									traditional :true,  
+									url:"{:U('Cart/addorder')}",  
+									data:{'cart_ids':cart_ids,'address_id':address_id,'total_price':total_price,'express_money':express_money,'coupon_id':$('#coupon_id').val(),type:sendid,paytype:paytype,depot_id:depot_id},  
+									success:function(data){
+										if(data.status==0)
+										{
+											tipFun(data.info);
+											return;
+										}else{
+											//tipFun('下单成功');
+											setTimeout(function(){
+												window.location.href = "{:U('/Member/Order/payOk')}&order_id="+data.order_id;
+											},1200);
+										}
+									}  
+								});
+							}else if(data.status==0){
+								tipFun(data.info);
+								setTimeout(function(){
+									/*var cartid = $('#cart_id').val();
+									var sendtype = $('#sendtype').val();
+									var paytype = $('#paytype').val();
+									var addrid = $('#address_id').val();
+									var coupon = $('#coupon_id').val();
+									var cash = $('#cash_id').val();
+									var tourl = "{:U('/Member/Index/editpaypwd')}&cart="+cartid+"&sendtype="+sendtype+"&paytype="+paytype;
+									if(addrid!="")tourl+="&addrid="+addrid;
+									if(coupon!="")tourl+="&coupon="+coupon;
+									if(cash!="")tourl+="&cash="+cash;
+									location.href = tourl;*/
+									location.href = "{:U('/Member/Index/editpaypwd')}";
+								},1200);
+							}else{
+								tipFun(data.info);
+								$('#maKuang .top .inputArea input').val("");
+								$('#maKuang .top .inputArea input').focus();
+								return;
+							}
+						}  
+					});
+				});
+			}
+			function addorder()
+			{
+				var paypwd = "{$user.paypwd}";
+				var yue = {$user.money};	//用户的账户余额
+				var cart_ids=$('#cart_id').val();//买了哪几个商品
+				var address_id=$('#address_id').val();//送货上门地址ID
+				var total_price=$('#total_price').val();//总金额
+				var express_money=$('#express_money').val();//运费
+				var depot_id = $('#depotid').val();
+				var note = $('#note').val();
+				/*var sendtype = $("#chooseImage").text();			//送货方式
+				var sendid = 0;
+				if(sendtype=="自提"){
+					sendid = 1;
+				}*/
+				var sendid = $("#sendtype").val();
+				var payname = $('.quanzhifu li .zhifu').text();	//支付方式
+				var paytype = $('#paytype').val();
+				if(paytype==""){
+					tipFun("请选择支付方式");
+					return;
+				}
+				if(sendid==""){
+					tipFun("请选择配送方式");
+					return;
+				}
+				if(paytype == 1){
+					if(paypwd==""){
+						tipFun('您还未设置支付密码');
+						setTimeout(function(){
+							location.href = "{:U('/Member/Index/editpaypwd')}";
+							//location.href = data.url;
+						},1200);
+						return;
+					}
+					
+					if(yue<total_price){
+						tipFun("您的余额不足");
+						return;
+					}
+				
+					gozhifu();
+				}else{
+				
+					$.ajax({  
+						type:'post',  
+						traditional :true,  
+						url:"{:U('Cart/addorder')}",  
+						data:{'cart_ids':cart_ids,'address_id':address_id,'total_price':total_price,'express_money':express_money,'coupon_id':$('#coupon_id').val(),type:sendid,paytype:paytype,note:note,depot_id:depot_id},  
+						success:function(data){
+							if(data.status==0)
+							{
+								tipFun(data.info);
+								return;
+							}
+							else
+							{
+								//tipFun('下单成功');
+								setTimeout(function(){
+									if(paytype==1){
+										window.location.href = "{:U('/Member/Order/payOk')}&order_id="+data.order_id;
+									}else{
+										window.location.href = '/wxpay/example/jsapi.php?order_id='+data.order_id+'&order_type=0';
+										//window.location.href='/Member/Order';
+									}
+								},1200);
+								
+								///wxpay/example/jsapi.php?order_id=3
+								//window.location.href='/wxpay/example/jsapi.php?order_id='+data.order_id;
+							}
+						}  
+					});
+				}
+			}
+			//返回按钮
+			$('#dingdanQuerenDanTop .back').on('click',function(){
+				window.history.go(-1);
+			});
+
+			//根据图片的宽度，确定图片的高度 660 525
+			window.addEventListener('load',function(){
+				var imgw=$('#dingdanQuerenDanMain .ddproList .list .clear .left img').width();
+				$('#dingdanQuerenDanMain .ddproList .list .clear .left img').height(imgw*525/660);
+				$('#dingdanQuerenDanMain .ddproList .list .clear .right').height(imgw*525/660);
+			},false);
+
+			//合计money显示.00
+			var hejiz2=parseFloat($('#dingdanQuerenDanBot em').text()).toFixed(2);
+			$('#dingdanQuerenDanBot em').text(hejiz2);
+
+			//跳转去选择地址
+			function toaddr(){
+				var cartid = $('#cart_id').val();
+				var paytype = $('#paytype').val();
+				var sendtype = $('#sendtype').val();
+				var couponid = $('#coupon_id').val();
+				var depot = $('#depot_id').val();
+				
+				var url = "{:U('/Member/UserAddress/index')}&cart_id="+cartid+"&paytype="+paytype+"&sendtype="+sendtype;
+				if(couponid!="") url+="&coupon_id="+couponid;
+				if(sendtype==1)url+="&depot="+depot;
+				
+				location.href = url;
+			}
+			
+			//跳转去选择优惠券
+			function choosecoupon(){
+				var couponnum = "{$couponnum}";
+				if(couponnum>0){
+					var cartid = $('#cart_id').val();
+					var paytype = $('#paytype').val();
+					var sendtype = $('#sendtype').val();
+					var addrid = $('#address_id').val();
+					var depot = $('#depotid').val();
+					var promoney = "{$promoney}";
+					var url = "{:U('Cart/couponlist')}&cart_id="+cartid+"&paytype="+paytype+"&sendtype="+sendtype+"&promoney="+promoney;
+					if(addrid!="")url+="&addr_id="+addrid;
+					if(sendtype==1)url+="&depot="+depot;
+					location.href = url;
+				}
+			}
+			//选择自提点
+			$('.cangkuCon').click(function(){
+				var cart = $('#cart_id').val();
+				var send = $('#sendtype').val();
+				var addr = "{$_GET['uaddress_id']}";
+				var coupon_id = $('#coupon_id').val();
+				var url = "__URL__/stores/cart/"+cart+"/send/"+send;
+				if(addr!="") url+="/addr/"+addr;
+				if(coupon_id!="")url+="/coupon/"+coupon_id;
+				location.href = url;
+			});
+			
+			//tip
+			function tipFun(str){
+				$('.tip').text(str).css({
+					'opacity':'1',
+					'z-index':'9999'
+				});
+				setTimeout(function(){
+					$('.tip').css('opacity','0');
+					setTimeout(function(){
+						$('.tip').css('z-index','-1');
+					},300);
+				},1300);
+			}
+
+			//选择支付方式 微信0 余额1
+			$('#dingdanQuerenDanMain .zhifu ul li .circleGreen').on('click',function(){
+				$('#dingdanQuerenDanMain .zhifu ul li .circleGreen').removeClass('on');
+				$(this).addClass('on');
+
+				var datatype=$(this).attr('data-type');
+				$('#paytype').val(datatype);
+			});
+			//选择配送方式 自提1 送货0
+			$('#dingdanQuerenDanMain .peisong ul li .circleGreen').on('click',function(){
+				$('#dingdanQuerenDanMain .peisong ul li .circleGreen').removeClass('on');
+				$(this).addClass('on');
+
+				var datatype=$(this).attr('data-type');
+				if(datatype==1){
+					//自提
+					$('#sendtype').val("1");
+					$('#express_money').val('0');
+					$('.yunfei').text("0");
+					$('.heji').text("<?php echo $total_price-$express_money;?>");
+					$('#total_price').val($('.heji').text());
+				}else{
+					//送货
+					$('#sendtype').val("0");
+					$('#express_money').val('{$express_money}');
+					$('.yunfei').text("{$express_money}");
+					$('.heji').text("{$total_price}");
+					$('#total_price').val($('.heji').text());
+				}
+				checkZitiAreaShow();//判断自提网点是否显示出来
+			});
+
+			//根据页面的url参数确定默认选中的内容-支付方式
+//			setZhifuDefault();
+//			function setZhifuDefault(){
+//				var allli=$('.orderSelectPayK .middle li.clear');
+//				for(var i=0;i<allli.length;i++){
+//					$(allli[i]).removeClass('selected');
+//					if($(allli[i]).attr('data-type')==paytype){
+//						$(allli[i]).addClass('selected');
+//						$(allli[i]).find('.selectArea .hz').addClass('active');
+//					}
+//				}
+//			}
+//			//点击 支付方式
+//			$('#dingdanQuerenDanMain .quanzhifu .zhifu').on('click',function(){
+//				$('#zhezhao').css('display','block');
+//				$('.orderSelectPayK').css('display','block');
+//			});
+//			//选择支付方式
+//			$('.orderSelectPayK .middle li').on('click',function(){
+//				$('.orderSelectPayK .middle li .hz.active').removeClass('active');
+//				$(this).find('.hz').addClass('active');
+//				$(this).addClass('selected').siblings().removeClass('selected');//selected用于判断选择的是那个配送方式
+//			});
+//			//点击确定
+//			$('.orderSelectPayK .bot').on('click',function(){
+//				$('.orderSelectPayK').css('display','none');
+//				$('#zhezhao').css('display','none');
+//
+//				//给页面上更新为 选中的支付方式
+//				var selectTypetext=$('.orderSelectPayK .middle li.selected').find('.tit').text();
+//				if(selectTypetext==""||selectTypetext==null)selectTypetext="请选择";
+//				$('.quanzhifu li .zhifu').text(selectTypetext);
+//				if(selectTypetext=="余额支付"){
+//					$('#paytype').val("1");
+//				}else{
+//					$('#paytype').val("0");
+//				}
+//			});
+
+
+			//根据页面的url参数确定默认选中的内容-配送方式
+//			setPeisongDefault();
+//			function setPeisongDefault(){
+//				var allli=$('.orderSelectSendTypeK .middle li.clear');
+//				for(var i=0;i<allli.length;i++){
+//					$(allli[i]).removeClass('selected');
+//					if($(allli[i]).attr('data-type')==sendtype){
+//						$(allli[i]).addClass('selected');
+//						$(allli[i]).find('.selectArea .hz').addClass('active');
+//						//$(allli[i]).addClass('selected').siblings().removeClass('selected');
+//					}
+//				}
+//			}
+//			//点击配送方式
+//			$('#dingdanQuerenDanMain .quanzhifu li.sendHuo').on('click',function(){
+//				$('.orderSelectSendTypeK').css('display','block');
+//				$('#zhezhao').css('display','block');
+//			});
+//			//选择配送方式
+//			$('.orderSelectSendTypeK .middle li').on('click',function(){
+//				$('.orderSelectSendTypeK .middle li .hz.active').removeClass('active');
+//				$(this).find('.hz').addClass('active');
+//				$(this).addClass('selected').siblings().removeClass('selected');//selected用于判断选择的是那个配送方式
+//			});
+//			//点击确定
+//			$('.orderSelectSendTypeK .bot').on('click',function(){
+//				$('.orderSelectSendTypeK').css('display','none');
+//				$('#zhezhao').css('display','none');
+//
+//				//给页面上更新为 选中的配送方式
+//				var selectTypetext=$('.orderSelectSendTypeK .middle li.selected').find('.tit').text();
+//				if(selectTypetext==""||selectTypetext==null)selectTypetext="请选择";
+//				$('.quanzhifu .sendHuo .text').text(selectTypetext);
+//				if(selectTypetext=='自提'){
+//					$('#sendtype').val("1");
+//					$('#express_money').val('0');
+//					$('.yunfei').text("0");
+//					$('.heji').text("<?php echo $total_price-$express_money;?>");
+//					$('#total_price').val($('.heji').text());
+//				}else{
+//					$('#sendtype').val("0");
+//					$('#express_money').val('{$express_money}');
+//					$('.yunfei').text("{$express_money}");
+//					$('.heji').text("{$total_price}");
+//					$('#total_price').val($('.heji').text());
+//				}
+//				checkZitiAreaShow();//判断自提网点是否显示出来
+//
+//			});
+		</script>
+	</body>
+</html>

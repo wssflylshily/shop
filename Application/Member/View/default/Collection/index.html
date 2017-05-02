@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html class="h100">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>我的收藏</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/zepto.js"></script>
+		<script src="__PUBLIC__/Home/js/iscroll-probe.js"></script>
+		<script src="__PUBLIC__/Home/js/delIOS_huitan.js"></script>
+		<style>
+			/*下拉加载样式*/
+			/*#wrapper {
+				position: absolute;
+				z-index: 1;
+				top: 0;
+				bottom: 0;
+				left: 0;
+				width: 100%;
+				overflow: hidden;
+			}
+			#loadBin{color: #5d5d5d;text-align: center;line-height: 30px;}*/
+		</style>
+	</head>
+	<!-- <body onLoad="onload()">  -->
+	<body class="h100 ohid box">
+		<!-- 遮罩层 -->
+		<div id="zhezhao" style="display:none"></div>
+		<!--confirm-->
+		<div class="confirm" style="display: none">
+			<div class="top"></div>
+			<div class="bot clear">
+				<div class="l"><p>取消</p></div>
+				<div class="r"><p>确定</p></div>
+			</div>
+		</div>
+		<!--提示文字-->
+		<div class="tip" style="opacity: 0;z-index: -1"></div>
+		<!--正文区域-->
+		<div id="myshoucangTop" class="topBackTitle">
+			<div class="contain maxWidth">
+				<a class="hz back" href="javascript:;">&#xe600;</a>我的收藏
+			</div>
+		</div>
+		<div id="myshoucangMain" class="fastscroll">
+			<div class="contain maxWidth">
+				<div class="ddproList">
+					<div id="wrapper" class="maxWidth">
+						<div>
+							<ul class="list">
+								<volist name="list" id="item">
+									<li class="clear">
+										<div class="circleGray" data-id="{$item.id}">
+											<span class="hz" >&#xe613;</span>
+										</div>
+										<a href="{:U('/Product/detail',array('id'=>$item['product_id']))}" class="clear">
+											<div class="left">
+												<img src="{$item.image}">
+											</div>
+											<div class="right">
+												<p class="title">{$item.title}</p>
+												<p class="price">
+													<em>&yen;{$item.gprice}</em><del>&yen;{$item.market_price}</del>
+												</p>
+											</div>
+										</a>
+									</li>
+								</volist>
+							</ul>
+							<div class="noData" style="display:none">没有更多数据了</div>
+							<div id="loadBin"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="myshoucangBot">
+			<div class="contain maxWidth">
+				<div class="left">
+					<div class="circleGray">
+						<span class="hz">&#xe613;</span>
+					</div>全选
+				</div>
+				<a href="javascript:;" class="right orangeBtn disabled">取消收藏</a>
+			</div>
+		</div>
+
+		<script>
+			//返回按钮
+			$('#myshoucangTop .back').on('tap',function(){
+				window.history.go(-1);
+			});
+
+			//点击 圈
+			$('#myshoucangMain .ddproList .list').on('tap','.circleGray',function(){
+				if($(this).find('.hz').hasClass('active')){
+					$(this).find('.hz').removeClass('active');
+					checkAllselect();
+				}else{
+					$(this).find('.hz').addClass('active');
+					checkAllselect();
+				}
+				checkdisabled();
+			});
+
+			//检测取消收藏是否可以点击 和样式变更
+			function checkdisabled(){
+				var currNum=$('#myshoucangMain .ddproList li .circleGray .active').length;
+				if(currNum>0){
+					$('#myshoucangBot .orangeBtn').removeClass('disabled');
+				}else{
+					$('#myshoucangBot .orangeBtn').addClass('disabled');
+				}
+			}
+
+			//检测是否全选
+			function checkAllselect(){
+				var allNum=$('#myshoucangMain .ddproList li').length;
+				var currNum=$('#myshoucangMain .ddproList li .circleGray .active').length;
+				if(allNum==currNum){
+					$('#myshoucangBot .circleGray .hz').addClass('active');
+				}else{
+					$('#myshoucangBot .circleGray .hz').removeClass('active');
+				}
+			}
+
+			//点击全选前的 圈
+			$('#myshoucangBot .circleGray').on('tap',function(){
+				if($(this).find('.hz').hasClass('active')){
+					$(this).find('.hz').removeClass('active');
+					$('#myshoucangMain .ddproList li .circleGray .active').removeClass('active');
+				}else{
+					$(this).find('.hz').addClass('active');
+					$('#myshoucangMain .ddproList li .circleGray .hz').addClass('active');
+				}
+				checkdisabled();
+			});
+
+			//点击取消收藏
+			$('#myshoucangBot .orangeBtn').on('tap',function(){
+				if(!$(this).hasClass('disabled')){
+					/*$("#myshoucangBot .circleGray").map(function(){
+						
+					});*/
+					var ids = "";
+					var allselect=$('#myshoucangMain .list .circleGray .active');
+					for(var i=0;i<allselect.length;i++){
+						ids+=$(allselect[i]).parent().attr('data-id')+',';
+					}
+					//console.log(ids)
+					//执行取消收藏操作
+					$('.confirm .top').text('确认取消收藏吗?');
+					$('#zhezhao').css('display','block');
+					$('.confirm').css('display','block');
+		
+					//点击取消
+					$('.confirm .bot div.l').on('click',function(){
+						$('#zhezhao').css('display','none');
+						$('.confirm').css('display','none');
+					});
+					//点击确定
+					$('.confirm .bot div.r').on('click',function(){
+						$('#zhezhao').css('display','none');
+						$('.confirm').css('display','none');
+						$.ajax({
+							url: '{:U("delcollection")}',
+							type: 'POST',
+							dataType: 'json',
+							data: {ids: ids},
+							success:function(data){
+								if(data.status==1){
+									tipFun('取消收藏成功');
+									//移除dom
+									var allselect=$('#myshoucangMain .list .circleGray .active');
+									for(var i=0;i<allselect.length;i++){
+										$(allselect[i]).parent().parent().remove();
+									}
+								}
+							}
+						})
+					});
+				}
+			});
+
+			//iscroll 下拉加载+zeptoajax
+			// var nodata=false;
+			// function onload(){
+			// 	loadBin = document.getElementById("loadBin");
+			// 	myScroll = new IScroll('#wrapper',{
+			// 		probeType: 3,
+			// 		click:true
+			// 	});
+			// 	myScroll.on("scroll",scrollFun);
+			// 	myScroll.on("scrollEnd",scrollEndFun);
+			// }
+			// var page=1;
+			// var myScroll,
+			// 	loadBin,
+			// 	isload = false,
+			// 	scrollFun = function(){
+			// 		if((this.y - this.maxScrollY)>>0 < -50){
+			// 			isload = true;
+			// 			loadBin.innerHTML = "松开手指加载更多";
+			// 			myScroll.refresh();
+			// 			myScroll.off("scroll",scrollFun);
+			// 		}
+			// 	},
+			// 	scrollEndFun = function(){
+			// 		if(isload){
+			// 			isload = false;
+
+			// 			// $.ajax({
+			// 			// 	type: 'GET',
+			// 			// 	url: '__PUBLIC__/Home/data/myShoucang.html',
+			// 			// 	dataType: 'json',
+			// 			// 	success: function(data){
+			// 			// 		page++;
+
+			// 					var str='';
+			// 					for(var i=0;i<5;i++){
+			// 						str+='<li class="clear">\
+			// 								<div class="circleGray" data-id="43">\
+			// 									<span class="hz" >&#xe613;</span>\
+			// 								</div>\
+			// 								<a href="/index.php?s=/Product/detail/id/9.html" class="clear">\
+			// 									<div class="left">\
+			// 										<img src="/Uploads/Picture/2016-11-10/5823dbffe6eb0.jpg">\
+			// 									</div>\
+			// 									<div class="right">\
+			// 										<p class="title">ajax五彩斑</p>\
+			// 										<p class="price">\
+			// 											<em>&yen;100.00</em><del>&yen;100.00</del>\
+			// 										</p>\
+			// 									</div>\
+			// 								</a>\
+			// 							</li>';
+			// 					}
+			// 					// nodata=;
+			// 					if(nodata){
+			// 						//显示没有更多数据了
+			// 						$('.noData').css('display','block');
+			// 						//没有必要再看到 松开手指加载更多
+			// 						scrollFun = function(){
+			// 							loadBin.innerHTML = "";
+			// 							myScroll.refresh();
+			// 							myScroll.off("scroll",scrollFun);
+			// 						}
+			// 					}else{ 
+			// 						//ajax数据插入到html中
+			// 						$('#myshoucangMain .list').append(str);
+			// 					}
+
+			// 					nodata=true;
+			// 					//下拉加载后，就不是全选了
+			// 					$('#myshoucangBot .circleGray .active').removeClass('active');
+
+			// 					loadBin.innerHTML = "";
+			// 					myScroll.on("scroll",scrollFun);
+			// 					myScroll.refresh();
+			// 			// 	},
+			// 			// 	error: function(xhr, type){
+			// 			// 		console.log('Ajax error!');
+			// 			// 	}
+			// 			// });
+			// 		}
+			// 	};
+
+			//tip
+			function tipFun(str){
+				$('.tip').text(str).css({
+					'opacity':'1',
+					'z-index':'9999'
+				});
+				setTimeout(function(){
+					$('.tip').css('opacity','0');
+					setTimeout(function(){
+						$('.tip').css('z-index','-1');
+					},300);
+				},1300);
+			}
+		</script>
+	</body>
+</html>

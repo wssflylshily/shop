@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>我的收藏</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/zepto.js"></script>
+		<script src="__PUBLIC__/Home/js/iscroll-probe.js"></script>
+		<style>
+			#myshoucangMain{bottom: 50px;}
+			#myshoucangBot .disabled{background: #A8A8A8;}
+			/*下拉加载样式*/
+			#wrapper {
+				position: absolute;
+				z-index: 1;
+				top: 0;
+				bottom: 0;
+				left: 0;
+				width: 100%;
+				overflow: hidden;
+			}
+			#loadBin{color: #5d5d5d;text-align: center;line-height: 30px;}
+		</style>
+	</head>
+	<body onLoad="onload()">
+		<!--正文区域-->
+		<div id="myshoucangTop" class="topBackTitle">
+			<div class="contain maxWidth">
+				<a class="hz back" href="javascript:;">&#xe600;</a>我的收藏
+			</div>
+		</div>
+		<div id="myshoucangMain" class="fastscroll">
+			<div class="contain maxWidth">
+				<div class="ddproList">
+					<div id="wrapper" class="maxWidth">
+						<div>
+							<ul class="list">
+							<volist name="list" id="item">
+								<li class="clear">
+									<div class="circleGray" data-id="{$item.id}">
+										<span class="hz" >&#xe613;</span>
+									</div>
+									<div class="left"><a href="{:U('/Product/detail',array('id'=>$item['product_id']))}">
+										<img src="{$item.image}">
+										</a>
+									</div>
+									<div class="right">
+										<p class="title"><a href="{:U('/Product/detail',array('id'=>$item['product_id']))}">{$item.title}</a></p>
+										<p class="price">
+											<em>&yen;{$item.gprice}</em><del>&yen;{$item.market_price}</del><span class="r"><!--&times;--><span><!--1--></span></span>
+										</p>
+									</div>
+								</li>
+							</volist>
+							</ul>
+							<div id="loadBin"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="myshoucangBot">
+			<div class="contain maxWidth">
+				<div class="left">
+					<div class="circleGray">
+						<span class="hz">&#xe613;</span>
+					</div>全选
+				</div>
+				<a href="javascript:;" class="right orangeBtn disabled">取消收藏</a>
+			</div>
+		</div>
+
+		<script>
+			//返回按钮
+			$('#myshoucangTop .back').on('tap',function(){
+				window.history.go(-1);
+			});
+
+			//点击 圈
+			$('#myshoucangMain .ddproList .list').on('tap','.circleGray',function(){
+				if($(this).find('.hz').hasClass('active')){
+					$(this).find('.hz').removeClass('active');
+					checkAllselect();
+				}else{
+					$(this).find('.hz').addClass('active');
+					checkAllselect();
+				}
+				checkdisabled();
+			});
+
+			//检测取消收藏是否可以点击 和样式变更
+			function checkdisabled(){
+				var currNum=$('#myshoucangMain .ddproList li .circleGray .active').length;
+				if(currNum>0){
+					$('#myshoucangBot .orangeBtn').removeClass('disabled');
+				}else{
+					$('#myshoucangBot .orangeBtn').addClass('disabled');
+				}
+			}
+
+			//检测是否全选
+			function checkAllselect(){
+				var allNum=$('#myshoucangMain .ddproList li').length;
+				var currNum=$('#myshoucangMain .ddproList li .circleGray .active').length;
+				if(allNum==currNum){
+					$('#myshoucangBot .circleGray .hz').addClass('active');
+				}else{
+					$('#myshoucangBot .circleGray .hz').removeClass('active');
+				}
+			}
+
+			//点击全选前的 圈
+			$('#myshoucangBot .circleGray').on('tap',function(){
+				if($(this).find('.hz').hasClass('active')){
+					$(this).find('.hz').removeClass('active');
+					$('#myshoucangMain .ddproList li .circleGray .active').removeClass('active');
+				}else{
+					$(this).find('.hz').addClass('active');
+					$('#myshoucangMain .ddproList li .circleGray .hz').addClass('active');
+				}
+				checkdisabled();
+			});
+
+			//点击取消收藏
+			$('#myshoucangBot .orangeBtn').on('tap',function(){
+				if(!$(this).hasClass('disabled')){
+					$("#myshoucangBot .circleGray").map(function(){
+						alert($(this).data('id'));
+					});
+					//执行取消收藏操作
+					console.log('执行取消收藏操作');
+				}
+			});
+
+			//iscroll 下拉加载+zeptoajax
+			function onload(){
+				loadBin = document.getElementById("loadBin");
+				myScroll = new IScroll('#wrapper',{
+					probeType: 3,
+					click:true
+				});
+				myScroll.on("scroll",scrollFun);
+				myScroll.on("scrollEnd",scrollEndFun);
+			}
+			var page=1;
+			var myScroll,
+					loadBin,
+					isload = false,
+					scrollFun = function(){
+						if((this.y - this.maxScrollY)>>0 < -50){
+							isload = true;
+							loadBin.innerHTML = "松开手指加载更多";
+							myScroll.refresh();
+							myScroll.off("scroll",scrollFun);
+						}
+					},
+					scrollEndFun = function(){
+						if(isload){
+							isload = false;
+
+							$.ajax({
+								type: 'GET',
+								url: '__PUBLIC__/Home/data/myShoucang.html',
+								dataType: 'json',
+								success: function(data){
+									page++;
+
+									for(var i=0;i<data.lists.length;i++){
+										$('#wrapper .list').append('<li class="clear"><div class="circleGray"><span class="hz">&#xe613;</span></div><div class="left"><img src="'+data.lists[i].pic+'"></div><div class="right"><p class="title"><a href="javascript:;">'+data.lists[i].title+'</a></p><p class="price"><em>&yen;'+data.lists[i].chipPrice+'</em><del>&yen;'+data.lists[i].guiPrice+'</del><span class="r">&times;<span>'+data.lists[i].num+'</span></span></p></div></li>');
+									}
+
+									loadBin.innerHTML = "";
+									myScroll.on("scroll",scrollFun);
+									myScroll.refresh();
+								},
+								error: function(xhr, type){
+									console.log('Ajax error!');
+								}
+							});
+						}
+					};
+		</script>
+	</body>
+</html>

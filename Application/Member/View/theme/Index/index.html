@@ -1,0 +1,232 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>{:C('WEB_SITE_TITLE')}</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/zepto.js"></script>
+	</head>
+	<body>
+		<!--正文区域-->
+		<div id="myTop">
+			<div class="contain maxWidth">
+				<div class="top">
+					<a href="javascript:;" class="hz back">&#xe600;</a>
+				</div>
+				<a href="{:U('Index/baseinfo')}" class="togeren">
+					<div class="touxiangArea">
+						<p class="touxiang" style="background-image: 
+						<if condition="$user['image'] eq null">
+						url(__PUBLIC__/Home/img/mytouxiang.png)
+						<else />
+						url(/Uploads/{$user.image})
+						</if>
+						"></p>
+					</div>
+					<p class="tel">{$user.login_user}</p>
+				</a>
+				<div class="content">
+					<div class="left zhanghu">
+						<span>{$user.money}</span>账户余额
+					</div>
+					<div class="line"></div>
+					<div class="center yongjin">
+						<span>{$user.jie_money}</span>已结佣金
+					</div>
+<!-- 					
+					<div class="right" onclick="window.location.href='/Member/Index/withdraw'">
+						<span class="hz">&#xe61a;</span>
+						申请提现
+					</div> -->
+					
+				</div>
+			</div>
+		</div>
+		<div id="myMain" class="fastscroll">
+			<div class="contain maxWidth">
+				<ul class="ullist1line dingdan">
+					<li>
+						<a href="{:U('Order/index')}">
+							<div class="left">
+								<span class="hz">&#xe602;</span>全部订单
+							</div>
+							<div class="right">
+								<span class="hz">&#xe60c;</span>
+							</div>
+						</a>
+					</li>
+				</ul>
+				<ul class="dingdanArea">
+					<!--我的订单 全部1 待付款2 待发货3 待收货4 待评价5-->
+					<li>
+						<a href="{:U('Order/index',array('status'=>0))}">
+							<span class="hz">&#xe627;</span>待付款
+						</a>
+					</li>
+					<li>
+						<a href="{:U('Order/index',array('status'=>1))}">
+							<span class="hz">&#xe626;</span>待发货
+						</a>
+					</li>
+					<li>
+						<a href="{:U('Order/index',array('status'=>2))}">
+							<span class="hz">&#xe629;</span>待收货
+						</a>
+					</li>
+					<li>
+						<a href="{:U('Order/index',array('status'=>3))}">
+							<span class="hz">&#xe628;</span>待评价
+						</a>
+
+					</li>
+					<!--
+					<li>
+						<a href="退款.html">
+							<span class="hz">&#xe62d;</span>退款
+						</a>
+					</li>
+					-->
+				</ul>
+				<ul class="ullist1line">
+					<li>
+						<a href="__URL__/rebatelist">
+							<div class="left">
+								<div class="icon fl">
+									<span class="hz">&#xe62b;</span>
+								</div>我的分享基金
+							</div>
+							<div class="right">
+								<span class="hz">&#xe60c;</span>
+							</div>
+						</a>
+					</li>
+					<!-- <li>
+						<a href="{:U('Bank/index')}">
+							<div class="left">
+								<div class="icon yc">
+									<span class="hz">&#xe62c;</span>
+								</div>我的银行卡
+							</div>
+							<div class="right">
+								<span class="hz">&#xe60c;</span>
+							</div>
+						</a>
+					</li> -->
+					
+				<!-- 	<li>
+						<a href="{:U('Share/index')}">
+							<div class="left">
+								<div class="icon fxdzj">
+									<span class="hz">&#xe62f;</span>
+								</div>分享得真金
+							</div>
+							<div class="right">
+								<span class="hz">&#xe60c;</span>
+							</div>
+						</a>
+					</li> -->
+					<li>
+						<a href="__URL__/couponlist">
+							<div class="left">
+								<div class="icon yq">
+									<span class="hz">&#xe611;</span>
+								</div>我的礼包
+							</div>
+							<div class="right">
+								<span class="hz">&#xe60c;</span>
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="{:U('Spread/index')}">
+							<div class="left">
+								<div class="icon tr">
+									<span class="hz">&#xe60e;</span>
+								</div>我的小组
+							</div>
+							<div class="right">
+								<span class="hz">&#xe60c;</span>
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="{:U('Index/qrcode')}">
+							<div class="left">
+								<div class="icon ema">
+									<span class="hz">&#xe62a;</span>
+								</div>我的二维码
+							</div>
+							<div class="right">
+								<span class="hz">&#xe60c;</span>
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="{:U('Collection/index')}">
+							<div class="left">
+								<div class="icon sc">
+									<span class="hz">&#xe60f;</span>
+								</div>我的收藏
+							</div>
+							<div class="right">
+								<span class="hz">&#xe60c;</span>
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="{:U('Spell/index')}">
+							<div class="left">
+								<div class="icon sc">
+									<span class="hz">&#xe60f;</span>
+								</div>我的团购
+							</div>
+							<div class="right">
+								<span class="hz">&#xe60c;</span>
+							</div>
+						</a>
+					</li>
+					
+					
+				</ul>
+				<a href="javascript:;" class="orangeBtn">退出登录</a>
+			</div>
+		</div>
+		<include file="Public:footer" />
+
+		<script>
+			//返回按钮
+			$('#myTop .back').on('tap',function(){
+				window.history.go(-1);
+			});
+
+			//点击退出登陆
+			$('#myMain .orangeBtn').on('tap',function(){
+				//退出登陆操作
+
+				//跳转页面
+				if(confirm("确认退出?"))
+				{
+					window.location.href='/Member/Login/logout';
+				}
+				//location.href='pay.html';
+			});
+
+			//点击 申请提现
+			$('#myTop .content .right').on('tap',function(){
+				location.href='我的账户余额提现1提现申请.html';
+			});
+
+			//点击账户余额
+			$('#myTop .content .zhanghu').on('tap',function(){
+				location.href='__URL__/balance';
+			});
+
+			//点击 已结佣金
+			$('#myTop .content .yongjin').on('tap',function(){
+				location.href='__URL__/brokerage';
+			});
+		</script>
+	</body>
+</html>

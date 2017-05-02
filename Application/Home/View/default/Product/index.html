@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>{:C('WEB_SITE_TITLE')}</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/swiper-3.3.1.min.css">
+		<script src="__PUBLIC__/Home/js/swiper-3.3.1.min.js"></script>
+
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/zepto.js"></script>
+		<script src="__PUBLIC__/Home/js/iscroll-probe.js"></script>
+		<script src="__PUBLIC__/Home/js/delIOS_huitan.js"></script>
+		<include file="Public/weixin"/>
+		<style>
+			/*下拉加载样式*/
+			#wrapper { 
+				position: absolute;
+				z-index: 1;
+				top: 0;
+				bottom: 0;
+				left: 0;
+				width: 100%;
+				overflow: hidden;
+			}
+			#loadBin{color: #5d5d5d;text-align: center;line-height: 30px;}
+		</style>
+	</head>
+	<body onLoad="onload()" class="box">
+		<!--正文区域-->
+		<div id="fenleiTop">
+			<div class="contain maxWidth">
+				<div class="top1">
+					<a href="javascript:;" class="hz back">&#xe600;</a>
+					分类
+					<a href="{:U('Search/index')}" class="right">筛选</a>
+				</div>
+				<div class="top2">
+					<div class="swiper-container">
+		                <ul class="clear swiper-wrapper lie">
+		                    <li class="<if condition="$cat_id eq 0">on</if> swiper-slide" onclick="location.href='__URL__/index'">全部</li>
+		                    <volist name="catelist" id="item">
+		                    <li class="swiper-slide <if condition="$item['id'] eq $cat_id">on</if>" onclick="location.href='__URL__/index&id={$item.id}'">{$item.title}</li>
+		                    </volist>
+		                    <!-- <li class="swiper-slide">当季热卖</li>
+		                    <li class="swiper-slide">潮流围巾</li>
+		                    <li class="swiper-slide">流行上装</li>
+		                    <li class="swiper-slide">百搭潮流</li>
+		                    <li class="swiper-slide">当季热卖</li>
+		                    <li class="swiper-slide">潮流围巾</li>
+		                    <li class="swiper-slide">流行上装</li> -->
+		                </ul>
+		            </div>
+					<!-- <ul class="clear">
+						<li class="<if condition="$cat_id eq 0">active</if>"><a href="/Product">全部</a></li>
+						<volist name="catelist" id="item">
+						<li class="<if condition="$cat_id eq $item['id']">active</if>"><a href="{:U('Product/index',array('id'=>$item['id']))}">{$item.title}</a></li>
+						</volist>
+					</ul> -->
+				</div>
+			</div>
+		</div>
+		<div id="fenleiMain" class="fastscroll">
+			<div id="wrapper">
+				<div class="maxWidth">
+					<!--轮播不放到ul里面-->
+					<div class="lunbo maxWidth">
+						<div class="swiper-container">
+							<div class="swiper-wrapper">
+							<volist name="focuslist" id="item">
+								<div class="swiper-slide">
+									<a href="javascript:;">
+										<img src="{$item.image}"/>
+									</a>
+								</div>
+							</volist>
+							</div>
+							<div class="swiper-pagination"></div>
+						</div>
+					</div>
+					<ul class="list content clear maxWidth">
+						<volist name="list" id="item">
+							<li>
+								<a href='{:U('Product/detail',array('id'=>$item['id']))}'>
+									<img src="{$item.image}">
+									<p class="title">{$item.title}</p>
+									<p class="price clear">
+										<em>&yen;{$item.gprice}</em>
+										<del>&yen;{$item.market_price}</del>
+									</p>
+									<p class="peoplemai clear">
+										<span class="people">已有<em>{$item.buyer_num}</em>人购买</span>
+										<span class="tui" href="javascript:;">推</span>
+										<!-- <span class="fan" href="javascript:;">返</span> -->
+									</p>
+								</a>
+							</li>
+						</volist>
+					</ul>
+					<div class="noData" style="display:none">没有更多数据了</div>
+					<div id="loadBin"></div>
+				</div>
+			</div>
+		</div>
+		<include file="Public:footer" />
+
+		<script>
+			//返回按钮
+			$('#fenleiTop .top1 .back').on('click',function(){
+				// window.history.go(-1);
+				location.href='/';
+			});
+
+			//轮播
+			//设置轮播图片高度720/333
+			setLunboH();
+			function setLunboH(){
+				var w=$('#fenleiMain .lunbo .swiper-slide a img').width();
+				$('#fenleiMain .lunbo .swiper-slide a img').height(333*w/720);
+			}
+			var mySwiper = new Swiper('#fenleiMain .lunbo .swiper-container', {
+				autoplay: 3000,
+				loop:true,
+				autoplayDisableOnInteraction:false,
+				pagination : '.swiper-pagination'
+			});
+
+			//导航区域，根据内容确定宽度
+			var navlis=$('#fenleiTop .top2 ul li');
+			var ulWidth=0;
+			for(var i=0;i<navlis.length;i++){
+				ulWidth+=$(navlis[i]).width();
+			}
+			$('#fenleiTop .top2 ul').width(ulWidth);
+
+			//点击 右上角 筛选 跳转到搜索列表
+			/*$('#fenleiTop .top1 a').on('tap',function(){
+				location.href='/Search';
+			});*/
+
+			//iscroll 下拉加载+zeptoajax
+			function onload(){
+				loadBin = document.getElementById("loadBin");
+				myScroll = new IScroll('#wrapper',{
+					probeType: 3,
+					click:true
+				});
+				myScroll.on("scroll",scrollFun);
+				myScroll.on("scrollEnd",scrollEndFun);
+			}
+			var page=2;
+			var myScroll,
+				loadBin,
+				isload = false,
+				scrollFun = function(){
+					if((this.y - this.maxScrollY)>>0 < -50){
+						isload = true;
+						loadBin.innerHTML = "松开手指加载更多";
+						myScroll.refresh();
+						myScroll.off("scroll",scrollFun);
+					}
+				},
+				scrollEndFun = function(){
+					if(isload){
+						isload = false;
+						
+						 var cat_id =GetQueryString('id');
+						 $.ajax({
+						 	type: 'POST',
+						 	url: "{:U('ajaxlist')}",
+						 	dataType: 'json',
+						 	data:{page:page,cat_id:cat_id},
+						 	success: function(data){
+						 		if(data.length>0){
+							 		page++;
+
+									var str='';
+									for(var i=0;i<data.length;i++){
+										str+='<li>\
+												<a href="/index.php?s=/Product/detail/id/'+data[i].id+'.html">\
+													<img src="'+data[i].image+'">\
+													<p class="title">'+data[i].title+'</p>\
+													<p class="price clear">\
+														<em>&yen;'+data[i].gprice+'</em>\
+														<del>&yen;'+data[i].market_price+'</del>\
+													</p>\
+													<p class="peoplemai clear">\
+														<span class="people">已有<em>'+data[i].buyer_num+'</em>人购买</span>\
+														<span class="tui" href="javascript:;">推</span>\
+														<!--<span class="fan" href="javascript:;">返</span>-->\
+													</p>\
+												</a>\
+											</li>';
+									}
+									$('#fenleiMain .list').append(str);
+								}else{
+									//显示没有更多数据了
+									$('.noData').css('display','block');
+									loadBin.innerHTML = "";
+									//没有必要再看到 松开手指加载更多
+									scrollFun = function(){
+										loadBin.innerHTML = "";
+										myScroll.refresh();
+										myScroll.off("scroll",scrollFun);
+									}
+								}
+
+								loadBin.innerHTML = "";
+								myScroll.on("scroll",scrollFun);
+								myScroll.refresh();
+						 	},
+						 	error: function(xhr, type){
+						 		console.log('Ajax error!');
+						 	}
+						 });
+					}
+				};
+
+			//让图片的高度等于图片的宽度  图片宽度是不确定值
+			$('#fenleiMain .content li img').height($('#fenleiMain .content li img').width());
+		</script>
+		<script type="text/javascript">
+			function GetQueryString(name)
+			{
+			     var reg = new RegExp("(^|/)"+ name +"/([^&]*)(&|$)");
+			     var r = window.location.search.substr(1).match(reg);
+			     if(r!=null)return  unescape(r[2]); return null;
+			}
+		</script>
+	</body>
+</html>

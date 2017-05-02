@@ -1,0 +1,919 @@
+<?php
+require_once "./sample/php/jssdk.php";
+$jssdk = new JSSDK("wx73f8f21829bef9c6", "00ea7e3072f302d457e88b7402dc6429");
+$signPackage = $jssdk->GetSignPackage();
+?>
+<!DOCTYPE html>
+<html>
+	<head> 
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>{:C('WEB_SITE_TITLE')}</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/swiper-3.3.1.min.css">
+		<script src="__PUBLIC__/Home/js/swiper-3.3.1.min.js"></script>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/jquery-1.8.3.min.js"></script>
+		<script src="__PUBLIC__/Home/js/iscroll-probe.js"></script>
+		<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+		<script src="__PUBLIC__/Home/js/delIOS_huitan.js"></script>
+		<!-- <include file="Public/weixin"/> -->
+	</head>
+	<body style="background: #efeff4;" class="box">
+		<!--正文区域-->
+		<div id="indexTop">
+			<div class="contain maxWidth clear">
+				<div class="col-2 backArea"><a class="hz back" href="javascript:;">&#xe600;</a></div>
+				<div class="col-10 search">
+					<div class="inputArea">
+						<span class="hz search">&#xe6e5;</span>
+						<input type="text" id="keywords" placeholder="搜索">
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="indexTop1">
+			<div class="maxWidth">
+				<div class="swiper-container">
+					<div class="swiper-wrapper">
+						<volist name="all_cates" id="cate">
+						<div class="swiper-slide">
+							<a href="{:U('Index/catelist',array('id'=>$cate['id']))}">{$cate.title}</a>
+						</div>
+						</volist>
+						<!-- 最后这个不放到循环里面 这个是一定要有的-->
+						<div class="swiper-slide">
+							<a href="{:U('Search/index')}">所有产品 <span class="hz">&#xe6e6;</span></a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="proDetail1Main" class="fastscroll">
+			<div class="contain maxWidth">
+				<!--基本信息-->
+				<div class="one item basicInfo">
+					<div class="swiper-container lunbo">
+						<div class="swiper-wrapper">
+						<volist name="piclist" id="item">
+							<div class="swiper-slide">
+								<img src="{$item.path}" />
+							</div>
+						</volist>
+						</div>
+						<div class="swiper-pagination"></div>
+					</div>
+					<div class="infoContent">
+						<div class="basic">
+							<p class="title">{$spell.title}</p>
+							<p class="daojishi" data-juStartTime="{:date('Y/m/d H:i:s',$spell['start_date'])}" data-juEndTime="{:date('Y/m/d H:i:s',$spell['end_date'])}" data-status="{$spell.state}">
+								<if condition="$spell.state lt 3">
+								<b class="daojishiText">距结束</b> <span class="day">01</span> 天 <span class="shi">15</span> 时 <span class="fen">12</span> 分 <span class="miao">59</span> 秒
+								<elseif condition="$spell['state'] eq 3"/><b class="daojishiText">拼团已结束</b>
+								<else/>
+								<b class="daojishiText">拼团已结束</b>
+								</if>
+							</p>
+							<p class="price">
+								<span class="xian">&yen;<span class="money">{$spell.price}</span></span>
+								<del>&yen;<span class="money">{$spell.oldprice}</span></del>
+							</p>
+						</div>
+						<div class="tuijianyu">
+							<div class="clear">
+								<div class="col-10">
+									<p class="name"><span class="headImg" style="background-image: url({$user.image|default='__PUBLIC__/Home/img/mytouxiang.png'})"></span>{$user.username|default="蜜罐儿"}推荐语:</p>
+								</div>
+								<div class="col-2 textR"><span class="hz">&#xe619;</span><a href="__URL__/editdes/id/{$spell.id}">编辑</a></div>
+							</div>
+							<p class="word">{$share_desc}</p>
+						</div>
+						<div class="peisong">
+							<p class="line1">
+								<span class="pei">配</span>
+								<span class="text">配送：48小时内</span>
+							</p>
+							<div class="line2 clear">
+								<ul class="col-11">
+									<li>
+										<span class="hz">&#xe633;</span>产品保障
+									</li>
+									<li>
+										<span class="hz">&#xe634;</span>极速退款
+									</li>
+									<li>
+										<span class="hz">&#xe635;</span>蜜罐儿品质
+									</li>
+								</ul>
+								<div class="col-1 icons textR">
+									<span class="hz down on">&#xe60b;</span>
+									<span class="hz up">&#xe6ab;</span>
+								</div>
+							</div>
+						</div>
+						<div class="peisongContent">
+							{$spell.guarantee}
+						</div>
+						<!-- <ul class="peisongContent">
+							
+							<li>
+								<p class="tit"><span class="hz">&#xe681;</span>产品保障</p>
+								<p class="con">
+									蜜团鲜活物流保障送到您手上的鱼、蟹产品为鲜活状态，若送到您那的产品非鲜活鱼类，即可立即获得重新配送保障。
+								</p>
+							</li>
+							<li>
+								<p class="tit"><span class="hz">&#xe681;</span>极速退款</p>
+								<p class="con">
+									在收到您的退款申请后，蜜团会尽快与您取得联系核实问题，申请通过后3个工作日内退款会返回至您的账户内。
+								</p>
+							</li>
+							<li>
+								<p class="tit"><span class="hz">&#xe681;</span>蜜团品质</p>
+								<p class="con">
+									蜜团保证所有的商品都经过专业的质量品控、严格的物流测试后方才进行发货。
+								</p>
+							</li>
+						</ul>
+						<div class="guize">
+							<a href="#">
+								<span class="tui">推</span>推广规则
+								<span class="hz">&#xe60c;</span>
+							</a>
+						</div> -->
+						<!-- <div class="select">
+							<a href="javascript:;">
+								<span class="selectno">请选择商品规格</span>
+									<span class="selected" style="display:none">
+										已选： <span class="selectinfo"></span><span class="num">1</span>件
+									</span>
+								<span class="hz">&#xe60c;</span>
+							</a>
+						</div> -->
+						<!-- <div class="pinglun">
+							<a href="__URL__/pingjia/id/{$info.id}" class="clear">
+								评论({$evaluate_num})<span class="hz">&#xe60c;</span>
+							</a>
+						</div> -->
+					</div>
+				</div>
+				<!-- 正在拼团的列表  倒计时肯定是距离结束的 data-status肯定是2-->
+				<if condition="$teams neq null">
+				<div class="pining">
+					<p class="tit">以下小伙伴正在发起团购，您可以直接参与</p>
+					<ul>
+						<volist name="teams" id="v">
+						<li class="clear" data-status="{$spell.state}" data-juStartTime="{:date('Y/m/d H:i:s',$spell['start_date'])}" data-juEndTime="{:date('Y/m/d H:i:s',$spell['end_date'])}">
+							<div class="bgfffzhe"></div>
+							<img src="{$v.headimg|default='__PUBLIC__/Home/img/mytouxiang.png'}" class="tx">
+							<div class="rect col-9 clear">
+								<div class="col-7 left">
+									{$v.nickname}
+								</div>
+								<div class="col-5 right">
+									<p class="textR red">还差{$v.nums}人成团</p>
+									<p class="textR">
+										剩余
+										<span class="daojishi">
+											<span class="shi">23</span>:<span class="fen">55</span>:<span class="miao">25</span>
+										</span>
+									</p>
+								</div>
+							</div>
+							<a class="btn col-3" href="{:U('Spell/detail_share',array('id'=>$spell['id'],'team_id'=>$v['id']))}">
+								<span>去参团</span>
+								<span class="caret"></span>
+							</a>
+						</li>
+						</volist>
+						<!-- <li class="clear" data-status="{$spell.state}" data-juStartTime="{:date('Y/m/d H:i:s',$spell['start_date'])}" data-juEndTime="{:date('Y/m/d H:i:s',$spell['end_date'])}">
+							<div class="bgfffzhe"></div>
+							<img src="__PUBLIC__/Home/img/mytouxiang.png" class="tx">
+							<div class="rect col-9">
+								<div class="clear">
+									<div class="col-7 pdleft">昵称</div>
+									<div class="col-5 textR red">还差10人成团</div>
+								</div>
+								<div class="clear">
+									<div class="col-7 pdleft">湖州</div>
+									<div class="col-5 textR">
+										剩余
+										<span class="daojishi">
+											<span class="shi">23</span>:<span class="fen">55</span>:<span class="miao">25</span>
+										</span>
+									</div>
+								</div>
+							</div>
+							<a class="btn col-3" href="javascript:;">
+								<span>去参团</span>
+								<span class="caret"></span>
+							</a>
+						</li> -->
+					</ul>
+				</div>
+				</if>
+				
+				<!--图文详情 这个区域的p h1 h2 h3 h4 h5 h6 em i strong b ins del a的样式已经定义过了-->
+				<div class="two item tuwenDetail">
+					<div class="maxWidth">
+						<div class="text">--商品详情--</div>
+						<div class="imgs">
+							{$spell.content}
+						</div>
+					</div>
+				</div>
+				<!--产品参数-->
+				<!-- <div class="three item proCanshu">
+					<div class="maxWidth">
+						<div class="text">--产品参数--</div>
+						<div class="con">
+							
+						</div>
+					</div>
+				</div> -->
+			</div>
+		</div>
+		<div id="proDetail1Bot">
+			<div class="contain maxWidth clear">
+				<div class="col-4 me">
+					<a href="{:U('/Member/Index/index')}">
+						<span class="hz">&#xe605;</span>
+						<p class="text">我的</p>
+					</a>
+				</div>
+				<div class="col-2 sc" style="display:none;">
+					<!-- 已收藏的带有on 类-->
+					<span class="hz wei on">&#xe60f;</span>
+					<span class="hz yi">&#xe612;</span>
+					<p class="text">收藏</p>
+				</div>
+				<div class="col-4 cartArea" style="display:none;">
+					<span class="cart">加入购物车</span>
+				</div>
+				<div class="col-8 maiArea" style="float:right;">
+					<span class="mai"><b style="font-size:1.2rem;">{$spell.num}</b> 人团</span>
+				</div>
+			</div>
+		</div>
+
+		<!--收藏成功提示-->
+		<div id="shoucangokTip" class="scTip" style="opacity: 0">
+			<p><span class="hz">&#xe613;</span></p>
+			收藏成功
+		</div>
+		<!--取消收藏成功提示-->
+		<div id="shoucangxTip" class="scTip" style="opacity: 0">
+			<p><span class="hz">&#xe613;</span></p>
+			取消收藏成功
+		</div>
+		<!-- 颜色规格 -->
+		<div id="proDetailGuige" style="display:none;">
+			<div class="top">
+				<div class="imgContain">
+					<p class="img" style="background-image:url({$info.image})"></p>
+				</div>
+				<div class="centerArea">
+					<div class="title">{$info.title}</div>
+					<div class="price">
+						<span id='gprice_txt'>&yen;{$spell.price}</span><del>&yen;{$spell.oldprice}</del>
+					</div>
+				</div>
+				<span class="hz close">&#xe617;</span>
+			</div>
+			<div class="scrollArea">
+
+				<div class="num">
+					<p class="title">数量</p>
+					<div class="addJianCom">
+						<a href="javascript:;" class="hz jian nooperate">&#xe616;</a>
+						<input type="number" value="1" id='amount'>
+						<a href="javascript:;" class="hz add canoperate">&#xe615;</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--confirm-->
+		<div class="confirm" style="display: none">
+			<div class="top">确认收货吗</div>
+			<div class="bot clear">
+				<div class="l"><p>取消</p></div>
+				<div class="r"><p>确定</p></div>
+			</div>
+		</div>
+		<!-- 遮罩-->
+		<div id="zhezhao" style="display: none"></div>
+		<!--提示文字-->
+		<div class="tip" style="opacity: 0;z-index: -1"></div>
+		<input type="hidden" id="sel_attr" name="sel_attr" class="kind_selected" value="" />
+
+		<script>
+			//点击返回
+			$('#indexTop a.back').on('click',function(){
+				//history.go(-1);
+				window.location.href = "{:U('Spell/index')}";
+			});
+			//点击搜索区域
+			$('#indexTop .search .inputArea').on('click',function(){
+				location.href="{:U('Search/pageindex')}";
+			});
+			//顶部第二行 水平滚动
+			var mySwiper1 = new Swiper('#indexTop1 .swiper-container',{
+				freeMode : true,
+				slidesPerView: 'auto'
+			});
+
+			var share_user_id={$share_user_id};
+			var is_login={$is_login};
+			var spellid = {$spell.id};
+			
+			//tip//////////////////////////////////////////////////////////////////////////////////
+			function tipFun(str){
+				$('.tip').text(str).css({
+					'opacity':'1',
+					'z-index':'9999'
+				});
+				setTimeout(function(){
+					$('.tip').css('opacity','0');
+					setTimeout(function(){
+						$('.tip').css('z-index','-1');
+					},300);
+				},1300);
+			}
+
+			//设置轮播高度720 600////////////////////////////////////////////////////////////
+			setLunboH();
+			function setLunboH(){
+				var w=$('#proDetail1Main .basicInfo .lunbo .swiper-slide img').width();
+				$('#proDetail1Main .basicInfo .lunbo .swiper-slide img').height(600*w/720);
+			}
+			//轮播
+			var lunbosw = new Swiper('#proDetail1Main .basicInfo .lunbo', {
+				autoplay: 3000,
+				loop:true,
+				autoplayDisableOnInteraction:false,
+				pagination : '.swiper-pagination',
+				paginationType : 'fraction'
+			});
+
+			//点击配送的箭头，查看详细信息///////////////////////////////////////////
+			$('#proDetail1Main .basicInfo .infoContent .peisong .line2 .textR').on('click',function(){
+				$(this).find('.on').removeClass('on').siblings('.hz').addClass('on');
+				var content=$('#proDetail1Main .basicInfo .infoContent .peisongContent');
+				if(content.css('display')=='none'){
+					content.show();
+				}else{
+					content.hide();
+				}
+			});
+
+			//规格/////////////////////////////////////////////////////////////////////////////
+			//初始化
+//			var getSelectNum=$('#proDetail1Main .basicInfo .infoContent .select span.num')[0].innerHTML;
+//			if(getSelectNum>1){
+//				$('#proDetailGuige .num .addJianCom input').val(getSelectNum);
+//			}else{
+//				$('#proDetailGuige .num .addJianCom input').val(1);
+//			}
+//			$('#proDetailGuige .num .addJianCom .jian')[0].className='hz jian nooperate';
+//			$('#proDetailGuige .num .addJianCom .add')[0].className='hz add canoperate';
+			//点击+
+			$('#proDetailGuige .num .addJianCom .add').on('click',function(){
+				var kucun=9999;//从后台获取的库存
+				var currNum=$('#proDetailGuige .num .addJianCom input').val();
+				currNum++;
+				if(currNum>kucun){currNum=kucun;}
+				$('#proDetailGuige .num .addJianCom input').val(currNum);
+				//更新到基本信息界面上
+				$('#proDetail1Main .basicInfo .infoContent .select .selectno').css('display','none');
+				$('#proDetail1Main .basicInfo .infoContent .select .selected').css('display','block');
+				$('#proDetail1Main .basicInfo .infoContent .select span.num').text(currNum);//件数跟随改变
+			});
+			//点击-
+			$('#proDetailGuige .num .addJianCom .jian').on('click',function(){
+				var currNum=$('#proDetailGuige .num .addJianCom input').val();
+				currNum--;
+				if(currNum<1){currNum=1;}
+				$('#proDetailGuige .num .addJianCom input').val(currNum);
+				//更新到基本信息界面上
+				$('#proDetail1Main .basicInfo .infoContent .select .selectno').css('display','none');
+				$('#proDetail1Main .basicInfo .infoContent .select .selected').css('display','block');
+				$('#proDetail1Main .basicInfo .infoContent .select span.num').text(currNum);//件数跟随改变
+			});
+			//手动输入商品数量
+			$('.addJianCom input').on('change',function(){
+				var v=$(this).val();
+				if(v<=0){
+					tipFun('低于商品下限');
+					$(this).val(1);
+				}
+				if(v>9999){
+					tipFun('超过商品上限');
+					$(this).val(1);
+				}
+			});
+			//点击x
+			$('#proDetailGuige .top .close').on('click',function(){
+				$('#proDetailGuige').css('display','none');
+				$('#zhezhao').hide();
+				$('#proDetail1Main').css('overflow-y','auto');
+			});
+			//选中的分类项
+			$('#proDetailGuige .fenlei .content p').on('click',function(){
+				$(this).addClass('select').siblings().removeClass('select');
+				//更新到基本信息界面上
+				$('#proDetail1Main .basicInfo .infoContent .select .selectno').css('display','none');
+				$('#proDetail1Main .basicInfo .infoContent .select .selected').css('display','block');
+				var alltype=$('#proDetailGuige .fenlei .content');
+				var text='';
+				for(var i=0;i<alltype.length;i++){
+					text+=''+$(alltype[i]).find('.select').text()+' ';
+				}
+				$('#proDetail1Main .basicInfo .infoContent .select span.selectinfo').text(text);//颜色等跟随改变
+				//防止同一个元素绑定click冲突
+				ergodic();
+			});
+
+			 var price = {$spell.price};
+			//点击加入购物车 选择规格显示
+			$('#proDetail1Bot .cart').on('click',function(){
+				$('#proDetailGuige').css('display','block');
+				$('#zhezhao').show();
+				$('#proDetail1Main').css('overflow-y','hidden');
+
+				var state = {$spell.state};
+				if(price<=0){
+					tipFun('拼团价格为0，不可购买');return;
+				}
+				if(state==1){
+					tipFun('拼团未开始');return;
+				}
+				if(state==2){
+					$('#zhezhao').show();
+					if($("#proDetailGuige").css("display")=='block')
+					{
+						addcart();
+					}else{
+						ergodic();
+						$('#proDetailGuige').css('display','block');
+					}
+				}
+				if(state==3){
+					tipFun('拼团已结束');return;
+				}
+				/*if(state==4){
+					tipFun('拼团已结束');return;
+				}*/
+			});
+
+			//点击立即购买 选择规格显示
+			$('#proDetail1Bot .mai').on('click',function(){
+				/*$('#proDetailGuige').css('display','block');
+				$('#zhezhao').show();
+				$('#proDetail1Main').css('overflow-y','hidden');*/
+
+				var state = {$spell.state};
+				if(price<=0){
+					tipFun('拼团价格为0，不可购买');return;
+				}
+				if(state==1){
+					tipFun('拼团未开始');return;
+				}
+				if(state==2){
+					addcart();
+					/*$('#zhezhao').show();
+					if($("#proDetailGuige").css("display")=='block')
+					{
+						addcart();
+					}
+					else
+					{
+						ergodic();
+						$('#proDetailGuige').css('display','block');
+					}*/
+				}
+				if(state==3){
+					tipFun('拼团已结束');return;
+				}
+				/*if(state==4){
+					tipFun('拼团已结束');return;
+				}*/
+			});
+
+			var is_login={$is_login};
+			function addcart()
+			{
+				if(is_login==0)
+				{
+					window.location.href = "{:U('/Member/Login/index')}";
+				}
+				else
+				{
+					window.location.href = "{:U('Cart/step3')}&spell_id="+spellid;
+					//checkUser();
+					//window.location.href = "{:U('Cart/step3')}&num="+$("#amount").val()+"&spell_id="+spellid;
+				}
+			}
+			
+			//判断用户是否报名当前拼团
+			function checkUser(){
+				var userid = "{$user.id}";
+				$.ajax({
+					type:"POST",
+					url:"__URL__/checkUserjoin",
+					data:{'spellid':spellid,userid:userid},
+					datatype: "json",      
+					success:function(json){
+						if(json.status<1){
+							tipFun(json.info);
+							return false;
+						}else{
+							window.location.href = "{:U('Cart/step3')}&spell_id="+spellid;
+							return true;
+						}
+					}
+				 });
+			}
+			
+			function collection(product_id)
+			{
+				if(is_login==0)
+				{
+					window.location.href = "{:U('/Member/Login/index')}";
+				}
+				else
+				{
+					/*$.ajax({
+						type:"POST",
+						url:"{:U('Product/addcollection')}",
+						data:{'product_id':product_id},
+						datatype: "json",
+						success:function(json){
+							if(json.status<1)
+							{
+								$.toast(json.info,'cancel', function() {
+								});
+							}
+							else
+							{
+								$.toast(json.info, function(){
+									$('.collect_btn').toggleClass("cur");
+								});
+							}
+						}
+					});*/
+				}
+			}
+
+
+			//点击收藏
+			var shoucangokTimer=null;
+			var shoucangxTimer=null;
+			$('#proDetail1Bot .sc').on('click',function(){
+				if(is_login==0)
+				{
+					window.location.href = "{:U('/Member/Login/index')}";
+				}
+				else
+				{
+					//收藏那个我把这个注释了就好了，说是没有 product_id
+//					$.ajax({
+//						type:"POST",
+//						url:"{:U('Product/addcollection')}",
+//						data:{'product_id':product_id},
+//						datatype: "json",
+//						success:function(json){
+//							if(json.status<1)
+//							{
+//								$.toast(json.info,'cancel', function() {
+//								});
+//							}
+//							else
+//							{
+//								$.toast(json.info, function() {
+//
+//									$('.collect_btn').toggleClass("cur");
+//								});
+//							}
+//						}
+//					});
+
+					var onobj=$(this).find('.on');
+					onobj.removeClass('on').siblings('.hz').addClass('on');
+					if(onobj.hasClass('wei')){
+						//弹出添加收藏成功提示 1s后消失
+						$('#shoucangokTip').animate({'opacity':1},500,'ease',function(){
+							shoucangokTimer=setTimeout(function(){
+								shoucangokTimer=null;
+								$('#shoucangokTip').animate({'opacity':0},500,'ease');
+							},500)
+						});
+					}else{
+						//弹出取消收藏成功提示 1s后消失
+						$('#shoucangxTip').animate({'opacity':1},500,'ease',function(){
+							shoucangxTimer=setTimeout(function(){
+								shoucangxTimer=null;
+								$('#shoucangxTip').animate({'opacity':0},500,'ease');
+							},500)
+						});
+					}
+				}
+			});
+
+			var stra="";
+//			var product_id={$info.id};
+			function ergodic()
+			{
+				stra='';
+				$(".fenlei .content .select").each(function(index, element) {
+					var ssele=$(this).html();
+					stra+=ssele
+				});
+				$('#sel_attr').val(stra);
+
+			}
+		</script>
+		<script>
+			//拼团倒计时////////////////////////////////////////////////////////////////////////////////////
+			//用于顶部的  天 时 分 秒 倒计时
+			//距离结束 距离开始 公共调用的函数
+			function setPTtime(li,listatus,listartTimeStr,liendTimeStr,licurrTime,litimer){
+				var NowTime = new Date();
+				var t =licurrTime.getTime() - NowTime.getTime();
+				var d=0;
+				var h=0;
+				var m=0;
+				var s=0;
+				if(t>=0){
+					d=Math.floor(t/1000/60/60/24);
+					h=Math.floor(t/1000/60/60%24);
+					m=Math.floor(t/1000/60%60);
+					s=Math.floor(t/1000%60);
+				}else{
+					clearInterval(litimer);
+					//距离开始倒计时结束后，直接走距离结束的倒计时
+					if(listatus==1){
+						listatus=2;
+						juliEndTimer(li,listatus,listartTimeStr,liendTimeStr,licurrTime,litimer);
+						//ajax 把后台的status设置为2
+						$.ajax({
+							type: 'GET',
+							url: "{:U('Spell/updateSpell')}",
+							dataType: 'json',
+							success: function(data){
+
+							},
+							error: function(xhr, type){
+								console.log('Ajax error!');
+							}
+						});
+					}
+				}
+
+				$(li).find('.day').text(d);
+				$(li).find('.shi').text(zhuanTwo(h));
+				$(li).find('.fen').text(zhuanTwo(m));
+				$(li).find('.miao').text(zhuanTwo(s));
+			}
+			function zhuanTwo(v){
+				//时分秒转成两位数
+				if(v<10){
+					return '0'+v;
+				}else{
+					return ''+v;
+				}
+			}
+			//距离结束
+			function juliEndTimer(li,listatus,listartTimeStr,liendTimeStr,licurrTime,litimer){
+				var liEndTime= new Date(liendTimeStr);
+				licurrTime=liEndTime;
+				$(li).find('.daojishiText').text('距离结束');
+				litimer=setInterval(function(){
+					setPTtime(li,listatus,listartTimeStr,liendTimeStr,licurrTime,litimer);
+				},30);
+			}
+			//距离开始
+			function juliStartTimer(li,listatus,listartTimeStr,liendTimeStr,licurrTime,litimer){
+				var liStartTime= new Date(listartTimeStr);
+				licurrTime=liStartTime;
+				$(li).find('.daojishiText').text('距离开始');
+				litimer=setInterval(function(){
+					setPTtime(li,listatus,listartTimeStr,liendTimeStr,licurrTime,litimer);
+				},30);
+			}
+			//根据status走不同的定时器
+			function setliDaojishi(li,listatus,listartTimeStr,liendTimeStr,licurrTime,litimer){
+				if(listatus==1){
+					juliStartTimer(li,listatus,listartTimeStr,liendTimeStr,licurrTime,litimer);
+				}else if(listatus==2){
+					juliEndTimer(li,listatus,listartTimeStr,liendTimeStr,licurrTime,litimer);
+				}
+			}
+			//获取所有的li，执行倒计时操作
+			//这里是只有一个元素
+			var allli=$('#proDetail1Main .basicInfo .infoContent .daojishi');
+			for(var x=0;x<allli.length;x++){
+				//设置
+				allli[x].timer=null;
+				allli[x].currTime=null;
+
+				//获取
+				var li=$(allli[x]);
+				var listatus=$(allli[x]).attr('data-status');
+				var listartTimeStr=$(allli[x]).attr('data-juStartTime');
+				var liendTimeStr=$(allli[x]).attr('data-juEndTime');
+				var licurrTime=allli[x].currTime;
+				var litimer=allli[x].timer;
+
+				//执行倒计时操作
+				setliDaojishi(li,listatus,listartTimeStr,liendTimeStr,licurrTime,litimer);
+			}
+
+
+			//拼团倒计时
+			//用于 以下小伙伴已经发起团购部分 这块肯定是距离结束的
+			//距离结束 距离开始 公共调用的函数
+			function setPTtime1(li,listatus,listartTimeStr,liendTimeStr,licurrTime,litimer){
+				var NowTime = new Date();
+				var t =licurrTime.getTime() - NowTime.getTime();
+				var d=0;
+				var h=0;
+				var m=0;
+				var s=0;
+				if(t>=0){
+					d=Math.floor(t/1000/60/60/24);
+					h=Math.floor(t/1000/60/60%24);
+					m=Math.floor(t/1000/60%60);
+					s=Math.floor(t/1000%60);
+				}else{
+					clearInterval(litimer);
+					//距离开始倒计时结束后，直接走距离结束的倒计时
+					if(listatus==1){
+						listatus=2;
+						juliEndTimer(li,listatus,listartTimeStr,liendTimeStr,licurrTime,litimer);
+						//ajax 把后台的status设置为2
+						// $.ajax({
+						// 	type: 'GET',
+						// 	url: "",
+						// 	dataType: 'json',
+						// 	success: function(data){
+
+						// 	},
+						// 	error: function(xhr, type){
+						// 		console.log('Ajax error!');
+						// 	}
+						// });
+					}
+				}
+
+				var h=d*24+h;
+				$(li).find('.shi').text(zhuanTwo(h));
+				$(li).find('.fen').text(zhuanTwo(m));
+				$(li).find('.miao').text(zhuanTwo(s));
+			}
+			//距离结束
+			function juliEndTimer1(li,listatus,listartTimeStr,liendTimeStr,licurrTime,litimer){
+				var liEndTime= new Date(liendTimeStr);
+				licurrTime=liEndTime;
+				$(li).find('.daojishiText').text('距离结束');
+				litimer=setInterval(function(){
+					setPTtime1(li,listatus,listartTimeStr,liendTimeStr,licurrTime,litimer);
+				},30);
+			}
+			//距离开始
+			function juliStartTimer1(li,listatus,listartTimeStr,liendTimeStr,licurrTime,litimer){
+				var liStartTime= new Date(listartTimeStr);
+				licurrTime=liStartTime;
+				$(li).find('.daojishiText').text('距离开始');
+				litimer=setInterval(function(){
+					setPTtime1(li,listatus,listartTimeStr,liendTimeStr,licurrTime,litimer);
+				},30);
+			}
+			//根据status走不同的定时器
+			function setliDaojishi1(li,listatus,listartTimeStr,liendTimeStr,licurrTime,litimer){
+				if(listatus==1){
+					juliStartTimer1(li,listatus,listartTimeStr,liendTimeStr,licurrTime,litimer);
+				}else if(listatus==2){
+					juliEndTimer1(li,listatus,listartTimeStr,liendTimeStr,licurrTime,litimer);
+				}
+			}
+			//获取所有的li，执行倒计时操作
+			function daojishiZhunbei1(){
+				var allli=$('#proDetail1Main .pining li');
+				for(var x=0;x<allli.length;x++){
+					//设置
+					allli[x].timer=null;
+					allli[x].currTime=null;
+
+					//获取
+					var li=$(allli[x]);
+					var listatus=$(allli[x]).attr('data-status');
+					var listartTimeStr=$(allli[x]).attr('data-juStartTime');
+					var liendTimeStr=$(allli[x]).attr('data-juEndTime');
+					var licurrTime=allli[x].currTime;
+					var litimer=allli[x].timer;
+
+					//执行倒计时操作
+					setliDaojishi1(li,listatus,listartTimeStr,liendTimeStr,licurrTime,litimer);
+				}
+			}
+			daojishiZhunbei1();
+		</script>
+		<script type="text/javascript">
+			wx.config({
+			      debug: false,
+			      appId: '<?php echo $signPackage["appId"];?>',
+			      timestamp: <?php echo $signPackage["timestamp"];?>,
+			      nonceStr: '<?php echo $signPackage["nonceStr"];?>',
+			      signature: '<?php echo $signPackage["signature"];?>',
+			      jsApiList: [
+			        'checkJsApi',
+			        'onMenuShareTimeline',
+			        'onMenuShareAppMessage',
+			        'onMenuShareQQ',
+			        'onMenuShareWeibo',
+			        'onMenuShareQZone',
+			      ]
+			  });
+			
+			wx.ready(function(){
+				var weiurl = "{$weiurl}";
+				var weilink = window.location.href;
+				var weititle = "{$spell.title}";
+				var imgurl = "{:C('WEBSITE')}{$share_img}";
+				var brief = "{$share_desc}";
+				//console.log(weiurl);
+		      wx.checkJsApi({
+		          jsApiList: ['onMenuShareAppMessage'], // 需要检测的JS接口列表，所有JS接口列表见附录2,
+		      });
+		       wx.onMenuShareTimeline({
+		          title: weititle, 
+		          link: weiurl,
+		          desc: brief,
+		          imgUrl: imgurl, // 分享图标
+		          trigger:function(res){
+		          },
+		          success: function () {
+		              //alert('已分享');
+		          },
+		          cancel: function () {
+		          },
+		          fail:function(){
+		          } 
+		      });
+		      wx.onMenuShareAppMessage({
+		          title: weititle, // 分享标题
+		          desc: brief, // 分享描述
+		          link: weiurl, // 分享链接
+		          imgUrl: imgurl, // 分享图标
+		          type: 'link', // 分享类型,music、video或link，不填默认为link
+		          dataUrl: '', // 如果type是music或video，则要提供数据链接，默认为空
+		          success: function () {
+		            //  alert('hello');
+		          },
+		          cancel: function () {
+		          }
+		      });
+		       //分享到QQ
+		      wx.onMenuShareQQ({
+		          title: weititle,
+		          desc: brief,
+		          link: weiurl,
+		          imgUrl: imgurl, // 分享图标
+		          success: function () { 
+		             // 用户确认分享后执行的回调函数
+		          },
+		          cancel: function () { 
+		             // 用户取消分享后执行的回调函数
+		          }
+		      });
+		      //分享到腾讯微博
+		      wx.onMenuShareWeibo({
+		          title: weititle,
+		          desc: brief,
+		          link: weiurl,
+		          imgUrl: imgurl, // 分享图标
+		          success: function () { 
+		             // 用户确认分享后执行的回调函数
+		          },
+		          cancel: function () { 
+		              // 用户取消分享后执行的回调函数
+		          }
+		      });
+		
+		      // 分享到qq空间
+		      wx.onMenuShareQZone({
+				    title: weititle, // 分享标题
+				    desc: brief, // 分享描述
+				    link: weiurl, // 分享链接
+				    imgUrl: imgurl, // 分享图标
+				    success: function () { 
+				       // 用户确认分享后执行的回调函数
+				    },
+				    cancel: function () { 
+				        // 用户取消分享后执行的回调函数
+				    }
+				});
+			});
+		</script>
+	</body>
+</html>							

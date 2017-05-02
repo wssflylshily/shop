@@ -1,0 +1,91 @@
+<extend name="Public/base"/>
+
+<block name="body">
+	<div class="main-title">
+		<h2>代金券明细列表</h2>
+	</div>
+
+	<div class="cf">
+			<a class="btn" href="javascript:history.go(-1);">返 回</a>
+		
+	</div>
+
+	<div class="data-table table-striped">
+		<table>
+			<thead>
+				<tr>
+					<!-- <th class="row-selected">
+						<input class="checkbox check-all" type="checkbox">
+					</th> -->
+					<th>ID</th>
+					<th>代金券编码</th>
+					<th>代金金额</th>
+					<th>领取用户</th>
+					<th>领取时间</th>
+                    <th>是否使用</th>
+                    <th>使用时间</th>
+					<!-- <th>操作</th> -->
+				</tr>
+			</thead>
+			<tbody>
+				<notempty name="list">
+				<volist name="list" id="item">
+					<tr>
+						<!-- <td><input class="ids row-selected" type="checkbox" name="" id="" value="{$item['id']}"> </td> -->
+						<td>{$item.id}</td>
+						<td>{$item.code}</td>
+                        <td>{$item.money}</td>
+                        <td>{$item.name}</td>
+                        <td>{$item.addtime|date='Y-m-d H:i:s',###}</td>
+                        <td>{$plyarr[$item['is_ply']]}</td>
+                        <td><if condition="$item.plytime neq 0">{$item.plytime|date='Y-m-d H:i:s',###}</if></td>
+						<!-- <td>
+						<if condition="$item.state eq 0">
+							<a title="生成" href="__URL__/create/id/{$item.id}">生成</a>
+							<a title="编辑" href="__URL__/edit/id/{$item.id}">编辑</a>
+							<a class="confirm ajax-get" title="删除" href="__URL__/del/id/{$item.id}">删除</a>
+							<a title="明细" href="__URL__/detail/id/{$item.id}">明细</a>
+						<else />
+						<a title="明细" href="__URL__/detail/id/{$item.id}">明细</a>
+						</if>
+						</td> -->
+					</tr>
+				</volist>
+				<else/>
+				<td colspan="6" class="text-center"> aOh! 暂时还没有内容! </td>
+				</notempty>
+			</tbody>
+		</table>
+	</div>
+		<div class="page">
+        {$page}
+		</div>
+</block>
+
+<block name="script">
+<script type="text/javascript">
+//导航高亮
+highlight_subnav('{:U('CashCoupon/index')}');
+
+    $(function() {
+    	//点击排序
+    	$('.list_sort').click(function(){
+    		var url = $(this).attr('url');
+    		var ids = $('.ids:checked');
+    		var param = '';
+    		if(ids.length > 0){
+    			var str = new Array();
+    			ids.each(function(){
+    				str.push($(this).val());
+    			});
+    			param = str.join(',');
+    		}
+
+    		if(url != undefined && url != ''){
+    			window.location.href = url + '/ids/' + param;
+    		}
+    	});
+    });
+
+</script>
+</block>

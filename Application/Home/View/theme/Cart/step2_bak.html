@@ -1,0 +1,239 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>{:C('WEB_SITE_TITLE')}</title>
+<meta name="description" content="{:C('WEB_SITE_DESCRIPTION')}" />
+<meta name="keywords" content="{:C('WEB_SITE_KEYWORD')}" />
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, width=device-width">
+<link href="__PUBLIC__/Home/css/weui.min.css" rel="stylesheet" />
+<link href="__PUBLIC__/Home/css/jquery-weui.css" rel="stylesheet" />
+<link href="__PUBLIC__/Home/css/common.css" rel="stylesheet" />
+<link href="__PUBLIC__/Home/css/style.css" rel="stylesheet" />
+<script src="__PUBLIC__/Home/js/jquery-1.8.3.min.js"></script>
+<script src="__PUBLIC__/Home/js/common.js"></script>
+<script>
+$(function(){
+	$("input[name='pay_way']").change(function(){
+		if($(this).val()==0)//送货上门
+		{
+			$(".pay_wayc").hide();
+			$(".receiver").show();
+			$(".contacts").hide();	
+			var total_price=parseInt($('#total_price').val())+parseInt($('#express_money').val());
+			$('#total_price_html').html(total_price);
+		}
+		else//仓库自取
+		{
+			$(".pay_wayc").show();
+			$(".receiver").hide();
+			$(".contacts").show();
+			$('#total_price_html').html($('#total_price').val());
+		}
+	});
+	
+	/*$("input[name='wareaddr']").change(function(){
+		$("#addr_ck").html($(this).val());
+	});*/
+
+	$("input[name='wareaddr']").change(function(){
+		//alert('mm');
+		var str="<p>收货人："+$(this).attr('data-name')+"<i>联系电话："+$(this).attr('data-tel')+"</i></p><p>地址："+$(this).attr('data-addr')+"天津市南开区红旗路赛德广场5号楼11层1107室</p>";
+		//alert($(".com_font").html());
+		$(".contacts .com_font").html(str);
+	});
+	
+	$("input[name='write_fp']").change(function(){
+		if($(this).val()==0)
+		{
+			$(".write_div").removeClass("show");
+		}
+		else
+		{			
+			$(".write_div").addClass("show");
+		}
+	});
+
+})
+</script>
+</head>
+<body>
+<!--top-->
+<div class="g_wrap top">
+	<table>
+    	<tr>
+        	<td class="td01"><a href="{:U('Cart/index')}"><img src="__PUBLIC__/Home/images/icon1_03.png" class="img2" /></a></td>
+            <td class="td02">确认订单</td>
+            <td class="td03">&nbsp;</td>
+        </tr>
+    </table>
+</div>
+<!--content-->
+<div class="container car_order g_wrap">    
+    <h2 class="h2">龙驰网信科技有限公司</h2>
+    <ul class="car_ul car_list">
+		<volist name="list" id="item">
+    	<li class="clear" data-id="{$item.id}">
+        	<div class="img_div l"><a href="{:U('Product/detail',array('id'=>$item['product_id']))}"><img src="{$item.image}" /></a></div>
+            <div class="font_div r">
+            	<a href="{:U('Product/detail',array('id'=>$item['id']))}">
+                	<h2>{$item.title}</h2>
+                    <div class="xz_infor">
+					<?php
+					$arr=array();
+					$attr=explode(',',$item['product_attr']);
+					foreach($attr as $val)
+					{
+						list($name,$value)=explode('=',$val);
+						$arr[]=$name.'：'.$value;
+					}
+					echo implode('；',$arr);
+					?>
+					</div>
+                    <div class="price_div">￥<em class="price_now">
+					<if condition="$is_vip eq 1">
+					{$item.product_vipprice}
+					<else />
+					{$item.product_price}
+					</if>
+					</em><i>x<span class="num_num">{$item.product_num}</span></i></div>
+                </a>
+            </div>
+        </li>
+		</volist>
+     </ul>
+     <div class="com_div com_div1 clear">
+     	<div class="l">配送方式</div>
+        <div class="r">
+        	<label><input type="radio" name="pay_way" checked="checked" class="single_btn" value="0" /> <span>送货上门</span></label>
+            <label><input type="radio" name="pay_way" class="single_btn" value="1" /> <span>仓库自提</span></label>
+        </div>
+     </div>
+     <div class="pay_wayc">
+		<volist name="depotlist" id="item">
+     	<label><input type="radio" name="wareaddr" checked="checked" class="single_btn" value="{$item.id}" data-name="{$item.title}" data-tel="{$item.tel}" data-addr="{$item.address}" />天津市 {$areaarr[$item['id']]['title']} {$item.title}</label>
+		</volist>
+     </div>
+
+  	 <div class="receiver">
+     	<h3 class="h3">收货人信息</h3>
+        <a href="/Member/UserAddress?cart_id={$cart_id}" class="com_a">
+        	<div class="com_font">
+            	<p>收货人：{$useraddress.name}<i>联系电话：{$useraddress.mobile}</i></p>
+                <p>地址：{$useraddress.address}</p>
+            </div>
+        </a>
+        <h3 class="h3">快递费：<i class="r">{$express_money}元</i></h3>
+     </div>
+     
+     <div class="contacts">
+     	<h3 class="h3">仓库联系人信息</h3>
+        <a href="javascript:;" class="com_a">
+        	<div class="com_font">
+            	<p>联络人：{$depotlist[0].title}<i>联系电话：{$depotlist[0].tel}</i></p>
+                <p>仓库地址：<em id="addr_ck">{$depotlist[0].address}</em></p>
+            </div>
+        </a>
+     </div>
+     
+     <div class="com_div com_div2">
+     	共{$product_num}件商品    合计：<em>￥{$total_price}</em>
+     </div>
+     <div class="com_div com_div1 clear">
+     	<div class="l">是否开具发票</div>
+        <div class="r">
+        	<label><input type="radio" name="write_fp" checked="checked" class="single_btn" value="0" /> <span>否</span></label>
+            <label><input type="radio" name="write_fp" class="single_btn" value="1" /> <span>是</span></label>
+        </div>
+     </div>
+     <div class="write_div com_div com_div2 no_border">
+     	<span>发票抬头：</span><span><input type="text" name="fp_title" id="invoice_head" value="" /></span>
+     </div>
+     <div class="buck clear">
+     	<div class="l" style="padding-top:16px; margin-right:10px;">
+		<if condition="$user_integral gt 0">
+		<input type="checkbox" name="dk" class="checkbox_btn" />
+		</if>
+		</div>
+        <div class="l">
+        	<p>用商城币抵<i>（100商城币可抵￥{$rateprice}元）</i></p>
+        	<p>当前商城币<i>{$user.integral}</i></p>
+			<if condition="$user_integral gt 0">
+        	<div style="padding-top:6px;">商城币<input type="text" id="user_integral" class="inp" value="{$user.integral}" /></div>
+			<else />
+        	<div style="padding-top:6px;">商品不可以使用积分或者您的积分不足</div>
+			</if>
+        </div>
+     </div>
+</div>
+
+<script>
+function addorder()
+{
+	//alert($("input[name='wareaddr']:checked").val());//提货方式 仓库ID
+	//alert($("input[name='dk']").is(':checked'))
+	var is_invoice=$("input[name='write_fp']:checked").val();//是否开票发票 0否 1是
+	var cart_ids=$('#cart_id').val();//买了哪几个商品
+	var type=$("input[name='pay_way']:checked").val()//0送货上门  1仓库自取
+	var address_id=$('#address_id').val();//送货上门地址ID
+	var depot_id=$("input[name='wareaddr']:checked").val();//仓库ID
+	var total_price=$('#total_price').val();//总金额
+	var express_money=$('#express_money').val();//运费
+	var invoice_head=$('#invoice_head').val();
+	var user_integral=0;//使用积分
+	if(is_invoice==0)invoice_head='';
+	//alert(invoice_head);
+	//$("input[name=´rd´]:checked").val();
+	//使用商城币
+	if($("input[name='dk']").is(':checked')==true)
+	{
+		user_integral=$('#user_integral').val();
+	}
+	else//不使用商城币
+	{
+		user_integral=0;
+	}
+	$.ajax({  
+		type:'post',  
+		traditional :true,  
+		url:"{:U('Cart/addorder')}",  
+		data:{'cart_ids':cart_ids,'type':type,'address_id':address_id,'depot_id':depot_id,'total_price':total_price,'express_money':express_money,'integral':user_integral,'is_invoice':is_invoice,'invoice_head':invoice_head},  
+		success:function(data){
+			if(data.status==0)
+			{
+				alert(data.info);
+			}
+			else
+			{
+				///wxpay/example/jsapi.php?order_id=3
+				window.location.href='/wxpay/example/jsapi.php?order_id='+data.order_id;
+			}
+			//refreshRmb(1);  
+			/*if(data.info=='请登陆')
+			{
+				window.location.href='/Login';
+			}
+			else
+			{
+				alert(data.info);
+			}*/
+			//window.location.reload();
+		}  
+	});
+}
+</script>
+<input type="hidden" id="total_price" value="{$total_price}" />
+<input type="hidden" id="express_money" value="{$express_money}" />
+<!--送货上门地址ID-->
+<input type="hidden" id="address_id" value="{$useraddress.id}" />
+<input type="hidden" id="cart_id" value="{$cart_id}" />
+<!--footer-->
+<div class="car_order_footer g_wrap">
+	<span>共<i>{$product_num}</i>件，总金额</span> <span><em>￥</em><em id="total_price_html">{$total_price+$express_money}</em></span><a href="javascript:addorder()" class="com_btn">提交订单</a>
+</div>
+<script src="__PUBLIC__/Home/js/jquery-2.1.4.js"></script>
+<script src="__PUBLIC__/Home/js/jquery-weui.js"></script>
+
+</body>
+</html>

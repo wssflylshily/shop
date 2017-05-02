@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>我的小组</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/zepto.js"></script>
+		<script src="__PUBLIC__/Home/js/iscroll-probe.js"></script>
+		<style>
+			/*下拉加载样式*/
+			#wrapper {
+				position: absolute;
+				z-index: 1;
+				top: 178px;
+				bottom: 0;
+				left: 0;
+				width: 100%;
+				overflow: hidden;
+			}
+			#loadBin{color: #5d5d5d;text-align: center;line-height: 30px;}
+		</style>
+	</head>
+	<body onLoad="onload()">
+		<!--正文区域-->
+		<div id="myTuiPeopleTop" class="topBackTitle">
+			<div class="contain maxWidth">
+				<a class="hz back" href="javascript:;">&#xe600;</a>我的小组
+			</div>
+		</div>
+		<div id="myTuiPeopleMain" class="fastscroll top50bot0">
+			<div class="contain maxWidth">
+				<ul class="ullist1line">
+					<li>我的组员</li>
+					<li>
+						<div class="left">账号</div>
+						<div class="right">{$spread.login_user}</div>
+					</li>
+				</ul>
+				<div class="title">
+					<div class="left">
+						<img src="__PUBLIC__/Home/img/left.jpg">
+					</div>
+					<div class="center">
+						<p class="tit">已推广会员</p>
+						<p class="num">共<span>{:count($userlist)}</span>人</p>
+						<p class="icon"><span class="hz">&#xe60b;</span></p>
+					</div>
+					<div class="right">
+						<img src="__PUBLIC__/Home/img/right.jpg">
+					</div>
+				</div>
+				<div id="wrapper">
+					<div class="maxWidth">
+						<ul class="list ullist1line tuiguang">
+						<volist name="userlist" id="item">
+							<li>
+								<div class="left">账号</div>
+								<div class="right">{$item.login_user}</div>
+							</li>
+						</volist>
+						</ul>
+						<div id="loadBin"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script>
+			//返回按钮
+			$('#myTuiPeopleTop .back').on('tap',function(){
+				window.history.go(-1);
+			});
+
+			//电话号码处理成，带有*****
+			var alltel=$('#myTuiPeopleMain .ullist1line li .right');
+			for(var i=0;i<alltel.length;i++){
+				var str=alltel[i].innerHTML;
+				var reg=/(\d{3})(\d{5})(\d{3})/;
+				alltel[i].innerHTML=str.replace(reg,'$1*****$3');
+			}
+
+			//推广会员 个数总计
+			var sumNum=$('#myTuiPeopleMain .tuiguang li').length;
+			$('#myTuiPeopleMain .title .center .num span').text(sumNum);
+
+			//iscroll 下拉加载+zeptoajax
+			function onload(){
+				loadBin = document.getElementById("loadBin");
+				myScroll = new IScroll('#wrapper',{
+					probeType: 3,
+					click:true
+				});
+				myScroll.on("scroll",scrollFun);
+				myScroll.on("scrollEnd",scrollEndFun);
+			}
+			var page=1;
+			var myScroll,
+					loadBin,
+					isload = false,
+					scrollFun = function(){
+						if((this.y - this.maxScrollY)>>0 < -50){
+							isload = true;
+							loadBin.innerHTML = "松开手指加载更多";
+							myScroll.refresh();
+							myScroll.off("scroll",scrollFun);
+						}
+					},
+					scrollEndFun = function(){
+						if(isload){
+							isload = false;
+
+							$.ajax({
+								type: 'GET',
+								url: 'data/我的推广人.html',
+								dataType: 'json',
+								success: function(data){
+									page++;
+									for(var i=0;i<data.lists.length;i++){
+										$('#wrapper .list').append('<li><div class="left">账号</div><div class="right">'+data.lists[i].zhanghao+'</div></li>');
+									}
+									loadBin.innerHTML = "";
+									myScroll.on("scroll",scrollFun);
+									myScroll.refresh();
+								},
+								error: function(xhr, type){
+									console.log('Ajax error!');
+								}
+							});
+						}
+					};
+		</script>
+	</body>
+</html>

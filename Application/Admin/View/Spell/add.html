@@ -1,0 +1,517 @@
+<extend name="Public/base" />
+
+<!-- 子导航 -->
+<block name="sidebar">
+    <include file="sidemenu" />
+</block>
+
+<block name="body">
+<link href="__STATIC__/datetimepicker/css/datetimepicker.css" rel="stylesheet" type="text/css">
+<php>if(C('COLOR_STYLE')=='blue_color') echo '<link href="__STATIC__/datetimepicker/css/datetimepicker_blue.css" rel="stylesheet" type="text/css">';</php>
+<link href="__STATIC__/datetimepicker/css/dropdown.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="__STATIC__/datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript" src="__STATIC__/datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+
+<script type="text/javascript">
+
+$(function(){
+    $('.date').datetimepicker({
+    	 Custom : 'yyyy-mm-dd hh:ii:ss',
+        language:"zh-CN",
+        //minView:2,
+        minView: 0,
+        minuteStep:1,
+        autoclose:true
+    });
+    $('.time').datetimepicker({
+        format: 'yyyy-mm-dd hh:ii:ss',
+        language:"zh-CN",
+        //minView:2,
+        minView: 0,
+        minuteStep:1,
+        autoclose:true
+    });
+    showTab();
+
+});
+</script>
+<script>
+
+function delthispic(obj,dataid){
+	if(!confirm("确认删除此图？"))return false;
+	/*var dataid=$(obj).attr('dataid');
+	$('.input_upload_all').val($('.input_upload_all').val().replace(dataid, ""));*/
+	var str='';
+	list=$('#z_sliders').val();
+	arr=list.split(',');
+	for(var i=0;i<arr.length;i++)
+	{
+		if(arr[i]==dataid)continue;
+		if(str=='')
+		{
+			str=arr[i];
+		}
+		else
+		{
+			str=str+','+arr[i];
+		}
+	}
+	$('#z_sliders').val(str);
+	$(obj).parent().remove();
+}
+</script>
+	<script type="text/javascript" src="__STATIC__/uploadify/jquery.uploadify.min.js"></script>
+	<div class="main-title cf">
+		<h2>
+			新增拼团
+		</h2>
+	</div>
+	<!-- 标签页导航 -->
+<div class="tab-wrap">
+	<!-- <ul class="tab-nav nav">
+		<li data-tab="tab0"class="current"><a href="javascript:void(0);">基础</a></li>
+		
+		<?php
+		$navnum=$key+1;
+		?>
+	</ul> -->
+	<div class="tab-content">
+		<!-- 表单 -->
+		<form id="form" action="{:U('addChk')}" method="post" class="form-horizontal">
+        <div id="tab0" class="tab-pane in tab0">
+                <div class="form-item cf">
+                		<label class="item-label">基本属性<span class="check-tips"></span></label>
+						<div class="controls">
+                        <input type="checkbox" name="is_home" value="1">首页推荐
+                        
+						<label class="item-label">拼团名称<span class="check-tips"></span></label>
+						<div class="controls">
+                        <input type="text" class="text input-large" name="title" value="" required="required">
+						</div>
+						<label class="item-label">库存数量<span class="check-tips"></span></label>
+						<div class="controls">
+                        <input type="text" class="text input-large" name="stock_num" value="" required="required">
+						</div>
+						<label class="item-label">开团人数<span class="check-tips"></span></label>
+						<div class="controls">
+                        <input type="text" class="text input-large" name="num" value="" required="required">
+						</div>
+						<label class="item-label">购买数量上限<span class="check-tips">每人可购买的最大数量</span></label>
+						<div class="controls">
+                        <input type="text" class="text input-large" name="max_num" value="1" required="required">
+						</div>
+						<label class="item-label">原价格<span class="check-tips"></span></label>
+						<div class="controls">
+                        <input type="text" class="text input-large" name="oldprice" value="">
+						</div>
+						
+						<label class="item-label">拼团价格<span class="check-tips"></span></label>
+						<div class="controls">
+                        <input type="text" class="text input-large" name="price" value="" required="required">
+						</div>
+						
+						<label class="item-label">
+							开始日期<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+							<input type="text" name="start_date" class="text date" value="{:date('Y-m-d H:i')}" required="required">
+						</div>
+						<label class="item-label">
+							截止日期<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+							<input type="text" name="end_date" class="text date" value="{:date('Y-m-d H:i')}" required="required">
+						</div>
+
+						<label class="item-label">快递费<span class="check-tips"></span></label>
+						<div class="controls">
+                        <input type="text" class="text input-large" name="express_money" value="0">
+						</div>
+						<label class="item-label">
+							封面图<span class="check-tips">（建议尺寸：700*370px）</span>
+						</label>
+						<div class="controls">
+							<div class="controls">
+								<input type="file" id="z_img">
+								<input type="hidden" name="image" id="z_img_id" value=""/>
+								<div class="upload-img-box"></div>
+							</div>
+							<script type="text/javascript">
+								//上传图片
+								/* 初始化上传插件 */
+								$("#z_img").uploadify({
+									"height"          : 30,
+									"swf"             : "/Public/static/uploadify/uploadify.swf",
+									"fileObjName"     : "download",
+									"buttonText"      : "上传图片",
+									"uploader"        : "{:U('File/uploadPicture',array('session_id'=>session_id()))}",
+									"width"           : 120,
+									'removeTimeout'	  : 1,
+									'fileTypeExts'	  : '*.jpg; *.png; *.gif;',
+									"onUploadSuccess" : z_img_id,
+									'onFallback' : function() {
+										alert('未检测到兼容版本的Flash.');
+									}
+								});
+								function z_img_id(file, data){
+									var data = $.parseJSON(data);
+									var src = '';
+									if(data.status){
+										$("#z_img_id").val(data.path);
+										src = data.url || '' + data.path
+										$("#z_img_id").parent().find('.upload-img-box').html(
+											'<div class="upload-pre-item"><img src="' + src + '"/></div>'
+										);
+									} else {
+										updateAlert(data.info);
+										setTimeout(function(){
+											$('#top-alert').find('button').click();
+											$(that).removeClass('disabled').prop('disabled',false);
+										},1500);
+									}
+								}
+								</script>
+						</div>
+						<label class="item-label">
+							幻灯片<span class="check-tips">（建议尺寸：720*600px）</span>
+						</label>
+						<div class="controls">
+							<div class="controls">
+								<input type="file" id="sliders">
+								<input type="hidden" name="imglist" id="z_sliders" value=""/>
+								<div class="upload-img-box"></div>
+							</div>
+							<script type="text/javascript">
+								//上传图片
+								/* 初始化上传插件 */
+								$("#sliders").uploadify({
+									"height"          : 30,
+									"swf"             : "/Public/static/uploadify/uploadify.swf",
+									"fileObjName"     : "download",
+									"buttonText"      : "上传图片",
+									"uploader"        : "{:U('File/uploadPicture',array('session_id'=>session_id()))}",
+									"width"           : 120,
+									'removeTimeout'	  : 1,
+									'fileTypeExts'	  : '*.jpg; *.png; *.gif;',
+									"onUploadSuccess" : z_sliders_id,
+									'onFallback' : function() {
+										alert('未检测到兼容版本的Flash.');
+									}
+								});
+								function z_sliders_id(file, data){
+									var data = $.parseJSON(data);
+									var src = '';
+									if(data.status){
+										imglist=$('#z_sliders').val();
+										if(imglist=='')
+										{
+											imglist=data.id;
+										}
+										else
+										{
+											imglist=imglist+','+data.id;
+										}
+										$('#z_sliders').val(imglist);
+										src = data.url || '' + data.path
+										$("#z_sliders").parent().find('.upload-img-box').append(
+											'<div class="upload-pre-item1"><img src="' + src + '" width="100" height="100" onclick="delthispic(this,'+data.id+')"/></div>'
+										);
+									} else {
+										updateAlert(data.info);
+										setTimeout(function(){
+											$('#top-alert').find('button').click();
+											$(that).removeClass('disabled').prop('disabled',false);
+										},1500);
+									}
+								}
+								</script>
+						</div>
+						<label class="item-label">内容<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+						<textarea name="content">{$field.value}</textarea>
+						</div>
+						{:hook('adminArticleEdit', array('name'=>'content','value'=>$field['value']))}
+						
+						<label class="item-label">推荐语<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+						<textarea style="width:60%;height:150px;" name="describe"></textarea>
+						</div>
+						
+						<label class="item-label">产品保障描述<span class="check-tips"></span>
+						</label>
+						<div class="controls">
+						<textarea name="guarantee"></textarea>
+						<script type="text/javascript">
+							var editor2;
+							KindEditor.ready(function(K) {
+								editor2 = 
+								K.create('textarea[name="guarantee"]', {
+									allowFileManager : false,
+									themesPath: K.basePath,
+									width: '80%',
+									height: '300px',
+									resizeType: 2,
+									pasteType : 2,
+									urlType : 'absolute',
+									fileManagerJson : "{:U('fileManagerJson')}",
+									uploadJson : '{:addons_url("EditorForAdmin://Upload/ke_upimg")}'
+								});
+							});
+							$(function(){
+								//传统表单提交同步
+								$('textarea[name="guarantee"]').closest('form').submit(function(){
+									editor2.sync();
+								});
+								//ajax提交之前同步
+								$('button[type="submit"],#submit,.ajax-post').click(function(){
+									editor2.sync();
+								});
+							})
+						
+						</script>
+						</div>
+						<!-- {:hook('adminArticleEdit', array('name'=>'guarantee','value'=>$field['value']))} -->
+						
+						<label class="item-label">排列序号<span class="check-tips"></span></label>
+						<div class="controls">
+                        <input type="text" class="text input-large" name="order_num" value="0">
+						</div>
+
+				</div>
+		</div>
+		
+		</form>
+		<div class="form-item cf">
+			<button class="btn submit-btn" id="button"  target-form="form-horizontal">确 定</button>
+			<a class="btn btn-return" href="__URL__/index">返 回</a>
+		</div>
+		<br />
+	</div>
+</div>
+<script type="text/javascript">
+	
+	$('input[name="num"]').blur(function(event) {
+		/* Act on the event */
+		if ($(this).val()=="") {
+			$('.check-tips').css('color','red');
+			$('.check-tips').eq(2).html('开团人数不能为空！');return;
+		}else if($(this).val()<=0){
+			$('.check-tips').css('color','red');
+			$('.check-tips').eq(2).html('开团人数需大于0！');return;
+		}else{
+			$('.check-tips').eq(2).html('')
+			$("#button").removeAttr("disabled");
+		}
+	});
+	$('input[name="price"]').blur(function(event) {
+		/* Act on the event */
+		if ($(this).val()=="") {
+			$('.check-tips').css('color','red');
+			$('.check-tips').eq(4).html('团购价格不能为空！');return;
+		}else if($(this).val()<=0){
+			$('.check-tips').css('color','red');
+			$('.check-tips').eq(4).html('团购价格需大于0！');return;
+		}else{
+			$('.check-tips').eq(4).html('')
+			$("#button").removeAttr("disabled");
+		}
+	});
+	
+	/*$("input[name='end_date']").blur(function(event){
+		var stat = $("input[name='start_date']").val();
+		var end  = $(this).val();
+		if(end<=stat){
+			$('.check-tips').css('color','red');
+			$('.check-tips').eq(6).html('截止日期需大于开始日期！');return;
+		}else{
+			$('.check-tips').eq(6).html('');
+			$("#button").removeAttr("disabled");
+		}
+	});*/
+	$("#button").click(function(){
+		var stat = $("input[name='start_date']").val();
+		var end  = $(this).val();
+		if(end<=stat){
+			$('.check-tips').css('color','red');
+			$('.check-tips').eq(6).html('截止日期需大于开始日期！');return;
+		}
+		$("form").submit();
+	})
+</script>
+<script>
+function delitem(title,id)
+{
+	if(confirm("确认删除"+title+"?"))
+	{
+		var titles=$('#attr_titles').val().split(',');
+		var str='';
+		var key=0;
+		for(var i=0;i<titles.length;i++)
+		{
+			if(title==titles[i])
+			{
+				key=i;
+				continue;
+			}
+			if(str=='')
+			{
+				str=titles[i];
+			}
+			else
+			{
+				str+=','+titles[i];
+			}
+		}
+		$('#attr_titles').val(str);
+		str='';
+		var values=$('#attr_values').val().split(',');
+		for(var i=0;i<values.length;i++)
+		{
+			if(key==i)
+			{
+				key=i;
+				continue;
+			}
+			if(str=='')
+			{
+				str=values[i];
+			}
+			else
+			{
+				str+=','+values[i];
+			}
+		}
+		$('#attr_values').val(str);
+		$('#item_'+id).remove();
+		var attrform = $('.form-horizontal');
+		var query = attrform.serialize();
+		//alert(query);
+		$.post("__URL__/getattrlist",query).success(function(data){
+			if (data.status==1) {
+				//updateAlert(data.attr_str ,'alert-success');
+				$('#attr_str').html(data.attr_str);
+				$('#attr_html').html(data.attr_html);
+			}else{
+				updateAlert(data.info);
+			}
+			setTimeout(function(){
+				$('#top-alert').find('button').click();
+			},1500);
+		})
+	}
+}
+var num=0;
+var str='';
+var attr_title='';
+var attr_value='';
+</script>
+</block>
+
+<block name="script">
+<link href="__STATIC__/datetimepicker/css/datetimepicker.css" rel="stylesheet" type="text/css">
+<php>if(C('COLOR_STYLE')=='blue_color') echo '<link href="__STATIC__/datetimepicker/css/datetimepicker_blue.css" rel="stylesheet" type="text/css">';</php>
+<link href="__STATIC__/datetimepicker/css/dropdown.css" rel="stylesheet" type="text/css">
+
+
+<script type="text/javascript">
+	//导航高亮
+	highlight_subnav('{:U('Spell/index')}');
+	//检测产品；
+	$("input[name='pid']").blur(function(event) {
+		/* Act on the event */
+		var $id =$(this).val();
+		if ($id != '') {
+			$.ajax({
+				url: '__URL__/findGoods',
+				type: 'POST',
+				dataType: 'json',
+				data: {id: $id},
+				success: function(data){
+					if(data!=""){
+						$('.ajaxgoods').html("<p>"+data.title+"</p>"+"<p>商城价格："+data.gprice+"</p>");
+						$('input[name="depot_num"]').val(data.depot_num);
+					}else{
+						$('.check-tips').css("color",'red');
+						$('.check-tips').eq(0).html('产品不存在！');
+						return;
+					}
+				}
+			})
+		}
+	});
+
+</script>
+<script type="text/javascript">
+
+$('#button').click(function(){
+	//$('#form').submit();
+});
+
+$(function(){
+    $('.time').datetimepicker({
+        format: 'yyyy-mm-dd hh:ii',
+        language:"zh-CN",
+        minView:2,
+        autoclose:true
+    });
+    showTab();
+
+	<if condition="C('OPEN_DRAFTBOX') and (ACTION_NAME eq 'add' or $info['status'] eq 3)">
+	//保存草稿
+	var interval;
+	$('#autoSave').click(function(){
+        var target_form = $(this).attr('target-form');
+        var target = $(this).attr('url')
+        var form = $('.'+target_form);
+        var query = form.serialize();
+        var that = this;
+
+        $(that).addClass('disabled').attr('autocomplete','off').prop('disabled',true);
+        $.post(target,query).success(function(data){
+            if (data.status==1) {
+                updateAlert(data.info ,'alert-success');
+                $('input[name=id]').val(data.data.id);
+            }else{
+                updateAlert(data.info);
+            }
+            setTimeout(function(){
+                $('#top-alert').find('button').click();
+                $(that).removeClass('disabled').prop('disabled',false);
+            },1500);
+        })
+
+        //重新开始定时器
+        clearInterval(interval);
+        autoSaveDraft();
+        return false;
+    });
+
+	//Ctrl+S保存草稿
+	$('body').keydown(function(e){
+		if(e.ctrlKey && e.which == 83){
+			$('#autoSave').click();
+			return false;
+		}
+	});
+
+	//每隔一段时间保存草稿
+	function autoSaveDraft(){
+		interval = setInterval(function(){
+			//只有基础信息填写了，才会触发
+			var title = $('input[name=title]').val();
+			var name = $('input[name=name]').val();
+			var des = $('textarea[name=description]').val();
+			if(title != '' || name != '' || des != ''){
+				$('#autoSave').click();
+			}
+		}, 1000*parseInt({:C('DRAFT_AOTOSAVE_INTERVAL')}));
+	}
+	autoSaveDraft();
+
+	</if>
+
+});
+</script>
+</block>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>选择卡类型</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/zepto.js"></script>
+		<script src="__PUBLIC__/Home/js/delIOS_huitan.js"></script>
+	</head>
+	<body class="box">
+		<!--正文区域-->
+		<div id="selectKaTypeTop" class="topBackTitle">
+			<div class="contain maxWidth">
+				<a class="hz back" href="javascript:;">&#xe600;</a>选择卡类型
+			</div>
+		</div>
+		<div id="selectKaTypeMain" class="fastscroll top50bot0">
+			<div class="contain maxWidth">
+				<ul class="ullist1line">
+					<volist name="typelist" id="item">
+					<a href='javascript:tourl({$item.id});'>
+					<li>
+						<div class="left">
+							<div class="l">
+								<img src="__PUBLIC__/Home/{$item.img}">
+							</div>
+							<div class="r">
+								<p class="title">{$item.title}</p>
+								<!--<p class="info">尾号<span>3300</span></p>-->
+							</div>
+						</div>
+						<!--
+						<div class="right">
+							<span class="circleGreen" style="display: block">
+								<span class="hz active">&#xe613;</span>
+							</span>
+						</div>-->
+					</li>
+					</a>
+					</volist>
+				</ul>
+				<!--
+				<ul class="addKa">
+					<li>
+						<a href="我的账户余额提现3填写银行卡信息.html">
+							<div class="left">
+								添加银行卡
+							</div>
+							<div class="right">
+								<span class="hz">&#xe60c;</span>
+							</div>
+						</a>
+					</li>
+				</ul>
+				-->
+			</div>
+		</div>
+
+		<script>
+			//返回按钮
+			$('#selectKaTypeTop .back').on('tap',function(){
+				window.history.go(-1);
+			});
+			function tourl(bankid){
+				var typeid =  "{$type}";
+				var type = "{$_GET['tx']}";
+				var id = "{$id}";
+				var url = "";
+				if(typeid==0){
+					url = "__URL__/add/type_id/"+bankid;
+				}else{
+					url = "__URL__/edit/id/"+id+"/type_id/"+bankid;
+				}
+				var name = "{$_GET['name']}",num="{$_GET['num']}",mobile="{$_GET['mobile']}";
+				if(name!=""){
+					url += "/name/"+name;
+				}
+				if(num!="") url += "/num/"+num;
+				if(mobile!="") url += "/mobile/"+mobile;
+				if(type!=""){
+					url +="/tx/"+type;
+				}
+				location.href = url;
+			}
+
+			//传过来的参数
+			/*var hrefstr=location.href;
+			var name=hrefstr.substring(hrefstr.indexOf('name=')+5,hrefstr.indexOf('/num='));
+			var num=hrefstr.substring(hrefstr.indexOf('num=')+4,hrefstr.indexOf('/mobile='));
+			var mobile=hrefstr.substring(hrefstr.indexOf('mobile=')+7);*/
+
+			//选择卡
+			$('#selectKaTypeMain .ullist1line li').on('tap',function(){
+				$('#selectKaTypeMain .ullist1line .right .circleGreen').css('display','none');
+				$(this).find('.right .circleGreen').css('display','block');
+				var currSelectName=$(this).find('.left .r .title').text();
+				var currSelectWeihao=$(this).find('.left .r .info span').text();
+				//console.log('当前选中的卡是:'+currSelectName+',尾号为:'+currSelectWeihao);
+			})
+
+			/*$('.ullist1line a').on('click',function(e){
+				e.preventDefault();
+				var ahref=$(this).attr('href');
+				var name = "{$_GET['name']}",num="{$_GET['num']}",mobile="{$_GET['mobile']}";
+				if(name!=""){
+					ahref += "&name="+name;
+				}
+				if(num!="") ahref += "&num="+num;
+				if(mobile!="") ahref += "&mobile="+mobile;
+				//alert(ahref);
+				location.href = ahref;//+'/name='+name+'/num='+num+'/mobile='+mobile;
+			});*/
+		</script>
+	</body>
+</html>

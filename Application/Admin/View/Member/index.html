@@ -1,0 +1,165 @@
+<extend name="Public/base"/>
+
+<block name="body">
+	<div class="main-title">
+		<h2>会员管理</h2>
+	</div>
+
+	<div class="cf">
+		<present name="Think.get.hid">
+			<a class="btn" href="{$Think.get.refer|base64_decode}">返 回</a>
+		</present>
+        <!--<button class="btn ajax-post" target-form="ids" url="{:U("Member/upgrade")}">升为VIP</button>
+        <button class="btn ajax-post" target-form="ids" url="{:U("Member/cancelupgrade")}">设为普通</button>-->
+		<a class="btn" href="__URL__/add">新 增</a>
+		<a class="btn ajax-post confirm" target-form="ids" href="__URL__/setStatus/status/-1">删 除</a>
+		<a class="btn ajax-post confirm" target-form="ids" href="__URL__/setStatus/status/1">启 用</a>
+		<a class="btn ajax-post confirm" target-form="ids" href="__URL__/setStatus/status/0">禁 用</a>
+		<button class="btn" target-form="ids" onclick="javascript:exportexl();">导出Excel</button>
+		<!-- 高级搜索 -->
+		<div class="search-form fr cf">
+			<div class="btn-group-click adv-sch-pannel fl">
+                <button class="btn">高 级<i class="btn-arrowdown"></i></button>
+                <div class="dropdown cf">
+                	<div class="row">
+                		<label>注册时间：</label>
+                		<input type="text" id="time_start" name="time_start" class="text input-2x" value="" placeholder="起始时间" /> -
+                		<input type="text" id="time_end" name="time_end" class="text input-2x" value="" placeholder="结束时间" />
+                	</div>
+                </div>
+            </div>
+			<div class="sleft">
+				<input type="text" name="title" id="order_id" class="search-input" value="{:I('title')}" placeholder="请输入用户名或手机号">
+				<a class="sch-btn" href="javascript:;" id="search" url="{:U('Member/index')}"><i class="btn-search"></i></a>
+			</div>
+		</div>
+	</div>
+
+	<div class="data-table table-striped">
+		<table>
+			<thead>
+				<tr>
+					<th class="row-selected">
+						<input class="checkbox check-all" type="checkbox">
+					</th>
+					<th>ID</th>
+					<th>会员卡号</th>
+					<th>用户名</th>
+					<th>姓名</th>
+					<th>手机号</th>
+					<th>会员等级</th>
+					<th>积分</th>
+                    <th>余额</th>
+					<th>注册类型</th>
+					<th>注册时间</th>
+                    <th>状态</th>
+					<th>操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				<notempty name="list">
+				<volist name="list" id="item">
+					<tr>
+						<td><input class="ids row-selected" type="checkbox" name="ids[]" id="" value="{$item['id']}"> </td>
+						<td>{$item.id}</td>
+                        <td>{$item.card_num}</td>
+						<td>{$item.login_user}</td>
+                        <td>{$item.name}</td>
+                        <td><if condition="$item.mobile neq ''">{$item.mobile}</if></td>
+                        <td>{$item.grade}</td>
+                        <td>{$item.integral}</td>
+                        <td>{$item['money']}</td>
+                        <td>{$registarr[$item['regist_type']]}</td>
+                        <td><if condition="$item.register_time gt 0">{:date("Y-m-d",$item['register_time'])}<else/><if condition="$item.addtime gt 0">{:date("Y-m-d",$item['addtime'])}</if></if></td>
+                        <td>{$statusarr[$item['status']]}</td>
+						<td>
+							<a title="编辑" href="__URL__/edit/id/{$item.id}">编辑</a>
+							<a class="confirm ajax-get" title="删除" href="__URL__/del/id/{$item.id}">删除</a>
+							<a href="{:U('Order/index',array('user_id'=>$item['id']))}">购买记录</a>
+							<a href="{:U('Member/brokerageList',array('user_id'=>$item['id']))}">分佣记录</a>
+						</td>
+					</tr>
+				</volist>
+				<else/>
+				<td colspan="13" class="text-center"> aOh! 暂时还没有内容! </td>
+				</notempty>
+			</tbody>
+		</table>
+	</div>
+		<div class="page">
+        {$page}
+		</div>
+</block>
+
+<block name="script">
+
+<link href="__STATIC__/datetimepicker/css/datetimepicker.css" rel="stylesheet" type="text/css">
+<php>if(C('COLOR_STYLE')=='blue_color') echo '<link href="__STATIC__/datetimepicker/css/datetimepicker_blue.css" rel="stylesheet" type="text/css">';</php>
+<link href="__STATIC__/datetimepicker/css/dropdown.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="__STATIC__/datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript" src="__STATIC__/datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+<script type="text/javascript">
+    $(function() {
+    	//点击排序
+    	$('.list_sort').click(function(){
+    		var url = $(this).attr('url');
+    		var ids = $('.ids:checked');
+    		var param = '';
+    		if(ids.length > 0){
+    			var str = new Array();
+    			ids.each(function(){
+    				str.push($(this).val());
+    			});
+    			param = str.join(',');
+    		}
+
+    		if(url != undefined && url != ''){
+    			window.location.href = url + '/ids/' + param;
+    		}
+    	});
+    	//搜索功能
+    	$("#search").click(function(){
+    		var url = $(this).attr('url');
+            var query  = $('.search-form').find('input').serialize();
+            query = query.replace(/(&|^)(\w*?\d*?\-*?_*?)*?=?((?=&)|(?=$))/g,'');
+            query = query.replace(/^&/g,'');
+            if( url.indexOf('?')>0 ){
+                url += '&' + query;
+            }else{
+                url += '?' + query;
+            }
+    		window.location.href = url;
+    	});
+    	//回车搜索
+    	$(".search-input").keyup(function(e){
+    		if(e.keyCode === 13){
+    			$("#search").click();
+    			return false;
+    		}
+    	});
+
+        $('#time_start').datetimepicker({
+            format: 'yyyy-mm-dd',
+            language:"zh-CN",
+    	    minView:2,
+    	    autoclose:true
+        });
+
+        $('#time_end').datetimepicker({
+            format: 'yyyy-mm-dd',
+            language:"zh-CN",
+    	    minView:2,
+    	    autoclose:true
+        });
+    });
+    function exportexl(){
+    	var ids = "";
+    	$(".ids").each(function(i,e){
+    		if($(this).is(":checked")){
+    			ids += $(this).val()+",";
+    		}
+    	});
+    	location.href = "{$excel_url}&ids="+ids;
+    }
+</script>
+</block>

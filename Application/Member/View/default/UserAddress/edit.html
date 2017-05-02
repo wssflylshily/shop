@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+	<head>  
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+		<title>编辑收货地址</title>
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/mui.min.css">
+		<link href="__PUBLIC__/Home/css/mui.picker.css" rel="stylesheet" />
+		<link href="__PUBLIC__/Home/css/mui.poppicker.css" rel="stylesheet" />
+		<!--mui和zepto冲突，本页面不引入zepto-->
+
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/common.css">
+		<link rel="stylesheet" href="__PUBLIC__/Home/css/main.css">
+		<script src="__PUBLIC__/Home/js/jquery-1.8.3.min.js"></script>
+		<script src="__PUBLIC__/Home/js/common.js"></script>
+		<script src="__PUBLIC__/Home/js/delIOS_huitan.js"></script>
+	</head>
+	<body class="editHuobody box">
+		<!--提示文字-->
+		<div class="tip" style="opacity: 0;z-index: -1"></div>
+		<!--正文区域-->
+		<div id="editHuoAddTop" class="topBackTitle">
+			<div class="contain maxWidth">
+				<a class="hz back" href="javascript:;">&#xe600;</a>编辑收货地址
+			</div>
+		</div>
+<input type="hidden" name="id" id="id" value="{$vo.id}" />
+		<div id="editHuoAddMain" class="fastscroll">
+			<div class="contain maxWidth">
+				<div class="inputs">
+					<div class="inputArea">
+						<span>收货人姓名</span><input type="text" placeholder="请输入收货人姓名" id="shuoHuoName" value="{$vo.name}">
+					</div>
+					<div class="inputArea">
+						<span>手机号码</span><input type="number" placeholder="请输入手机号码" id="telNum" value="{$vo.mobile}">
+					</div>
+					<div class="inputArea">
+						<span>省市区</span>
+						<em id="showCityPicker3">{$vo.area}</em>
+					</div>
+					<div class="inputArea">
+						<span>街道地址</span><input type="text" placeholder="请输入街道详细地址" id="jiedaoAddress" value="{$vo.address}">
+					</div>
+				</div>
+				<button class="submitbtn">保存地址</button>
+			</div>
+		</div>
+
+		<script src="__PUBLIC__/Home/js/mui.min.js"></script>
+		<script src="__PUBLIC__/Home/js/mui.picker.js"></script>
+		<script src="__PUBLIC__/Home/js/mui.poppicker.js"></script>
+		<script src="__PUBLIC__/Home/js/city.data-3.js" type="text/javascript" charset="utf-8"></script>
+		<script>
+			var cart_id='{$cart_id}';
+			//返回按钮
+			document.querySelector('#editHuoAddTop .back').addEventListener('touchstart',function(){
+				window.history.go(-1);
+			},false);
+
+			//tip
+			function tipFun(str){
+				$('.tip').text(str).css({
+					'opacity':'1',
+					'z-index':'9999'
+				});
+				setTimeout(function(){
+					$('.tip').css('opacity','0');
+					setTimeout(function(){
+						$('.tip').css('z-index','-1');
+					},300);
+				},1300);
+			}
+
+
+			//点击 保存地址 跳转到收货地址列表页
+			var saveBtn=document.querySelector('#editHuoAddMain .submitbtn');
+			saveBtn.addEventListener('touchstart',function(){
+				//保存地址操作
+				var shuoHuoName=document.getElementById('shuoHuoName').value;//收货人姓名
+				var telNum=document.getElementById('telNum').value;//电话
+				var shengshiqu=document.getElementById('showCityPicker3').innerHTML;//省市区
+				var jiedaoAddress=document.getElementById('jiedaoAddress').value;//街道地址
+
+				if(!notEmpty(shuoHuoName)){
+					tipFun('收货人姓名不能为空')
+					return;
+				}
+				if(!notEmpty(telNum)){
+					tipFun('手机号码不能为空')
+					return;
+				}
+				if(!checkTel(telNum)){
+					tipFun('请输入有效的手机号码')
+					return;
+				}
+				if(shengshiqu=='请选择省市区'){
+					tipFun('请选择省市区')
+					return;
+				}
+				if(!notEmpty(jiedaoAddress)){
+					tipFun('请输入街道详细地址')
+					return;
+				}
+				
+				$.ajax({
+					//提交数据的类型 POST GET
+					type:"POST",
+					//提交的网址
+					url:"__URL__/update",
+					//提交的数据
+					data:{'id':$('#id').val(),'name':shuoHuoName,sex:$("input[name='sex']").attr("data-values"),mobile:telNum,area:shengshiqu,address:jiedaoAddress},
+					//返回数据的格式
+					datatype: "json",//"xml", "html", "script", "json", "jsonp", "text".
+					//在请求之前调用的函数
+					//成功返回之后调用的函数             
+					success:function(json){ 
+						if(json.status>0)
+						{
+							if(cart_id!='')
+							{
+								window.location.href='/Member/UserAddress?cart_id='+cart_id;
+							}
+							else
+							{
+								window.location.href='/Member/UserAddress';
+							}
+						}
+						else
+						{
+							tipFun(json.info);
+						}
+					}
+				});
+				//跳转页面操作
+				//location.href='订单确认收货地址.html';
+			},false);
+
+			//mui 城市列表
+			(function($, doc) {
+				$.init();
+				$.ready(function() {
+					var cityPicker3 = new $.PopPicker({
+						layer: 3
+					});
+					cityPicker3.setData(cityData3);
+					var showCityPickerButton = doc.getElementById('showCityPicker3');
+					var cityResult3 = doc.getElementById('showCityPicker3');
+					showCityPickerButton.addEventListener('tap', function(event) {
+						cityPicker3.show(function(items) {
+							//得到的城市结果
+							cityResult3.innerText =  (items[0] || {}).text + " " + (items[1] || {}).text + " " + (items[2] || {}).text;
+							//返回 false 可以阻止选择框的关闭
+							//return false;
+						});
+					}, false);
+				});
+			})(mui, document);
+		</script>
+	</body>
+</html>

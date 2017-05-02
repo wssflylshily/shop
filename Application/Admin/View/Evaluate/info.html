@@ -1,0 +1,114 @@
+<extend name="Public/base"/>
+<block name="script">
+<script charset="utf-8" src="/Public/static/kindeditor/kindeditor-min.js"></script>
+<script charset="utf-8" src="/Public/static/kindeditor/zh_CN.js"></script>
+<script type="text/javascript">
+	var editor_content;
+	KindEditor.ready(function(K) {
+		editor_content = K.create('textarea[name="content"]', {
+			allowFileManager : false,
+			themesPath: K.basePath,
+			width: '100%',
+			height: '500px',
+			resizeType: 1,
+			pasteType : 2,
+			urlType : 'absolute',
+			fileManagerJson : '/admin.php?s=/Article/fileManagerJson.html',
+			//uploadJson : '/admin.php?s=/Article/uploadJson.html' }
+			uploadJson : '/admin.php?s=/Addons/execute/_addons/EditorForAdmin/_controller/Upload/_action/ke_upimg.html',
+			afterBlur: function () { this.sync(); }
+		});
+	});
+	KindEditor.ready(function(K) {
+		editor_content = K.create('textarea[name="en_content"]', {
+			allowFileManager : false,
+			themesPath: K.basePath,
+			width: '100%',
+			height: '500px',
+			resizeType: 1,
+			pasteType : 2,
+			urlType : 'absolute',
+			fileManagerJson : '/admin.php?s=/Article/fileManagerJson.html',
+			//uploadJson : '/admin.php?s=/Article/uploadJson.html' }
+			uploadJson : '/admin.php?s=/Addons/execute/_addons/EditorForAdmin/_controller/Upload/_action/ke_upimg.html',
+			afterBlur: function () { this.sync(); }
+		});
+	});
+
+	$(function(){
+		//传统表单提交同步
+		$('textarea[name="content"]').closest('form').submit(function(){
+			editor_content.sync();
+		});
+		$('textarea[name="en_content"]').closest('form').submit(function(){
+			editor_content.sync();
+		});
+		//ajax提交之前同步
+		$('button[type="submit"],#submit,.ajax-post,#autoSave').click(function(){
+			editor_content.sync();
+		});
+	})
+
+</script>
+<link rel="stylesheet" href="/Public/static/kindeditor/default/default.css" />
+</block>
+
+<block name="body">
+<link href="__STATIC__/datetimepicker/css/datetimepicker.css" rel="stylesheet" type="text/css">
+<link href="__STATIC__/datetimepicker/css/datetimepicker.css" rel="stylesheet" type="text/css">
+<php>if(C('COLOR_STYLE')=='blue_color') echo '<link href="__STATIC__/datetimepicker/css/datetimepicker_blue.css" rel="stylesheet" type="text/css">';</php>
+<link href="__STATIC__/datetimepicker/css/dropdown.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="__STATIC__/datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript" src="__STATIC__/datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+<script type="text/javascript">
+$('#submit').click(function(){
+    $('#form').submit();
+});
+
+$(function(){
+    $('.date').datetimepicker({
+        format: 'yyyy-mm-dd',
+        language:"zh-CN",
+        minView:2,
+        autoclose:true
+    });
+    $('.time').datetimepicker({
+        format: 'yyyy-mm-dd hh:ii',
+        language:"zh-CN",
+        minView:2,
+        autoclose:true
+    });
+    showTab();
+
+});
+</script>
+	<script type="text/javascript" src="__STATIC__/uploadify/jquery.uploadify.min.js"></script>
+	<div class="main-title">
+		<h2>评论详情</h2>
+	</div>
+	<div class="tab-wrap">
+		<div class="tab-content">
+				<table>
+				<tr>
+					<td>订单号：{:getorderid($info['order_id'])}</td>
+				</tr>
+				<tr>
+					<td>评论人：{:getusername($info['user_id'])}</td>
+				</tr>
+				<tr>
+					<td>评论时间：{:date('Y-m-d H:i:s',$info['addtime'])}</td>
+				</tr>
+				<tr>
+					<td>评论内容：{$info.desc}</td>
+				</tr>
+				<tr>
+					<td>评论星级：{$info.score}</td>
+				</tr>
+				</table>
+				<div class="form-item">
+					<button type="submit" id="submit" class="btn submit-btn ajax-post" target-form="form-horizontal">确 定</button>
+					<button class="btn btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
+				</div>
+		</div>
+	</div>
+</block>
